@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">EngApp</string>
+    <string name="default_web_client_id">407652235319-fg8ttkbd0q7ec9uabmk681u0kuhhms1g.apps.googleusercontent.com</string>
+    <string name="verification_email_sent">Đã gửi email xác nhận đến %s. Vui lòng kiểm tra hộp thư.</string>
+    <string name="resend_verification">Gửi lại email xác nhận</string>
+    <string name="email_not_verified">Email chưa được xác nhận</string>
+</resources>
