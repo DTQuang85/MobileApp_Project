@@ -14,13 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.*;
 import java.util.List;
+import android.widget.LinearLayout;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -46,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         initViews();
         setupGoogleSignIn();
         setupEmailPasswordLogin();
+        setupForgotPassword();
     }
 
     private void initViews() {
@@ -57,8 +61,161 @@ public class LoginActivity extends AppCompatActivity {
         // Sign up text
         TextView tvSignUp = findViewById(R.id.tvSignUp);
         tvSignUp.setOnClickListener(v -> showSignUpDialog());
+
+        // Forgot password text
+        TextView tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvForgotPassword.setOnClickListener(v -> showForgotPasswordDialog());
     }
 
+    private void setupForgotPassword() {
+        TextView tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvForgotPassword.setOnClickListener(v -> showForgotPasswordDialog());
+    }
+
+    private void showForgotPasswordDialog() {
+        // Tạo dialog nhập email để reset mật khẩu
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("Quên mật khẩu");
+        builder.setMessage("Nhập email của bạn để nhận link đặt lại mật khẩu");
+
+        // Tạo input field
+        final TextInputEditText input = new TextInputEditText(this);
+        input.setHint("Email của bạn");
+        input.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(50, 0, 50, 0);
+        container.addView(input);
+
+        builder.setView(container);
+
+        builder.setPositiveButton("Gửi link", (dialog, which) -> {
+            String email = input.getText().toString().trim();
+            if (!email.isEmpty()) {
+                sendPasswordResetEmail(email);
+            } else {
+                Toast.makeText(this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void sendPasswordResetEmail(String email) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Email không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Hiển thị loading
+        showForgotPasswordLoading(true);
+
+        auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        showForgotPasswordLoading(false);
+
+                        if (task.isSuccessful()) {
+                            // Gửi email thành công
+                            showResetEmailSentDialog(email);
+                        } else {
+                            // Xử lý lỗi
+                            handleResetPasswordError(task.getException(), email);
+                        }
+                    }
+                });
+    }
+
+    private void showResetEmailSentDialog(String email) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Đã gửi email đặt lại mật khẩu")
+                .setMessage("Chúng tôi đã gửi link đặt lại mật khẩu đến:\n" + email +
+                        "\n\nVui lòng kiểm tra hộp thư và làm theo hướng dẫn.")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    private void handleResetPasswordError(Exception exception, String email) {
+        Log.e("RESET_PASSWORD", "Error sending reset email", exception);
+
+        if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+            Toast.makeText(this, "Email không hợp lệ", Toast.LENGTH_LONG).show();
+        } else if (exception instanceof FirebaseAuthInvalidUserException) {
+            // Kiểm tra xem email có tồn tại không
+            auth.fetchSignInMethodsForEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            List<String> signInMethods = task.getResult().getSignInMethods();
+                            if (signInMethods == null || signInMethods.isEmpty()) {
+                                Toast.makeText(this, "Email chưa được đăng ký", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(this, "Không thể gửi email đặt lại mật khẩu", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(this, "Lỗi hệ thống, vui lòng thử lại", Toast.LENGTH_LONG).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "Lỗi: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showForgotPasswordLoading(boolean show) {
+        // Có thể thêm progress bar nếu muốn
+        if (show) {
+            Toast.makeText(this, "Đang gửi email...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // CẬP NHẬT method handleLoginError - thêm option quên mật khẩu
+    private void handleLoginError(String email, Exception exception) {
+        // Kiểm tra xem email đã được đăng ký với provider nào
+        auth.fetchSignInMethodsForEmail(email)
+                .addOnCompleteListener(task -> {
+                    showLoading(false);
+
+                    if (task.isSuccessful()) {
+                        List<String> signInMethods = task.getResult().getSignInMethods();
+
+                        if (signInMethods != null && signInMethods.contains("google.com")) {
+                            // 📧 Email đã được dùng với Google Sign-in
+                            showProviderConflictDialog(email, "Google");
+                        } else if (signInMethods != null && !signInMethods.isEmpty()) {
+                            // 📧 Email đã được dùng với email/password - THÊM OPTION QUÊN MẬT KHẨU
+                            showLoginErrorWithResetOption(email);
+                        } else {
+                            // 📧 Email chưa đăng ký
+                            showEmailNotRegisteredDialog(email);
+                        }
+                    } else {
+                        // 📧 Lỗi kiểm tra
+                        showLoginErrorDialog("Email chưa được đăng ký. Vui lòng đăng ký tài khoản mới.");
+                    }
+                });
+    }
+
+    // THÊM METHOD MỚI - Hiển thị lỗi với option reset mật khẩu
+    private void showLoginErrorWithResetOption(String email) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Đăng nhập thất bại")
+                .setMessage("Sai mật khẩu. Bạn có muốn đặt lại mật khẩu không?")
+                .setPositiveButton("Đặt lại mật khẩu", (dialog, which) -> {
+                    sendPasswordResetEmail(email);
+                })
+                .setNegativeButton("Thử lại", null)
+                .show();
+    }
+
+    // Các method khác giữ nguyên...
     private void setupGoogleSignIn() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -117,7 +274,7 @@ public class LoginActivity extends AppCompatActivity {
     private void showEmailNotVerifiedDialog(FirebaseUser user) {
         showLoading(false);
 
-        new android.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Email chưa được xác nhận")
                 .setMessage("Tài khoản của bạn chưa được xác nhận. " +
                         "Vui lòng kiểm tra email và click vào link xác nhận chúng tôi đã gửi." +
@@ -151,32 +308,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void handleLoginError(String email, Exception exception) {
-        // Kiểm tra xem email đã được đăng ký với provider nào
-        auth.fetchSignInMethodsForEmail(email)
-                .addOnCompleteListener(task -> {
-                    showLoading(false);
-
-                    if (task.isSuccessful()) {
-                        List<String> signInMethods = task.getResult().getSignInMethods();
-
-                        if (signInMethods != null && signInMethods.contains("google.com")) {
-                            // 📧 Email đã được dùng với Google Sign-in
-                            showProviderConflictDialog(email, "Google");
-                        } else if (signInMethods != null && !signInMethods.isEmpty()) {
-                            // 📧 Email đã được dùng với email/password
-                            showLoginErrorDialog("Sai mật khẩu. Vui lòng kiểm tra lại mật khẩu hoặc chọn 'Quên mật khẩu'.");
-                        } else {
-                            // 📧 Email chưa đăng ký
-                            showEmailNotRegisteredDialog(email);
-                        }
-                    } else {
-                        // 📧 Lỗi kiểm tra
-                        showLoginErrorDialog("Email chưa được đăng ký. Vui lòng đăng ký tài khoản mới.");
-                    }
-                });
-    }
-
     private void showProviderConflictDialog(String email, String provider) {
         String message = "Email " + email + " đã được đăng ký với " + provider + ".\n\n";
 
@@ -186,7 +317,7 @@ public class LoginActivity extends AppCompatActivity {
             message += "Vui lòng sử dụng email khác để đăng ký tài khoản mới.";
         }
 
-        new android.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Email đã tồn tại")
                 .setMessage(message)
                 .setPositiveButton("OK", null)
@@ -194,7 +325,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showEmailNotRegisteredDialog(String email) {
-        new android.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Email chưa đăng ký")
                 .setMessage("Email " + email + " chưa được đăng ký. Bạn có muốn đăng ký tài khoản mới không?")
                 .setPositiveButton("Đăng ký ngay", (dialog, which) -> {
@@ -208,7 +339,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showLoginErrorDialog(String message) {
-        new android.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Đăng nhập thất bại")
                 .setMessage(message)
                 .setPositiveButton("OK", null)
