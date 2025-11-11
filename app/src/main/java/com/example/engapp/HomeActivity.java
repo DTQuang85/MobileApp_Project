@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.example.engapp.utils.DatabaseHelper;
+import com.example.engapp.models.User;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -20,6 +22,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        // Khởi tạo lessons nếu chưa có
+        DatabaseHelper.getInstance().initializeLessons();
+
         auth = FirebaseAuth.getInstance();
 
         // Hiển thị thông tin user
@@ -28,6 +33,9 @@ public class HomeActivity extends AppCompatActivity {
         // Kiểm tra email verification
         checkEmailVerification();
 
+
+        // Load user stats from database
+        loadUserStats();
         // Setup click listeners
         setupClickListeners();
     }
@@ -35,13 +43,40 @@ public class HomeActivity extends AppCompatActivity {
     private void displayUserInfo() {
         FirebaseUser user = auth.getCurrentUser();
         TextView tvWelcome = findViewById(R.id.tvWelcome);
-
         if (user != null) {
             String welcomeText = "Xin chào, " +
                     (user.getDisplayName() != null ? user.getDisplayName() : user.getEmail());
             tvWelcome.setText(welcomeText);
         }
     }
+
+    private void loadUserStats() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            DatabaseHelper.getInstance().getUserData(user.getUid(), new DatabaseHelper.UserDataCallback() {
+                @Override
+                public void onUserDataReceived(User userData) {
+                    if (userData != null) {
+                        updateStatsUI(userData);
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Toast.makeText(HomeActivity.this, "Không thể tải dữ liệu người dùng", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void updateStatsUI(User userData) {
+        TextView tvWelcome = findViewById(R.id.tvWelcome);
+        String statsText = "Xin chào, " + userData.getDisplayName() + "!\n" +
+                "🏆 Điểm: " + userData.getTotalScore() + " | " +
+                "📚 Bài học: " + userData.getLessonsCompleted();
+        tvWelcome.setText(statsText);
+    }
+
 
     private void checkEmailVerification() {
         FirebaseUser user = auth.getCurrentUser();
@@ -78,7 +113,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Practice button
         findViewById(R.id.btnPractice).setOnClickListener(v -> {
-            Toast.makeText(this, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, PracticeActivity.class));
         });
 
         // Profile button

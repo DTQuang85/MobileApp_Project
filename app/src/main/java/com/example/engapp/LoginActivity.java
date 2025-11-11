@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.*;
 import java.util.List;
 import android.widget.LinearLayout;
+import com.example.engapp.utils.DatabaseHelper;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -255,14 +256,11 @@ public class LoginActivity extends AppCompatActivity {
                         // ✅ ĐĂNG NHẬP THÀNH CÔNG - KIỂM TRA EMAIL ĐÃ XÁC NHẬN CHƯA
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
-                            if (user.isEmailVerified()) {
-                                // EMAIL ĐÃ XÁC NHẬN
-                                Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                                goHome(user.getDisplayName() != null ? user.getDisplayName() : user.getEmail());
-                            } else {
-                                // EMAIL CHƯA XÁC NHẬN
-                                showEmailNotVerifiedDialog(user);
-                            }
+                            // EMAIL ĐÃ XÁC NHẬN - Lưu vào Database
+                            String displayName = user.getDisplayName() != null ? user.getDisplayName() : user.getEmail().split("@")[0];
+                            DatabaseHelper.getInstance().createOrUpdateUser(user.getUid(), user.getEmail(), displayName);
+                            // EMAIL ĐÃ XÁC NHẬN
+                            goHome(displayName);
                         }
                     } else {
                         // ❌ ĐĂNG NHẬP THẤT BẠI
@@ -423,9 +421,14 @@ public class LoginActivity extends AppCompatActivity {
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
                 auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        String name = auth.getCurrentUser() != null ? auth.getCurrentUser().getDisplayName() : account.getDisplayName();
-                        Toast.makeText(this, "Đăng nhập Google thành công!", Toast.LENGTH_SHORT).show();
-                        goHome(name);
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null) {
+                            String name = user.getDisplayName() != null ? user.getDisplayName() : account.getDisplayName();
+                            // Lưu user vào Database
+                            DatabaseHelper.getInstance().createOrUpdateUser(user.getUid(), user.getEmail(), name);
+                            Toast.makeText(this, "Đăng nhập Google thành công!", Toast.LENGTH_SHORT).show();
+                            goHome(name);
+                        }
                     } else {
                         Log.e("GSI", "Firebase signInWithCredential failed", task.getException());
                         Toast.makeText(this, "Đăng nhập Google thất bại", Toast.LENGTH_LONG).show();

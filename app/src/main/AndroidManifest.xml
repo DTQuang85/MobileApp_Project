@@ -29,6 +29,7 @@
         <!-- SanityActivity dùng test khởi động (nếu bạn đã tạo) -->
         <activity android:name=".SanityActivity"/>
         <activity android:name=".LessonActivity" />
+        <activity android:name=".PracticeActivity" />
 
     </application>
 </manifest>
