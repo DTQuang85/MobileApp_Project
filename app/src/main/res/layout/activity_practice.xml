@@ -40,7 +40,32 @@
                 android:textColor="@color/primary_color"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="12dp" />
+
+            <!-- Category Display -->
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="📂 Chủ đề: Tất cả"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Change Category Button -->
+            <Button
+                android:id="@+id/btnChangeCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:background="@drawable/button_background"
+                android:paddingHorizontal="16dp"
+                android:text="🔄 Đổi chủ đề"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:layout_marginBottom="12dp" />
 
             <!-- Divider -->
             <View

@@ -121,9 +121,9 @@ public class HomeActivity extends AppCompatActivity {
             showProfileDialog();
         });
 
-        // Logout button
+        // Exit button - Đóng app thay vì logout
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
-            logout();
+            exitApp();
         });
     }
 
@@ -137,9 +137,25 @@ public class HomeActivity extends AppCompatActivity {
             new android.app.AlertDialog.Builder(this)
                     .setTitle("Thông tin tài khoản")
                     .setMessage(profileInfo)
-                    .setPositiveButton("OK", null)
+                    .setPositiveButton("Đóng", null)
+                    .setNeutralButton("Đăng xuất", (dialog, which) -> {
+                        logout();
+                    })
                     .show();
         }
+    }
+
+    private void exitApp() {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Thoát ứng dụng")
+                .setMessage("Bạn có chắc muốn thoát?")
+                .setPositiveButton("Thoát", (dialog, which) -> {
+                    // Đóng app hoàn toàn
+                    finishAffinity();
+                    System.exit(0);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void logout() {
@@ -149,6 +165,7 @@ public class HomeActivity extends AppCompatActivity {
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
                     auth.signOut();
                     Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 })
