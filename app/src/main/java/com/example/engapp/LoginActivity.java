@@ -224,12 +224,8 @@ public class LoginActivity extends AppCompatActivity {
         googleClient = GoogleSignIn.getClient(this, gso);
 
         findViewById(R.id.btnGoogleSignIn).setOnClickListener(v -> {
-            // LUÔN HIỆN DIALOG CHỌN TÀI KHOẢN BẰNG CÁCH ĐĂNG XUẤT TRƯỚC
-            googleClient.signOut().addOnCompleteListener(this, task -> {
-                // SAU KHI ĐĂNG XUẤT, MỞ DIALOG CHỌN TÀI KHOẢN
-                Intent signInIntent = googleClient.getSignInIntent();
-                signInLauncher.launch(signInIntent);
-            });
+            Intent signInIntent = googleClient.getSignInIntent();
+            signInLauncher.launch(signInIntent);
         });
     }
 
@@ -402,12 +398,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<Intent> signInLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == RESULT_CANCELED) {
+                Log.d("GSI", "Result code: " + result.getResultCode());
+                
+                Intent data = result.getData();
+                if (data == null) {
+                    Log.e("GSI", "Intent data is null");
                     Toast.makeText(this, "Đã hủy đăng nhập Google", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                Intent data = result.getData();
+                
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 handleSignInResult(task);
             });
@@ -416,36 +415,50 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             if (account != null) {
+                Log.d("GSI", "Account obtained: " + account.getEmail());
                 // HIỆN THÔNG BÁO ĐANG XỬ LÝ
                 Toast.makeText(this, "Đang đăng nhập với Google...", Toast.LENGTH_SHORT).show();
 
                 // ĐĂNG NHẬP VỚI FIREBASE
-                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                String idToken = account.getIdToken();
+                Log.d("GSI", "ID Token: " + (idToken != null ? "present" : "null"));
+                
+                AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
                 auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         String name = auth.getCurrentUser() != null ? auth.getCurrentUser().getDisplayName() : account.getDisplayName();
+                        Log.d("GSI", "Firebase auth successful for: " + name);
                         Toast.makeText(this, "Đăng nhập Google thành công!", Toast.LENGTH_SHORT).show();
                         goHome(name);
                     } else {
                         Log.e("GSI", "Firebase signInWithCredential failed", task.getException());
-                        Toast.makeText(this, "Đăng nhập Google thất bại", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Đăng nhập Google thất bại: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
+            } else {
+                Log.e("GSI", "Account is null");
+                Toast.makeText(this, "Không thể lấy thông tin tài khoản Google", Toast.LENGTH_SHORT).show();
             }
         } catch (ApiException e) {
             int code = e.getStatusCode();
-            Log.e("GSI", "Google sign-in failed, code=" + code, e);
+            Log.e("GSI", "Google sign-in failed, code=" + code + ", message=" + e.getMessage(), e);
 
+            String errorMsg;
             if (code == 12501) { // SIGN_IN_CANCELLED
-                Toast.makeText(this, "Đã hủy đăng nhập Google", Toast.LENGTH_SHORT).show();
+                errorMsg = "Đã hủy đăng nhập Google";
+            } else if (code == 12500) { // SIGN_IN_FAILED
+                errorMsg = "Đăng nhập Google thất bại. Vui lòng kiểm tra kết nối mạng.";
+            } else if (code == 10) { // DEVELOPER_ERROR
+                errorMsg = "Lỗi cấu hình. SHA-1 certificate chưa được thêm vào Firebase Console.";
             } else {
-                Toast.makeText(this, "Đăng nhập Google thất bại", Toast.LENGTH_LONG).show();
+                errorMsg = "Đăng nhập Google thất bại (mã lỗi: " + code + ")";
             }
+            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
         }
     }
 
     private void goHome(String name) {
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("username", name != null ? name : "User");
         startActivity(intent);
         finish();
