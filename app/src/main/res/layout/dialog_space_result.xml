@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_space"
+    android:padding="24dp">
+
+    <!-- Icon -->
+    <TextView
+        android:id="@+id/tvDialogIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="🎉"
+        android:textSize="48sp"/>
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Tuyệt vời!"
+        android:textColor="@color/text_white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Message -->
+    <TextView
+        android:id="@+id/tvDialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bạn đã hoàn thành!"
+        android:textColor="@color/text_white"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="4dp"/>
+
+    <!-- Stars -->
+    <TextView
+        android:id="@+id/tvDialogStars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="⭐⭐⭐"
+        android:textSize="32sp"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Button -->
+    <TextView
+        android:id="@+id/btnDialogOk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_button_dialog"
+        android:padding="14dp"
+        android:text="Tiếp tục"
+        android:textAlignment="center"
+        android:textColor="@color/text_white"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+</LinearLayout>
+

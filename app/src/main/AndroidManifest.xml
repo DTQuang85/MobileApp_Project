@@ -109,6 +109,26 @@
             android:name=".ProfileActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+        <!-- Explore Activity -->
+        <activity
+            android:name=".ExploreActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Dialogue Activity -->
+        <activity
+            android:name=".DialogueActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Puzzle Game Activity -->
+        <activity
+            android:name=".PuzzleGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Boss Gate Activity -->
+        <activity
+            android:name=".BossGateActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <!-- Main Activity (Legacy - redirect to SpaceMap) -->
         <activity android:name=".MainActivity"/>
         

@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <layer-list>
-            <item>
-                <shape android:shape="rectangle">
-                    <gradient
-                        android:startColor="#0F0F23"
-                        android:centerColor="#1A1A3E"
-                        android:endColor="#2D3561"
-                        android:angle="270"/>
-                </shape>
-            </item>
-        </layer-list>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#0c0c1d"
+                android:centerColor="#1a1a3e"
+                android:endColor="#2d2d5a"
+                android:angle="270"/>
+        </shape>
     </item>
-</selector>
-
+    <!-- Stars effect -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#10FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="radial"
+                android:gradientRadius="300dp"
+                android:centerX="0.2"
+                android:centerY="0.3"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#15FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="radial"
+                android:gradientRadius="250dp"
+                android:centerX="0.8"
+                android:centerY="0.6"/>
+        </shape>
+    </item>
+</layer-list>

@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -11,6 +12,9 @@ import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
 
 public class ProfileActivity extends AppCompatActivity {
+
+    private static final String PREFS_NAME = "game_prefs";
+    private static final String KEY_AVATAR_INDEX = "avatar_index";
 
     private TextView tvAvatar, tvPlayerName, tvLevel, tvXP;
     private TextView tvTotalStars, tvTotalFuel, tvTotalCrystals;
@@ -25,17 +29,28 @@ public class ProfileActivity extends AppCompatActivity {
     private int currentAvatarIndex = 0;
 
     private GameDatabaseHelper dbHelper;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         initViews();
+        loadSavedAvatar();
         loadData();
         setupAvatarSelection();
+    }
+
+    private void loadSavedAvatar() {
+        currentAvatarIndex = prefs.getInt(KEY_AVATAR_INDEX, 0);
+        if (currentAvatarIndex >= 0 && currentAvatarIndex < avatarEmojis.length) {
+            tvAvatar.setText(avatarEmojis[currentAvatarIndex]);
+        }
     }
 
     private void initViews() {
@@ -103,6 +118,8 @@ public class ProfileActivity extends AppCompatActivity {
         tvAvatar.setText(avatarEmojis[index]);
         updateAvatarSelection(index);
 
+        prefs.edit().putInt(KEY_AVATAR_INDEX, currentAvatarIndex).apply();
+
         Toast.makeText(this, "Đã chọn avatar mới! ✨", Toast.LENGTH_SHORT).show();
     }
 
@@ -116,4 +133,3 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 }
-

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Rocket shake/vibrate -->
+    <rotate
+        android:fromDegrees="-3"
+        android:toDegrees="3"
+        android:pivotX="50%"
+        android:pivotY="100%"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:duration="100"/>
+
+    <!-- Scale pulse for fire effect -->
+    <scale
+        android:fromXScale="1.0"
+        android:toXScale="1.05"
+        android:fromYScale="1.0"
+        android:toYScale="1.05"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:duration="150"/>
+</set>
+

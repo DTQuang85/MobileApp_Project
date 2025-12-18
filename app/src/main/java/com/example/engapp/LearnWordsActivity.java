@@ -11,10 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import com.example.engapp.data.GameDataProvider;
-import com.example.engapp.model.Planet;
-import com.example.engapp.model.Word;
-import com.example.engapp.model.Zone;
+import com.example.engapp.database.GameDatabaseHelper;
+import com.example.engapp.database.GameDatabaseHelper.*;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,25 +27,26 @@ public class LearnWordsActivity extends AppCompatActivity implements TextToSpeec
     private CardView cardWord;
 
     private TextToSpeech tts;
-    private List<Word> words;
+    private GameDatabaseHelper dbHelper;
+    private List<WordData> words;
     private int currentIndex = 0;
+    private int planetId;
+    private int sceneId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn_words);
+        overridePendingTransition(R.anim.fade_scale_in, 0);
 
-        String planetId = getIntent().getStringExtra("planet_id");
-        int zoneIndex = getIntent().getIntExtra("zone_index", 0);
+        planetId = getIntent().getIntExtra("planet_id", 1);
+        sceneId = getIntent().getIntExtra("scene_id", 1);
 
-        if (planetId == null) {
-            finish();
-            return;
-        }
+        dbHelper = GameDatabaseHelper.getInstance(this);
 
         initViews();
         initTTS();
-        loadWords(planetId, zoneIndex);
+        loadWords();
         setupClickListeners();
         displayCurrentWord();
     }
@@ -72,23 +71,21 @@ public class LearnWordsActivity extends AppCompatActivity implements TextToSpeec
         tts = new TextToSpeech(this, this);
     }
 
-    private void loadWords(String planetId, int zoneIndex) {
-        Planet planet = GameDataProvider.getPlanetById(planetId);
-        if (planet != null && planet.getZones() != null && zoneIndex < planet.getZones().size()) {
-            Zone zone = planet.getZones().get(zoneIndex);
-            words = zone.getWords();
-        }
+    private void loadWords() {
+        words = dbHelper.getWordsForPlanet(planetId);
 
         if (words == null || words.isEmpty()) {
-            Toast.makeText(this, "Không có từ vựng", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không có từ vựng!", Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
     }
 
     private void setupClickListeners() {
-        btnBack.setOnClickListener(v -> finish());
-
-        btnListen.setOnClickListener(v -> speakWord());
+        btnBack.setOnClickListener(v -> {
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
 
         btnPrevious.setOnClickListener(v -> {
             if (currentIndex > 0) {
@@ -102,78 +99,87 @@ public class LearnWordsActivity extends AppCompatActivity implements TextToSpeec
                 currentIndex++;
                 displayCurrentWord();
             } else {
-                // Finished learning all words
-                Toast.makeText(this, "🎉 Hoàn thành! Bạn đã học xong " + words.size() + " từ!", Toast.LENGTH_LONG).show();
-                finish();
+                // Completed all words
+                completeScene();
             }
         });
 
-        // Card animation on touch
-        cardWord.setOnClickListener(v -> speakWord());
+        btnListen.setOnClickListener(v -> speakCurrentWord());
+
+        if (cardWord != null) {
+            cardWord.setOnClickListener(v -> speakCurrentWord());
+        }
     }
 
     private void displayCurrentWord() {
-        if (words == null || currentIndex >= words.size()) return;
+        if (words == null || words.isEmpty() || currentIndex >= words.size()) {
+            return;
+        }
 
-        Word word = words.get(currentIndex);
+        WordData word = words.get(currentIndex);
+
+        tvWordEmoji.setText(word.emoji);
+        tvEnglish.setText(word.english);
+        tvPronunciation.setText(word.pronunciation);
+        tvVietnamese.setText(word.vietnamese);
+        tvExample.setText(word.exampleSentence);
+
+        if (tvExampleVi != null) {
+            tvExampleVi.setText(word.exampleTranslation);
+        }
 
         // Update progress
-        tvProgress.setText((currentIndex + 1) + "/" + words.size());
         int progress = ((currentIndex + 1) * 100) / words.size();
         progressBar.setProgress(progress);
-
-        // Display word
-        tvWordEmoji.setText(word.getImageUrl() != null ? word.getImageUrl() : "📖");
-        tvEnglish.setText(capitalizeFirst(word.getEnglish()));
-        tvVietnamese.setText(word.getVietnamese());
-
-        // Pronunciation (if available)
-        if (word.getPronunciation() != null && !word.getPronunciation().isEmpty()) {
-            tvPronunciation.setText(word.getPronunciation());
-            tvPronunciation.setVisibility(View.VISIBLE);
-        } else {
-            tvPronunciation.setVisibility(View.GONE);
-        }
-
-        // Example sentence
-        if (word.getExampleSentence() != null) {
-            tvExample.setText(word.getExampleSentence());
-            tvExampleVi.setText(word.getExampleTranslation());
-        } else {
-            tvExample.setText("This is a " + word.getEnglish() + ".");
-            tvExampleVi.setText("Đây là " + word.getVietnamese() + ".");
-        }
+        tvProgress.setText((currentIndex + 1) + "/" + words.size());
 
         // Update button states
+        btnPrevious.setEnabled(currentIndex > 0);
         btnPrevious.setAlpha(currentIndex > 0 ? 1f : 0.5f);
-        btnNext.setText(currentIndex < words.size() - 1 ? "Tiếp ▶" : "Hoàn thành ✓");
 
-        // Auto-speak word
-        speakWord();
+        if (currentIndex >= words.size() - 1) {
+            btnNext.setText("Hoàn thành ✅");
+        } else {
+            btnNext.setText("Tiếp theo →");
+        }
+
+        // Auto speak
+        speakCurrentWord();
     }
 
-    private void speakWord() {
+    private void speakCurrentWord() {
         if (tts != null && words != null && currentIndex < words.size()) {
-            String text = words.get(currentIndex).getEnglish();
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "word_" + currentIndex);
+            WordData word = words.get(currentIndex);
+            tts.speak(word.english, TextToSpeech.QUEUE_FLUSH, null, "word");
         }
     }
 
-    private String capitalizeFirst(String text) {
-        if (text == null || text.isEmpty()) return text;
-        return text.substring(0, 1).toUpperCase() + text.substring(1);
+    private void completeScene() {
+        // Mark words as learned
+        for (WordData word : words) {
+            dbHelper.markWordAsLearned(word.id);
+        }
+
+        // Update scene progress
+        dbHelper.updateSceneProgress(sceneId, 3);
+        dbHelper.addStars(3);
+
+        String message = "Bạn đã học " + words.size() + " từ mới!";
+        SpaceDialog.showSuccess(this, message, 3, () -> finish());
     }
 
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-            int result = tts.setLanguage(Locale.US);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(this, "Ngôn ngữ không hỗ trợ", Toast.LENGTH_SHORT).show();
-            } else {
-                tts.setSpeechRate(0.8f); // Slower for kids
-            }
+            tts.setLanguage(Locale.US);
+            tts.setSpeechRate(0.8f);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     @Override
