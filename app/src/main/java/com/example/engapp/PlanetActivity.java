@@ -36,8 +36,8 @@ public class PlanetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planet);
 
-        // Animation chuyển cảnh
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        // Animation chuyển cảnh kiểu warp
+        overridePendingTransition(R.anim.warp_in, R.anim.warp_out);
 
         planetId = getIntent().getIntExtra("planet_id", -1);
         if (planetId == -1) {

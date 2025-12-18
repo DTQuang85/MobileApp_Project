@@ -1,11 +1,14 @@
 package com.example.engapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -57,6 +60,21 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         setupRecyclerView();
         setupBottomNav();
         setRandomBuddyMessage();
+        loadBuddyAndAnimate();
+    }
+
+    private void loadBuddyAndAnimate() {
+        SharedPreferences prefs = getSharedPreferences("game_prefs", MODE_PRIVATE);
+        int buddyIndex = prefs.getInt("buddy_index", 0);
+        String[] buddyEmojis = {"🤖", "👽", "🐱", "🦊"};
+
+        TextView tvBuddy = findViewById(R.id.tvBuddy);
+        if (tvBuddy != null && buddyIndex < buddyEmojis.length) {
+            tvBuddy.setText(buddyEmojis[buddyIndex]);
+            // Add floating animation
+            Animation floatAnim = AnimationUtils.loadAnimation(this, R.anim.float_up_down);
+            tvBuddy.startAnimation(floatAnim);
+        }
     }
 
     @Override
@@ -143,11 +161,17 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         });
 
         btnNavAdventure.setOnClickListener(v -> {
+            // Button press animation
+            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_press));
             // Open Word Battle game (Bookworm Adventures style)
             Intent intent = new Intent(this, WordBattleActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
         });
+
+        // Add pulse animation to battle button to attract attention
+        Animation pulseAnim = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        btnNavAdventure.startAnimation(pulseAnim);
 
         btnNavProfile.setOnClickListener(v -> openProfile());
     }

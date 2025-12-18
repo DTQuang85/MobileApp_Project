@@ -39,7 +39,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     // UI Views
     private TextView tvBuddyEmoji, tvBuddyName, tvBuddyMessage;
     private TextView tvPlayerHealth, tvPlayerName;
-    private TextView tvEnemyEmoji, tvEnemyName, tvEnemyHealth;
+    private TextView tvEnemyEmoji, tvEnemyName, tvEnemyHealth, tvDamagePopup;
     private ProgressBar progressPlayerHealth, progressEnemyHealth;
     private TextView tvCurrentWord, tvWordMeaning, tvDamagePreview;
     private GridLayout letterGrid;
@@ -82,19 +82,19 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private String buddyName = "Robo-Buddy";
     private int buddyIndex = 0;
 
-    // Enemy data for different stages
+    // Enemy data for different stages - linked to planets
     private static final String[][] ENEMIES = {
-        // {emoji, name, health, damage}
-        {"🦠", "Slime", "40", "8"},
-        {"👻", "Ghost", "50", "10"},
-        {"🐺", "Wolf", "60", "12"},
-        {"🦇", "Bat", "55", "11"},
-        {"🕷️", "Spider", "65", "13"},
-        {"🐍", "Snake", "70", "14"},
-        {"🦂", "Scorpion", "80", "16"},
-        {"👹", "Ogre", "100", "18"},
-        {"🐲", "Dragon", "120", "20"},
-        {"👾", "Alien Boss", "150", "25"},
+        // {emoji, name, health, damage, planet_theme}
+        {"🎨", "Color Blob", "40", "8"},       // Planet 1: Coloria
+        {"🧸", "Evil Teddy", "50", "10"},      // Planet 2: Toytopia
+        {"🦁", "Wild Lion", "60", "12"},       // Planet 3: Animania
+        {"🚗", "Traffic Bot", "65", "13"},     // Planet 4: Citytron
+        {"🍕", "Food Monster", "70", "14"},    // Planet 5: Foodora
+        {"🌪️", "Storm Spirit", "80", "16"},   // Planet 6: Weatheron
+        {"🤖", "Rogue Robot", "90", "17"},     // Planet 7: RoboLab
+        {"⏰", "Time Phantom", "100", "18"},   // Planet 8: TimeLapse
+        {"🐲", "Story Dragon", "120", "20"},   // Planet 9: Storyverse
+        {"👾", "Galaxy Boss", "150", "25"},    // Final Boss
     };
 
     // Buddy messages
@@ -215,6 +215,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         tvEnemyEmoji = findViewById(R.id.tvEnemyEmoji);
         tvEnemyName = findViewById(R.id.tvEnemyName);
         tvEnemyHealth = findViewById(R.id.tvEnemyHealth);
+        tvDamagePopup = findViewById(R.id.tvDamagePopup);
         progressEnemyHealth = findViewById(R.id.progressEnemyHealth);
 
         // Word building
@@ -434,8 +435,13 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
         int damage = calculateDamage(word);
 
-        // Attack animation
-        tvEnemyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_scale_in));
+        // Attack animation - buddy attacks
+        tvBuddyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.attack_hit));
+
+        // Enemy gets hit with shake
+        new Handler().postDelayed(() -> {
+            tvEnemyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
+        }, 200);
 
         // Deal damage
         enemyHealth -= damage;
@@ -448,7 +454,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         int scoreGain = damage * 10 + word.length() * 5;
         totalScore += scoreGain;
 
-        // Show damage popup
+        // Show damage popup with animation
         showDamagePopup(damage, word);
 
         // Speak the word
@@ -457,10 +463,12 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
 
         // Buddy reaction
-        if (combo >= 3) {
-            showBuddyMessage(buddyMessages[buddyIndex][3]); // Combo message
-        } else {
-            showBuddyMessage(buddyMessages[buddyIndex][1]); // Nice word message
+        if (buddyIndex < buddyMessages.length) {
+            if (combo >= 3) {
+                showBuddyMessage(buddyMessages[buddyIndex][3]); // Combo message
+            } else {
+                showBuddyMessage(buddyMessages[buddyIndex][1]); // Nice word message
+            }
         }
 
         // Clear word
@@ -468,22 +476,46 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
         // Check enemy death
         if (enemyHealth <= 0) {
-            enemyDefeated();
+            new Handler().postDelayed(this::enemyDefeated, 500);
         } else {
             // Enemy counter-attack after delay
-            new Handler().postDelayed(this::enemyAttack, 1000);
+            new Handler().postDelayed(this::enemyAttack, 1200);
         }
 
         updateUI();
     }
 
     private void showDamagePopup(int damage, String word) {
-        // Could add floating damage text animation here
-        Toast.makeText(this, "💥 " + word.toUpperCase() + " → " + damage + " damage!", Toast.LENGTH_SHORT).show();
+        // Show floating damage text
+        tvDamagePopup.setText("-" + damage);
+        tvDamagePopup.setVisibility(View.VISIBLE);
+
+        Animation popupAnim = AnimationUtils.loadAnimation(this, R.anim.damage_popup);
+        popupAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tvDamagePopup.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        tvDamagePopup.startAnimation(popupAnim);
     }
 
     private void enemyAttack() {
         if (enemyHealth <= 0) return;
+
+        // Enemy attack animation
+        tvEnemyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.attack_hit));
+
+        // Player gets hit
+        new Handler().postDelayed(() -> {
+            tvBuddyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake));
+        }, 200);
 
         // Enemy attacks player
         playerHealth -= enemyDamage;
@@ -567,8 +599,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         tvEnemyEmoji.setText(enemyEmoji);
         tvEnemyName.setText(enemyName + " Lv." + currentStage);
 
-        // Animation
-        tvEnemyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
+        // Spawn animation with rotation
+        tvEnemyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.enemy_spawn));
 
         showBuddyMessage(enemyEmoji + " " + enemyName + " xuất hiện! Chiến thôi! ⚔️");
 
@@ -576,12 +608,31 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void enemyDefeated() {
+        // Death animation
+        Animation deathAnim = AnimationUtils.loadAnimation(this, R.anim.enemy_death);
+        deathAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                // Continue after death animation
+                continueAfterVictory();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        tvEnemyEmoji.startAnimation(deathAnim);
+
         // Victory for this stage
         int bonus = currentStage * 100;
         totalScore += bonus;
 
         showBuddyMessage("🎉 Đánh bại " + enemyName + "! +" + bonus + " điểm!");
+    }
 
+    private void continueAfterVictory() {
         // Heal player slightly
         playerHealth = Math.min(playerHealth + 20, maxPlayerHealth);
 

@@ -12,7 +12,7 @@ import java.util.List;
 public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "space_english_game.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table names
     public static final String TABLE_PLANETS = "planets";
@@ -250,6 +250,102 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "Mini-game ghép màu và hình", "🧩", 4);
         insertScene(db, planetId, "boss_gate", "Boss Gate", "Cửa Ải Boss",
             "Nghe và chọn đúng vật thể", "👾", 5);
+
+        // Planet 2: Toytopia Orbit
+        insertScene(db, 2, "landing_zone", "Toy Landing", "Bãi Đáp Đồ Chơi",
+            "Học từ vựng về đồ chơi", "🧸", 1);
+        insertScene(db, 2, "explore_area", "Toy Hunt", "Săn Đồ Chơi",
+            "Tìm đồ chơi ẩn giấu", "🔎", 2);
+        insertScene(db, 2, "dialogue_dock", "Toy Talk", "Nói Chuyện Đồ Chơi",
+            "Hỏi đáp về vị trí đồ chơi", "💬", 3);
+        insertScene(db, 2, "puzzle_zone", "Toy Puzzle", "Ghép Hình Đồ Chơi",
+            "Xếp câu với giới từ", "🧩", 4);
+        insertScene(db, 2, "boss_gate", "Teddy Boss", "Boss Gấu Bông",
+            "Cứu Teddy bị lạc", "🧸", 5);
+
+        // Planet 3: Animania Wild
+        insertScene(db, 3, "landing_zone", "Safari Start", "Bắt Đầu Safari",
+            "Học tên các con vật", "🦁", 1);
+        insertScene(db, 3, "explore_area", "Animal Hunt", "Tìm Thú",
+            "Tìm động vật trong rừng", "🔍", 2);
+        insertScene(db, 3, "dialogue_dock", "Zoo Guide", "Hướng Dẫn Viên",
+            "Hỏi đáp về khả năng động vật", "💬", 3);
+        insertScene(db, 3, "puzzle_zone", "Animal Match", "Ghép Thú",
+            "Ghép động vật với hành động", "🧩", 4);
+        insertScene(db, 3, "boss_gate", "Wild Boss", "Boss Hoang Dã",
+            "Thuần phục thú hoang", "🐉", 5);
+
+        // Planet 4: Citytron Nova
+        insertScene(db, 4, "landing_zone", "City Tour", "Tham Quan Thành Phố",
+            "Học tên địa điểm", "🏙️", 1);
+        insertScene(db, 4, "explore_area", "City Hunt", "Khám Phá Phố",
+            "Tìm các địa điểm", "🔍", 2);
+        insertScene(db, 4, "dialogue_dock", "Ask Direction", "Hỏi Đường",
+            "Luyện hỏi và chỉ đường", "💬", 3);
+        insertScene(db, 4, "puzzle_zone", "Map Puzzle", "Ghép Bản Đồ",
+            "Xếp câu chỉ đường", "🧩", 4);
+        insertScene(db, 4, "boss_gate", "Traffic Boss", "Boss Giao Thông",
+            "Vượt qua mê cung đường", "🚦", 5);
+
+        // Planet 5: Foodora Station
+        insertScene(db, 5, "landing_zone", "Menu Learn", "Học Menu",
+            "Học tên đồ ăn thức uống", "🍕", 1);
+        insertScene(db, 5, "explore_area", "Food Hunt", "Tìm Đồ Ăn",
+            "Thu thập nguyên liệu", "🔍", 2);
+        insertScene(db, 5, "dialogue_dock", "Order Food", "Gọi Món",
+            "Luyện gọi món ăn", "💬", 3);
+        insertScene(db, 5, "puzzle_zone", "Recipe Puzzle", "Ghép Công Thức",
+            "Xếp câu nấu ăn", "🧩", 4);
+        insertScene(db, 5, "boss_gate", "Chef Boss", "Boss Đầu Bếp",
+            "Hoàn thành món ăn", "👨‍🍳", 5);
+
+        // Planet 6: Weatheron Sky
+        insertScene(db, 6, "landing_zone", "Weather Watch", "Xem Thời Tiết",
+            "Học từ vựng thời tiết", "⛅", 1);
+        insertScene(db, 6, "explore_area", "Cloud Hunt", "Săn Mây",
+            "Thu thập các loại mây", "🔍", 2);
+        insertScene(db, 6, "dialogue_dock", "Weather Talk", "Nói Về Thời Tiết",
+            "Hỏi đáp thời tiết và trang phục", "💬", 3);
+        insertScene(db, 6, "puzzle_zone", "Dress Up", "Mặc Đồ",
+            "Chọn trang phục phù hợp", "🧩", 4);
+        insertScene(db, 6, "boss_gate", "Storm Boss", "Boss Bão Táp",
+            "Vượt qua bão", "🌪️", 5);
+
+        // Planet 7: RoboLab Command
+        insertScene(db, 7, "landing_zone", "Command Learn", "Học Lệnh",
+            "Học các từ chỉ lệnh", "🤖", 1);
+        insertScene(db, 7, "explore_area", "Part Hunt", "Tìm Linh Kiện",
+            "Thu thập linh kiện robot", "🔍", 2);
+        insertScene(db, 7, "dialogue_dock", "Robot Talk", "Nói Với Robot",
+            "Ra lệnh cho robot", "💬", 3);
+        insertScene(db, 7, "puzzle_zone", "Command Chain", "Chuỗi Lệnh",
+            "Xếp thứ tự các lệnh", "🧩", 4);
+        insertScene(db, 7, "boss_gate", "Mech Boss", "Boss Cơ Khí",
+            "Lập trình đánh boss", "🦾", 5);
+
+        // Planet 8: TimeLapse Base
+        insertScene(db, 8, "landing_zone", "Time Learn", "Học Thời Gian",
+            "Học giờ và ngày", "⏰", 1);
+        insertScene(db, 8, "explore_area", "Schedule Hunt", "Tìm Lịch Trình",
+            "Thu thập các hoạt động", "🔍", 2);
+        insertScene(db, 8, "dialogue_dock", "Daily Talk", "Nói Về Ngày",
+            "Hỏi đáp thói quen hàng ngày", "💬", 3);
+        insertScene(db, 8, "puzzle_zone", "Schedule Fix", "Sửa Lịch",
+            "Xếp thời gian biểu", "🧩", 4);
+        insertScene(db, 8, "boss_gate", "Time Boss", "Boss Thời Gian",
+            "Hoàn thành đúng giờ", "⌛", 5);
+
+        // Planet 9: Storyverse Galaxy
+        insertScene(db, 9, "landing_zone", "Story Start", "Bắt Đầu Truyện",
+            "Học từ kể chuyện", "📚", 1);
+        insertScene(db, 9, "explore_area", "Page Hunt", "Tìm Trang Truyện",
+            "Thu thập các trang truyện", "🔍", 2);
+        insertScene(db, 9, "dialogue_dock", "Story Talk", "Kể Chuyện",
+            "Luyện kể câu chuyện", "💬", 3);
+        insertScene(db, 9, "puzzle_zone", "Story Order", "Xếp Truyện",
+            "Xếp thứ tự câu chuyện", "🧩", 4);
+        insertScene(db, 9, "boss_gate", "Dragon Boss", "Boss Rồng",
+            "Đánh bại rồng bằng từ", "🐲", 5);
 
         // Insert words for Coloria Prime
         insertColoriaWords(db, planetId);
