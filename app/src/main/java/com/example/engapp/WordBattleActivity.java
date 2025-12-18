@@ -454,6 +454,9 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         int scoreGain = damage * 10 + word.length() * 5;
         totalScore += scoreGain;
 
+        // Play attack Lottie animation
+        playAttackAnimation();
+
         // Show damage popup with animation
         showDamagePopup(damage, word);
 
@@ -504,6 +507,22 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             public void onAnimationRepeat(Animation animation) {}
         });
         tvDamagePopup.startAnimation(popupAnim);
+    }
+
+    private void playAttackAnimation() {
+        // Use simple XML animation instead of Lottie for now
+        if (tvEnemyEmoji != null) {
+            tvEnemyEmoji.startAnimation(AnimationUtils.loadAnimation(this, R.anim.attack_hit));
+        }
+    }
+
+    private void playVictoryAnimation() {
+        // Victory animation using XML
+        if (tvBuddyEmoji != null) {
+            Animation victoryAnim = AnimationUtils.loadAnimation(this, R.anim.fade_scale_in);
+            victoryAnim.setRepeatCount(3);
+            tvBuddyEmoji.startAnimation(victoryAnim);
+        }
     }
 
     private void enemyAttack() {

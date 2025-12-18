@@ -73,6 +73,9 @@ dependencies {
     // CircleImageView cho avatar
     implementation("de.hdodenhof:circleimageview:3.1.0")
     
+    // Lottie for beautiful vector animations (looks like 3D)
+    implementation("com.airbnb.android:lottie:6.3.0")
+
     // ExoPlayer cho video streaming - latest version with best audio
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
