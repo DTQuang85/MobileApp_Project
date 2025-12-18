@@ -425,6 +425,30 @@
                 android:textSize="11sp"/>
         </LinearLayout>
 
+        <!-- Adventure Button - NEW -->
+        <LinearLayout
+            android:id="@+id/btnNavAdventure"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚔️"
+                android:textSize="24sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chiến Đấu"
+                android:textColor="@color/fun_yellow"
+                android:textSize="11sp"/>
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/btnNavBadges"
             android:layout_width="0dp"

@@ -29,7 +29,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private ProgressBar progressLevel, progressDailyMission;
     private CardView cardAvatar;
 
-    private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavBadges, btnNavProfile;
+    private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavBadges, btnNavProfile, btnNavAdventure;
 
     private GameDatabaseHelper dbHelper;
     private List<PlanetData> planets;
@@ -84,6 +84,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         btnNavBuddy = findViewById(R.id.btnNavBuddy);
         btnNavBadges = findViewById(R.id.btnNavBadges);
         btnNavProfile = findViewById(R.id.btnNavProfile);
+        btnNavAdventure = findViewById(R.id.btnNavAdventure);
 
         cardAvatar.setOnClickListener(v -> openProfile());
     }
@@ -139,6 +140,13 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         btnNavBadges.setOnClickListener(v -> {
             Intent intent = new Intent(this, BadgesActivity.class);
             startActivity(intent);
+        });
+
+        btnNavAdventure.setOnClickListener(v -> {
+            // Open Word Battle game (Bookworm Adventures style)
+            Intent intent = new Intent(this, WordBattleActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_scale_in, 0);
         });
 
         btnNavProfile.setOnClickListener(v -> openProfile());

@@ -129,6 +129,16 @@
             android:name=".BossGateActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+        <!-- Adventure Activity - Explore with Buddy -->
+        <activity
+            android:name=".AdventureActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Word Battle Activity - Bookworm Adventures style -->
+        <activity
+            android:name=".WordBattleActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <!-- Main Activity (Legacy - redirect to SpaceMap) -->
         <activity android:name=".MainActivity"/>
         

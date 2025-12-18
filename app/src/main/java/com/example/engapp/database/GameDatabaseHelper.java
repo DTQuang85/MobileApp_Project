@@ -257,6 +257,16 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         // Insert sentences for Coloria Prime
         insertColoriaSentences(db, planetId);
 
+        // Insert words for all other planets
+        insertToytopiaWords(db, 2);
+        insertAnimaniaWords(db, 3);
+        insertCitytronWords(db, 4);
+        insertFoodoraWords(db, 5);
+        insertWeatheronWords(db, 6);
+        insertRobolabWords(db, 7);
+        insertTimelapseWords(db, 8);
+        insertStoryverseWords(db, 9);
+
         // Insert default user progress
         ContentValues userValues = new ContentValues();
         userValues.put("user_id", "default");
@@ -348,6 +358,247 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "The sun is bright.", "Mặt trời rất sáng.");
         insertWord(db, planetId, 1, "dark", "tối", "/dɑːrk/", "🌑", "adjective", 1,
             "The room is dark.", "Căn phòng rất tối.");
+    }
+
+    // Planet 2: Toytopia Orbit - Toys & Positions
+    private void insertToytopiaWords(SQLiteDatabase db, long planetId) {
+        // Toys
+        insertWord(db, planetId, 1, "ball", "quả bóng", "/bɔːl/", "⚽", "toy", 1,
+            "I play with the ball.", "Tôi chơi với quả bóng.");
+        insertWord(db, planetId, 1, "doll", "búp bê", "/dɒl/", "🎎", "toy", 1,
+            "She has a doll.", "Cô ấy có một con búp bê.");
+        insertWord(db, planetId, 1, "car", "ô tô", "/kɑːr/", "🚗", "toy", 1,
+            "The car is fast.", "Chiếc ô tô rất nhanh.");
+        insertWord(db, planetId, 1, "robot", "người máy", "/ˈroʊbɒt/", "🤖", "toy", 1,
+            "The robot can walk.", "Người máy có thể đi.");
+        insertWord(db, planetId, 1, "teddy", "gấu bông", "/ˈtedi/", "🧸", "toy", 1,
+            "I love my teddy.", "Tôi yêu gấu bông của tôi.");
+        insertWord(db, planetId, 1, "train", "tàu hỏa", "/treɪn/", "🚂", "toy", 1,
+            "The train is long.", "Tàu hỏa rất dài.");
+        insertWord(db, planetId, 1, "kite", "con diều", "/kaɪt/", "🪁", "toy", 1,
+            "The kite flies high.", "Con diều bay cao.");
+        insertWord(db, planetId, 1, "puzzle", "xếp hình", "/ˈpʌzl/", "🧩", "toy", 1,
+            "I do the puzzle.", "Tôi xếp hình.");
+
+        // Prepositions
+        insertWord(db, planetId, 1, "in", "trong", "/ɪn/", "📦", "preposition", 1,
+            "The ball is in the box.", "Quả bóng ở trong hộp.");
+        insertWord(db, planetId, 1, "on", "trên", "/ɒn/", "📚", "preposition", 1,
+            "The book is on the table.", "Quyển sách ở trên bàn.");
+        insertWord(db, planetId, 1, "under", "dưới", "/ˈʌndər/", "🛋️", "preposition", 1,
+            "The cat is under the sofa.", "Con mèo ở dưới ghế sofa.");
+        insertWord(db, planetId, 1, "behind", "phía sau", "/bɪˈhaɪnd/", "🚪", "preposition", 1,
+            "The dog is behind the door.", "Con chó ở phía sau cửa.");
+        insertWord(db, planetId, 1, "next to", "bên cạnh", "/nekst tuː/", "🪑", "preposition", 1,
+            "The chair is next to the desk.", "Cái ghế ở bên cạnh bàn.");
+        insertWord(db, planetId, 1, "between", "ở giữa", "/bɪˈtwiːn/", "🌳", "preposition", 1,
+            "The house is between two trees.", "Ngôi nhà ở giữa hai cây.");
+    }
+
+    // Planet 3: Animania Wild - Animals & Abilities
+    private void insertAnimaniaWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "dog", "con chó", "/dɒɡ/", "🐕", "animal", 1,
+            "The dog can run fast.", "Con chó có thể chạy nhanh.");
+        insertWord(db, planetId, 1, "cat", "con mèo", "/kæt/", "🐱", "animal", 1,
+            "The cat can climb trees.", "Con mèo có thể leo cây.");
+        insertWord(db, planetId, 1, "bird", "con chim", "/bɜːrd/", "🐦", "animal", 1,
+            "The bird can fly.", "Con chim có thể bay.");
+        insertWord(db, planetId, 1, "fish", "con cá", "/fɪʃ/", "🐟", "animal", 1,
+            "The fish can swim.", "Con cá có thể bơi.");
+        insertWord(db, planetId, 1, "lion", "sư tử", "/ˈlaɪən/", "🦁", "animal", 1,
+            "The lion is the king.", "Sư tử là vua.");
+        insertWord(db, planetId, 1, "elephant", "con voi", "/ˈelɪfənt/", "🐘", "animal", 1,
+            "The elephant is big.", "Con voi rất to.");
+        insertWord(db, planetId, 1, "monkey", "con khỉ", "/ˈmʌŋki/", "🐒", "animal", 1,
+            "The monkey can jump.", "Con khỉ có thể nhảy.");
+        insertWord(db, planetId, 1, "penguin", "chim cánh cụt", "/ˈpeŋɡwɪn/", "🐧", "animal", 1,
+            "The penguin can swim.", "Chim cánh cụt có thể bơi.");
+        insertWord(db, planetId, 1, "rabbit", "con thỏ", "/ˈræbɪt/", "🐰", "animal", 1,
+            "The rabbit can hop.", "Con thỏ có thể nhảy lò cò.");
+        insertWord(db, planetId, 1, "snake", "con rắn", "/sneɪk/", "🐍", "animal", 1,
+            "The snake can't walk.", "Con rắn không thể đi.");
+
+        // Actions
+        insertWord(db, planetId, 1, "run", "chạy", "/rʌn/", "🏃", "action", 1,
+            "I can run fast.", "Tôi có thể chạy nhanh.");
+        insertWord(db, planetId, 1, "jump", "nhảy", "/dʒʌmp/", "🦘", "action", 1,
+            "Kangaroos can jump high.", "Kangaroo có thể nhảy cao.");
+        insertWord(db, planetId, 1, "fly", "bay", "/flaɪ/", "🦅", "action", 1,
+            "Birds can fly.", "Chim có thể bay.");
+        insertWord(db, planetId, 1, "swim", "bơi", "/swɪm/", "🏊", "action", 1,
+            "Fish can swim.", "Cá có thể bơi.");
+    }
+
+    // Planet 4: Citytron Nova - Places & Directions
+    private void insertCitytronWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "school", "trường học", "/skuːl/", "🏫", "place", 1,
+            "I go to school.", "Tôi đi đến trường.");
+        insertWord(db, planetId, 1, "hospital", "bệnh viện", "/ˈhɒspɪtl/", "🏥", "place", 1,
+            "The hospital is big.", "Bệnh viện rất lớn.");
+        insertWord(db, planetId, 1, "park", "công viên", "/pɑːrk/", "🏞️", "place", 1,
+            "I play in the park.", "Tôi chơi ở công viên.");
+        insertWord(db, planetId, 1, "supermarket", "siêu thị", "/ˈsuːpərmɑːrkɪt/", "🏪", "place", 1,
+            "Mom shops at the supermarket.", "Mẹ mua sắm ở siêu thị.");
+        insertWord(db, planetId, 1, "library", "thư viện", "/ˈlaɪbrəri/", "📚", "place", 1,
+            "I read at the library.", "Tôi đọc sách ở thư viện.");
+        insertWord(db, planetId, 1, "restaurant", "nhà hàng", "/ˈrestrɒnt/", "🍽️", "place", 1,
+            "We eat at the restaurant.", "Chúng tôi ăn ở nhà hàng.");
+
+        // Directions
+        insertWord(db, planetId, 1, "left", "trái", "/left/", "⬅️", "direction", 1,
+            "Turn left.", "Rẽ trái.");
+        insertWord(db, planetId, 1, "right", "phải", "/raɪt/", "➡️", "direction", 1,
+            "Turn right.", "Rẽ phải.");
+        insertWord(db, planetId, 1, "straight", "thẳng", "/streɪt/", "⬆️", "direction", 1,
+            "Go straight.", "Đi thẳng.");
+        insertWord(db, planetId, 1, "near", "gần", "/nɪr/", "📍", "direction", 1,
+            "The park is near.", "Công viên ở gần.");
+        insertWord(db, planetId, 1, "far", "xa", "/fɑːr/", "🗺️", "direction", 1,
+            "The beach is far.", "Bãi biển ở xa.");
+    }
+
+    // Planet 5: Foodora Station - Food & Shopping
+    private void insertFoodoraWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "apple", "quả táo", "/ˈæpl/", "🍎", "food", 1,
+            "I eat an apple.", "Tôi ăn một quả táo.");
+        insertWord(db, planetId, 1, "banana", "quả chuối", "/bəˈnænə/", "🍌", "food", 1,
+            "Monkeys like bananas.", "Khỉ thích chuối.");
+        insertWord(db, planetId, 1, "bread", "bánh mì", "/bred/", "🍞", "food", 1,
+            "I eat bread for breakfast.", "Tôi ăn bánh mì cho bữa sáng.");
+        insertWord(db, planetId, 1, "rice", "cơm", "/raɪs/", "🍚", "food", 1,
+            "We eat rice every day.", "Chúng tôi ăn cơm mỗi ngày.");
+        insertWord(db, planetId, 1, "chicken", "thịt gà", "/ˈtʃɪkɪn/", "🍗", "food", 1,
+            "I like chicken.", "Tôi thích thịt gà.");
+        insertWord(db, planetId, 1, "pizza", "bánh pizza", "/ˈpiːtsə/", "🍕", "food", 1,
+            "Pizza is delicious.", "Pizza rất ngon.");
+        insertWord(db, planetId, 1, "milk", "sữa", "/mɪlk/", "🥛", "drink", 1,
+            "I drink milk.", "Tôi uống sữa.");
+        insertWord(db, planetId, 1, "juice", "nước ép", "/dʒuːs/", "🧃", "drink", 1,
+            "I like orange juice.", "Tôi thích nước cam.");
+        insertWord(db, planetId, 1, "water", "nước", "/ˈwɔːtər/", "💧", "drink", 1,
+            "Drink more water.", "Uống nhiều nước hơn.");
+        insertWord(db, planetId, 1, "ice cream", "kem", "/ˈaɪs kriːm/", "🍦", "food", 1,
+            "I love ice cream.", "Tôi yêu kem.");
+    }
+
+    // Planet 6: Weatheron Sky - Weather & Clothes
+    private void insertWeatheronWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "sunny", "nắng", "/ˈsʌni/", "☀️", "weather", 1,
+            "It is sunny today.", "Hôm nay trời nắng.");
+        insertWord(db, planetId, 1, "rainy", "mưa", "/ˈreɪni/", "🌧️", "weather", 1,
+            "It is rainy.", "Trời đang mưa.");
+        insertWord(db, planetId, 1, "cloudy", "nhiều mây", "/ˈklaʊdi/", "☁️", "weather", 1,
+            "It is cloudy.", "Trời nhiều mây.");
+        insertWord(db, planetId, 1, "windy", "có gió", "/ˈwɪndi/", "💨", "weather", 1,
+            "It is windy.", "Trời có gió.");
+        insertWord(db, planetId, 1, "snowy", "có tuyết", "/ˈsnoʊi/", "❄️", "weather", 1,
+            "It is snowy in winter.", "Trời có tuyết vào mùa đông.");
+        insertWord(db, planetId, 1, "hot", "nóng", "/hɒt/", "🥵", "weather", 1,
+            "It is hot today.", "Hôm nay trời nóng.");
+        insertWord(db, planetId, 1, "cold", "lạnh", "/koʊld/", "🥶", "weather", 1,
+            "It is cold outside.", "Bên ngoài trời lạnh.");
+
+        // Clothes
+        insertWord(db, planetId, 1, "jacket", "áo khoác", "/ˈdʒækɪt/", "🧥", "clothes", 1,
+            "Wear a jacket.", "Mặc áo khoác.");
+        insertWord(db, planetId, 1, "hat", "mũ", "/hæt/", "🧢", "clothes", 1,
+            "Wear a hat.", "Đội mũ.");
+        insertWord(db, planetId, 1, "umbrella", "ô, dù", "/ʌmˈbrelə/", "☂️", "clothes", 1,
+            "Take an umbrella.", "Mang theo ô.");
+        insertWord(db, planetId, 1, "boots", "giày ống", "/buːts/", "👢", "clothes", 1,
+            "I wear boots.", "Tôi mang giày ống.");
+        insertWord(db, planetId, 1, "sunglasses", "kính mát", "/ˈsʌnɡlæsɪz/", "🕶️", "clothes", 1,
+            "I wear sunglasses.", "Tôi đeo kính mát.");
+    }
+
+    // Planet 7: RoboLab Command - Commands & Sequences
+    private void insertRobolabWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "open", "mở", "/ˈoʊpən/", "📂", "command", 1,
+            "Open the door.", "Mở cửa.");
+        insertWord(db, planetId, 1, "close", "đóng", "/kloʊz/", "📁", "command", 1,
+            "Close the window.", "Đóng cửa sổ.");
+        insertWord(db, planetId, 1, "press", "nhấn", "/pres/", "🔘", "command", 1,
+            "Press the button.", "Nhấn nút.");
+        insertWord(db, planetId, 1, "turn", "xoay, rẽ", "/tɜːrn/", "🔄", "command", 1,
+            "Turn around.", "Xoay người.");
+        insertWord(db, planetId, 1, "stop", "dừng", "/stɒp/", "🛑", "command", 1,
+            "Stop right there!", "Dừng lại ngay!");
+        insertWord(db, planetId, 1, "go", "đi", "/ɡoʊ/", "▶️", "command", 1,
+            "Go forward.", "Đi về phía trước.");
+        insertWord(db, planetId, 1, "wait", "chờ", "/weɪt/", "⏳", "command", 1,
+            "Wait here.", "Chờ ở đây.");
+
+        // Sequence words
+        insertWord(db, planetId, 1, "first", "đầu tiên", "/fɜːrst/", "1️⃣", "sequence", 1,
+            "First, open the door.", "Đầu tiên, mở cửa.");
+        insertWord(db, planetId, 1, "then", "sau đó", "/ðen/", "2️⃣", "sequence", 1,
+            "Then, go inside.", "Sau đó, đi vào trong.");
+        insertWord(db, planetId, 1, "next", "tiếp theo", "/nekst/", "3️⃣", "sequence", 1,
+            "Next, turn left.", "Tiếp theo, rẽ trái.");
+        insertWord(db, planetId, 1, "finally", "cuối cùng", "/ˈfaɪnəli/", "🏁", "sequence", 1,
+            "Finally, press the button.", "Cuối cùng, nhấn nút.");
+    }
+
+    // Planet 8: TimeLapse Base - Time & Routines
+    private void insertTimelapseWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "morning", "buổi sáng", "/ˈmɔːrnɪŋ/", "🌅", "time", 1,
+            "Good morning!", "Chào buổi sáng!");
+        insertWord(db, planetId, 1, "afternoon", "buổi chiều", "/ˌæftərˈnuːn/", "🌤️", "time", 1,
+            "Good afternoon!", "Chào buổi chiều!");
+        insertWord(db, planetId, 1, "evening", "buổi tối", "/ˈiːvnɪŋ/", "🌆", "time", 1,
+            "Good evening!", "Chào buổi tối!");
+        insertWord(db, planetId, 1, "night", "đêm", "/naɪt/", "🌙", "time", 1,
+            "Good night!", "Chúc ngủ ngon!");
+
+        // Days
+        insertWord(db, planetId, 1, "Monday", "Thứ Hai", "/ˈmʌndeɪ/", "📅", "day", 1,
+            "Today is Monday.", "Hôm nay là Thứ Hai.");
+        insertWord(db, planetId, 1, "Tuesday", "Thứ Ba", "/ˈtuːzdeɪ/", "📅", "day", 1,
+            "I have English on Tuesday.", "Tôi có tiếng Anh vào Thứ Ba.");
+        insertWord(db, planetId, 1, "Wednesday", "Thứ Tư", "/ˈwenzdeɪ/", "📅", "day", 1,
+            "Wednesday is fun.", "Thứ Tư vui lắm.");
+
+        // Routines
+        insertWord(db, planetId, 1, "wake up", "thức dậy", "/weɪk ʌp/", "⏰", "routine", 1,
+            "I wake up at 7.", "Tôi thức dậy lúc 7 giờ.");
+        insertWord(db, planetId, 1, "brush teeth", "đánh răng", "/brʌʃ tiːθ/", "🪥", "routine", 1,
+            "I brush my teeth.", "Tôi đánh răng.");
+        insertWord(db, planetId, 1, "eat breakfast", "ăn sáng", "/iːt ˈbrekfəst/", "🍳", "routine", 1,
+            "I eat breakfast at 7:30.", "Tôi ăn sáng lúc 7:30.");
+        insertWord(db, planetId, 1, "go to school", "đi học", "/ɡoʊ tuː skuːl/", "🎒", "routine", 1,
+            "I go to school at 8.", "Tôi đi học lúc 8 giờ.");
+        insertWord(db, planetId, 1, "do homework", "làm bài tập", "/duː ˈhoʊmwɜːrk/", "📝", "routine", 1,
+            "I do my homework.", "Tôi làm bài tập về nhà.");
+    }
+
+    // Planet 9: Storyverse Galaxy - Storytelling
+    private void insertStoryverseWords(SQLiteDatabase db, long planetId) {
+        insertWord(db, planetId, 1, "once", "ngày xưa", "/wʌns/", "📖", "story", 1,
+            "Once upon a time...", "Ngày xửa ngày xưa...");
+        insertWord(db, planetId, 1, "forest", "khu rừng", "/ˈfɒrɪst/", "🌲", "story", 1,
+            "I went to the forest.", "Tôi đã đi vào rừng.");
+        insertWord(db, planetId, 1, "castle", "lâu đài", "/ˈkɑːsl/", "🏰", "story", 1,
+            "The princess lives in a castle.", "Công chúa sống trong lâu đài.");
+        insertWord(db, planetId, 1, "dragon", "con rồng", "/ˈdræɡən/", "🐉", "story", 1,
+            "I saw a dragon.", "Tôi thấy một con rồng.");
+        insertWord(db, planetId, 1, "magic", "phép màu", "/ˈmædʒɪk/", "✨", "story", 1,
+            "Magic is real.", "Phép màu có thật.");
+        insertWord(db, planetId, 1, "brave", "dũng cảm", "/breɪv/", "🦸", "story", 1,
+            "The hero is brave.", "Người hùng rất dũng cảm.");
+        insertWord(db, planetId, 1, "happy", "vui vẻ", "/ˈhæpi/", "😊", "story", 1,
+            "They lived happily.", "Họ sống vui vẻ.");
+        insertWord(db, planetId, 1, "scared", "sợ hãi", "/skerd/", "😨", "story", 1,
+            "I was scared.", "Tôi đã sợ hãi.");
+
+        // Connectors
+        insertWord(db, planetId, 1, "and", "và", "/ænd/", "➕", "connector", 1,
+            "I saw a bird and a cat.", "Tôi thấy một con chim và một con mèo.");
+        insertWord(db, planetId, 1, "but", "nhưng", "/bʌt/", "↔️", "connector", 1,
+            "I was scared, but I was brave.", "Tôi sợ, nhưng tôi dũng cảm.");
+        insertWord(db, planetId, 1, "so", "vì vậy", "/soʊ/", "➡️", "connector", 1,
+            "It was cold, so I wore a jacket.", "Trời lạnh, vì vậy tôi mặc áo khoác.");
+        insertWord(db, planetId, 1, "because", "bởi vì", "/bɪˈkɒz/", "💡", "connector", 1,
+            "I'm happy because I won.", "Tôi vui vì tôi thắng.");
     }
 
     private void insertWord(SQLiteDatabase db, long planetId, long sceneId,

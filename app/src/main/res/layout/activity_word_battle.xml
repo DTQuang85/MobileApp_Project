@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_space_universe">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_glass_dark">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_back_arrow"
+            android:padding="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/text_white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚔️ Word Battle"
+            android:textColor="@color/text_white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/tvLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lv.1"
+            android:textColor="@color/star_gold"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="12dp"/>
+
+        <TextView
+            android:id="@+id/tvScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💰 0"
+            android:textColor="@color/text_white"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <!-- Battle Arena -->
+    <LinearLayout
+        android:id="@+id/battleArena"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topBar"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Player Side -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvBuddyEmoji"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:text="🤖"
+                android:textSize="36sp"
+                android:background="@drawable/bg_buddy_avatar"/>
+
+            <TextView
+                android:id="@+id/tvBuddyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Robo-Buddy"
+                android:textColor="@color/text_white"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvPlayerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phi Hành Gia"
+                android:textColor="@color/star_gold"
+                android:textSize="10sp"/>
+
+            <TextView
+                android:id="@+id/tvPlayerHealth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="❤️ 100/100"
+                android:textColor="@color/correct_green"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"/>
+
+            <ProgressBar
+                android:id="@+id/progressPlayerHealth"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="80dp"
+                android:layout_height="8dp"
+                android:progressDrawable="@drawable/progress_health_player"
+                android:max="100"
+                android:progress="100"/>
+        </LinearLayout>
+
+        <!-- VS -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚔️"
+            android:textSize="32sp"/>
+
+        <!-- Enemy Side -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvEnemyEmoji"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:text="👾"
+                android:textSize="36sp"
+                android:background="@drawable/bg_enemy_avatar"/>
+
+            <TextView
+                android:id="@+id/tvEnemyName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Slime Lv.1"
+                android:textColor="@color/text_white"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/tvEnemyHealth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💀 50/50"
+                android:textColor="@color/wrong_red"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"/>
+
+            <ProgressBar
+                android:id="@+id/progressEnemyHealth"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="80dp"
+                android:layout_height="8dp"
+                android:progressDrawable="@drawable/progress_health_enemy"
+                android:max="100"
+                android:progress="100"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Buddy Message -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardBuddyMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/battleArena"
+        android:layout_marginHorizontal="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#4ECDC4">
+
+        <TextView
+            android:id="@+id/tvBuddyMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sẵn sàng chiến đấu! Ghép chữ thành từ để tấn công! 💪"
+            android:textColor="@color/text_white"
+            android:textSize="13sp"
+            android:padding="12dp"
+            android:gravity="center"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Word Building Area -->
+    <LinearLayout
+        android:id="@+id/wordArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cardBuddyMessage"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:gravity="center">
+
+        <!-- Combo indicator -->
+        <TextView
+            android:id="@+id/tvCombo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/fun_yellow"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <!-- Current Word Display -->
+        <LinearLayout
+            android:id="@+id/wordDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvCurrentWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="..."
+                android:textColor="@color/text_white"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"/>
+        </LinearLayout>
+
+        <!-- Word Meaning -->
+        <TextView
+            android:id="@+id/tvWordMeaning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/fun_green"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"/>
+
+        <!-- Damage Preview -->
+        <TextView
+            android:id="@+id/tvDamagePreview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ghép ít nhất 2 chữ cái"
+            android:textColor="@color/text_hint"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <!-- Letter Grid -->
+    <GridLayout
+        android:id="@+id/letterGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/wordArea"
+        android:layout_above="@id/buttonArea"
+        android:columnCount="4"
+        android:rowCount="4"
+        android:padding="12dp"
+        android:useDefaultMargins="true"/>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:id="@+id/buttonArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center"
+        android:background="@drawable/bg_glass_dark">
+
+        <Button
+            android:id="@+id/btnHint"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="💡 Gợi ý"
+            android:textColor="@color/text_white"
+            android:textSize="12sp"
+            android:background="@drawable/bg_button_rest"/>
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="🔄 Xóa"
+            android:textColor="@color/text_white"
+            android:textSize="12sp"
+            android:background="@drawable/bg_button_rest"/>
+
+        <Button
+            android:id="@+id/btnAttack"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="2"
+            android:text="⚔️ TẤN CÔNG!"
+            android:textColor="@color/text_white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_attack"
+            android:enabled="false"
+            android:alpha="0.5"/>
+    </LinearLayout>
+</RelativeLayout>
+
