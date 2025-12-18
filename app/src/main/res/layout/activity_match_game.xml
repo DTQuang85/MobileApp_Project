@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_space">
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_transparent_dark">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back_arrow"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="@color/text_white"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🧩 Ghép hình - chữ"
+            android:textColor="@color/text_white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"/>
+
+        <TextView
+            android:id="@+id/tvScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⭐ 0"
+            android:textColor="@color/star_gold"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_below="@id/topBar"
+        android:progressDrawable="@drawable/progress_planet"
+        android:max="100"/>
+
+    <TextView
+        android:id="@+id/tvMatches"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progressBar"
+        android:text="Ghép: 0/4"
+        android:textColor="@color/text_white"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:padding="12dp"/>
+
+    <GridLayout
+        android:id="@+id/gridCards"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvMatches"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"
+        android:columnCount="4"
+        android:rowCount="2">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card1"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card2"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card3"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card4"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card5"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card6"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card7"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText7" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card8"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#3B82F6">
+            <TextView android:id="@+id/cardText8" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
+        </androidx.cardview.widget.CardView>
+    </GridLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gridCards"
+        android:text="Nhấn vào 2 thẻ để ghép\nEmoji với từ tiếng Anh"
+        android:textColor="@color/text_white"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:alpha="0.8"
+        android:padding="16dp"/>
+</RelativeLayout>
+

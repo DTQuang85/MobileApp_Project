@@ -32,8 +32,8 @@ public class SplashActivity extends AppCompatActivity {
                 // Đã xem intro nhưng chưa login -> đi tới LoginActivity
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
             } else {
-                // Đã login -> đi tới MainActivity
-                intent = new Intent(SplashActivity.this, MainActivity.class);
+                // Đã login -> đi tới SpaceshipHubActivity (màn hình game chính mới)
+                intent = new Intent(SplashActivity.this, SpaceshipHubActivity.class);
             }
             
             startActivity(intent);

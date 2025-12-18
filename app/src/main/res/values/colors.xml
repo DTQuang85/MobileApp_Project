@@ -71,4 +71,42 @@
     <color name="purple">#7C3AED</color>
     <color name="purple_500">#7C3AED</color>
     <color name="teal">#009688</color>
+
+    <!-- Space Theme Colors for Kids -->
+    <color name="space_dark">#0F0F23</color>
+    <color name="space_purple">#1A1A3E</color>
+    <color name="space_blue">#2D3561</color>
+    <color name="star_gold">#FFD93D</color>
+    <color name="star_silver">#C0C0C0</color>
+    <color name="star_bronze">#CD7F32</color>
+
+    <!-- Planet Colors -->
+    <color name="planet_animal">#4ADE80</color>
+    <color name="planet_color">#F472B6</color>
+    <color name="planet_number">#60A5FA</color>
+    <color name="planet_food">#FB923C</color>
+    <color name="planet_family">#A78BFA</color>
+    <color name="planet_nature">#34D399</color>
+    <color name="planet_body">#F87171</color>
+    <color name="planet_school">#FBBF24</color>
+
+    <!-- Time Zone Colors -->
+    <color name="era_prehistoric">#86EFAC</color>
+    <color name="era_medieval">#C4B5FD</color>
+    <color name="era_modern">#93C5FD</color>
+    <color name="era_future">#F0ABFC</color>
+
+    <!-- Fun Colors for Kids -->
+    <color name="fun_pink">#FF6B9D</color>
+    <color name="fun_yellow">#FFE66D</color>
+    <color name="fun_green">#4ADE80</color>
+    <color name="fun_blue">#38BDF8</color>
+    <color name="fun_purple">#A855F7</color>
+    <color name="fun_orange">#FB923C</color>
+
+    <!-- Game UI Colors -->
+    <color name="correct_green">#22C55E</color>
+    <color name="wrong_red">#EF4444</color>
+    <color name="hint_yellow">#FDE047</color>
+    <color name="progress_blue">#3B82F6</color>
 </resources>

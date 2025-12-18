@@ -458,7 +458,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goHome(String name) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, SpaceshipHubActivity.class);
         intent.putExtra("username", name != null ? name : "User");
         startActivity(intent);
         finish();

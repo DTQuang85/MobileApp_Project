@@ -44,34 +44,87 @@
         <!-- SignUp Activity -->
         <activity android:name=".SignUpActivity"/>
         
-        <!-- Main Activity - Bottom navigation host -->
+        <!-- Space Map Activity - Main game hub -->
+        <activity
+            android:name=".SpaceMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Planet Activity - Planet zones -->
+        <activity
+            android:name=".PlanetActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Zone Activity - Zone games and learning -->
+        <activity
+            android:name=".ZoneActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Learn Words Activity -->
+        <activity
+            android:name=".LearnWordsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Guess Name Game Activity -->
+        <activity
+            android:name=".GuessNameGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Listen Choose Game Activity -->
+        <activity
+            android:name=".ListenChooseGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Match Game Activity -->
+        <activity
+            android:name=".MatchGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Sentence Activity -->
+        <activity
+            android:name=".SentenceActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Badges Activity -->
+        <activity
+            android:name=".BadgesActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Spaceship Hub Activity - New Main Hub -->
+        <activity
+            android:name=".SpaceshipHubActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Word Lab Activity -->
+        <activity
+            android:name=".WordLabActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Buddy Room Activity -->
+        <activity
+            android:name=".BuddyRoomActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Profile Activity -->
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Main Activity (Legacy - redirect to SpaceMap) -->
         <activity android:name=".MainActivity"/>
         
-        <!-- Category Activity - Chọn category -->
-        <activity android:name=".CategoryActivity"/>
-        
-        <!-- Vocabulary Activity - Danh sách từ vựng theo category -->
+        <!-- Vocabulary Activity - Updated for space theme -->
         <activity android:name=".VocabularyActivity"/>
         
-        <!-- Vocabulary Detail Activity - Chi tiết từ vựng -->
+        <!-- Legacy activities kept for compatibility -->
+        <activity android:name=".CategoryActivity"/>
         <activity android:name=".VocabularyDetailActivity"/>
-        
-        <!-- Vocabulary Game Activity - Game nhìn từ chọn ảnh -->
         <activity android:name=".VocabularyGameActivity"/>
-        
-        <!-- Category Detail Activity - Tabs cho Vocabulary, Video, Game -->
         <activity android:name=".CategoryDetailActivity"/>
-        
-        <!-- Video List Activity - Danh sách video phỏng vấn -->
         <activity android:name=".VideoListActivity"/>
-        
-        <!-- Video Player Activity - Xem video YouTube trong app -->
-        <activity 
+        <activity
             android:name=".VideoPlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        
-        <!-- Behavioral Interview Activities -->
         <activity android:name=".BehavioralListActivity"/>
         <activity android:name=".BehavioralDetailActivity"/>
         <activity 
