@@ -962,6 +962,19 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         return words;
     }
 
+    public List<WordData> getLearnedWords() {
+        List<WordData> words = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_WORDS, null, "is_learned = ?",
+            new String[]{"1"}, null, null, null);
+
+        while (cursor.moveToNext()) {
+            words.add(cursorToWord(cursor));
+        }
+        cursor.close();
+        return words;
+    }
+
     public List<SentenceData> getSentencesForPlanet(int planetId) {
         List<SentenceData> sentences = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -1014,6 +1027,29 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("total_fuel_cells", progress.totalFuelCells + cells);
+            db.update(TABLE_USER_PROGRESS, values, "user_id = ?", new String[]{"default"});
+        }
+    }
+
+    public void addCrystals(int crystals) {
+        UserProgressData progress = getUserProgress();
+        if (progress != null) {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("total_crystals", progress.totalCrystals + crystals);
+            db.update(TABLE_USER_PROGRESS, values, "user_id = ?", new String[]{"default"});
+        }
+    }
+
+    public void addExperience(int xp) {
+        UserProgressData progress = getUserProgress();
+        if (progress != null) {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues values = new ContentValues();
+            int newXp = progress.experiencePoints + xp;
+            int newLevel = newXp / 100 + 1; // Level up every 100 XP
+            values.put("experience_points", newXp);
+            values.put("current_level", newLevel);
             db.update(TABLE_USER_PROGRESS, values, "user_id = ?", new String[]{"default"});
         }
     }

@@ -104,35 +104,42 @@ public class SpaceshipHubActivity extends AppCompatActivity {
 
         cardAvatar.setOnClickListener(v -> openProfile());
 
-        // Daily Mission card click - TODO: Re-enable after fixing DailyMissionsActivity
+        // Daily Mission card click
         CardView cardDailyMission = findViewById(R.id.cardDailyMission);
         if (cardDailyMission != null) {
             cardDailyMission.setOnClickListener(v -> {
-                Toast.makeText(this, "Daily Missions coming soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, DailyMissionsActivity.class);
+                startActivity(intent);
             });
         }
 
-        // Quick Actions - Word Review - TODO: Re-enable after fixing WordReviewActivity
+        // Quick Actions - Word Review
         CardView cardWordReview = findViewById(R.id.cardWordReview);
         if (cardWordReview != null) {
             cardWordReview.setOnClickListener(v -> {
-                Toast.makeText(this, "Word Review coming soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, WordReviewActivity.class);
+                startActivity(intent);
             });
         }
 
-        // Quick Actions - Galaxy Map - TODO: Re-enable after fixing GalaxyMapActivity
+        // Quick Actions - Galaxy Map
         CardView cardGalaxyMap = findViewById(R.id.cardGalaxyMap);
         if (cardGalaxyMap != null) {
             cardGalaxyMap.setOnClickListener(v -> {
-                Toast.makeText(this, "Galaxy Map coming soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, GalaxyMapActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
             });
         }
 
-        // Quick Actions - Battle - TODO: Re-enable after fixing BattleActivity
+        // Quick Actions - Battle
         CardView cardBattle = findViewById(R.id.cardBattle);
         if (cardBattle != null) {
             cardBattle.setOnClickListener(v -> {
-                Toast.makeText(this, "Battle coming soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, BattleActivity.class);
+                intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
             });
         }
     }
@@ -238,8 +245,8 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             }
         }
 
-        // Use PlanetActivity for now (TODO: Re-enable PlanetMapActivity)
-        Intent intent = new Intent(this, PlanetActivity.class);
+        // Use PlanetMapActivity for learning path nodes
+        Intent intent = new Intent(this, PlanetMapActivity.class);
         intent.putExtra("planet_id", planet.id);
         intent.putExtra("planet_name", planet.name);
         intent.putExtra("planet_name_vi", planet.nameVi);

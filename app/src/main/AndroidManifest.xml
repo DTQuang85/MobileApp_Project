@@ -33,17 +33,35 @@
             </intent-filter>
         </activity>
         
-        <!-- Cutscene Activity - Story introduction (commented out - need to fix XML files)
+        <!-- Cutscene Activity - Story introduction -->
         <activity
             android:name=".CutsceneActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        -->
 
-        <!-- Galaxy Map Activity - Galaxy selection (commented out - need to fix XML files)
+        <!-- Galaxy Map Activity - Galaxy selection -->
         <activity
             android:name=".GalaxyMapActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        -->
+
+        <!-- Battle Activity - Word battles -->
+        <activity
+            android:name=".BattleActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Reward Activity - Show rewards -->
+        <activity
+            android:name=".RewardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Daily Missions Activity -->
+        <activity
+            android:name=".DailyMissionsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Word Review Activity - Spaced repetition -->
+        <activity
+            android:name=".WordReviewActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <!-- Intro Activity - Welcome slides -->
         <activity 
@@ -66,11 +84,10 @@
             android:name=".PlanetActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <!-- Planet Map Activity - Learning path nodes (Phase 3) (commented out - need to fix XML)
+        <!-- Planet Map Activity - Learning path nodes (Phase 3) -->
         <activity
             android:name=".PlanetMapActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        -->
 
         <!-- Zone Activity - Zone games and learning -->
         <activity
@@ -157,29 +174,9 @@
             android:name=".WordBattleActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <!-- Battle Activity - Vocabulary battle game (Phase 5) -->
-        <activity
-            android:name=".BattleActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
-        <!-- Daily Missions Activity (Phase 8) -->
-        <activity
-            android:name=".DailyMissionsActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
-        <!-- Reward Activity (Phase 7) -->
-        <activity
-            android:name=".RewardActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
         <!-- Parent Dashboard Activity (Phase 8) -->
         <activity
             android:name=".ParentDashboardActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
-        <!-- Word Review Activity - Spaced Repetition (Phase 8) -->
-        <activity
-            android:name=".WordReviewActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <!-- Main Activity (Legacy - redirect to SpaceMap) -->
