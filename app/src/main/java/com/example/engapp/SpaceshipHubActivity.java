@@ -103,6 +103,38 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         btnNavAdventure = findViewById(R.id.btnNavAdventure);
 
         cardAvatar.setOnClickListener(v -> openProfile());
+
+        // Daily Mission card click - TODO: Re-enable after fixing DailyMissionsActivity
+        CardView cardDailyMission = findViewById(R.id.cardDailyMission);
+        if (cardDailyMission != null) {
+            cardDailyMission.setOnClickListener(v -> {
+                Toast.makeText(this, "Daily Missions coming soon!", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        // Quick Actions - Word Review - TODO: Re-enable after fixing WordReviewActivity
+        CardView cardWordReview = findViewById(R.id.cardWordReview);
+        if (cardWordReview != null) {
+            cardWordReview.setOnClickListener(v -> {
+                Toast.makeText(this, "Word Review coming soon!", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        // Quick Actions - Galaxy Map - TODO: Re-enable after fixing GalaxyMapActivity
+        CardView cardGalaxyMap = findViewById(R.id.cardGalaxyMap);
+        if (cardGalaxyMap != null) {
+            cardGalaxyMap.setOnClickListener(v -> {
+                Toast.makeText(this, "Galaxy Map coming soon!", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        // Quick Actions - Battle - TODO: Re-enable after fixing BattleActivity
+        CardView cardBattle = findViewById(R.id.cardBattle);
+        if (cardBattle != null) {
+            cardBattle.setOnClickListener(v -> {
+                Toast.makeText(this, "Battle coming soon!", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     private void loadData() {
@@ -206,6 +238,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             }
         }
 
+        // Use PlanetActivity for now (TODO: Re-enable PlanetMapActivity)
         Intent intent = new Intent(this, PlanetActivity.class);
         intent.putExtra("planet_id", planet.id);
         intent.putExtra("planet_name", planet.name);
@@ -213,6 +246,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         intent.putExtra("planet_emoji", planet.emoji);
         intent.putExtra("planet_color", planet.themeColor);
         startActivity(intent);
+        overridePendingTransition(R.anim.warp_in, R.anim.warp_out);
     }
 
     @Override

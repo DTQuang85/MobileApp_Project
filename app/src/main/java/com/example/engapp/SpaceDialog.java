@@ -106,5 +106,80 @@ public class SpaceDialog {
 
         dialog.show();
     }
+
+    /**
+     * Show dialog with two buttons (confirm/cancel style)
+     */
+    public static void show(Context context, String title, String message,
+                           String positiveText, View.OnClickListener positiveListener,
+                           String negativeText, View.OnClickListener negativeListener) {
+        Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_space_result, null);
+        dialog.setContentView(view);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        TextView tvIcon = view.findViewById(R.id.tvDialogIcon);
+        TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
+        TextView tvMessage = view.findViewById(R.id.tvDialogMessage);
+        TextView tvStars = view.findViewById(R.id.tvDialogStars);
+        TextView btnOk = view.findViewById(R.id.btnDialogOk);
+
+        // Extract emoji from title if present
+        if (title.length() > 2 && Character.isHighSurrogate(title.charAt(0))) {
+            tvIcon.setText(title.substring(0, 2));
+            tvTitle.setText(title.substring(2).trim());
+        } else if (title.startsWith("🚀") || title.startsWith("🎉") || title.startsWith("💪") ||
+                   title.startsWith("🎯") || title.startsWith("🎁") || title.startsWith("⚔️")) {
+            int spaceIndex = title.indexOf(" ");
+            if (spaceIndex > 0) {
+                tvIcon.setText(title.substring(0, spaceIndex));
+                tvTitle.setText(title.substring(spaceIndex + 1));
+            } else {
+                tvIcon.setText("🚀");
+                tvTitle.setText(title);
+            }
+        } else {
+            tvIcon.setText("🚀");
+            tvTitle.setText(title);
+        }
+
+        tvMessage.setText(message);
+        tvStars.setVisibility(View.GONE);
+
+        btnOk.setText(positiveText);
+        btnOk.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (positiveListener != null) {
+                positiveListener.onClick(v);
+            }
+        });
+
+        // Handle negative button if provided
+        if (negativeText != null && negativeListener != null) {
+            // For simplicity, we make the dialog cancelable and treat cancel as negative
+            dialog.setCancelable(true);
+            dialog.setOnCancelListener(d -> {
+                if (negativeListener != null) {
+                    negativeListener.onClick(null);
+                }
+            });
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Show simple dialog with one button
+     */
+    public static void show(Context context, String title, String message,
+                           String buttonText, View.OnClickListener listener) {
+        show(context, title, message, buttonText, listener, null, null);
+    }
 }
 

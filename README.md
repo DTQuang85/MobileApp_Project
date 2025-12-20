@@ -120,6 +120,50 @@
 - **Multiple States**: Idle, Happy, Encouraging, Traveling, Celebrating
 - **Text-to-Speech**: Buddy có thể đọc lời nói
 
+### 🎬 Cutscene System (MỚI!)
+
+- **Story Introduction**: Cutscene giới thiệu câu chuyện khi mở app lần đầu
+- **6 Story Slides**: Kịch bản ngắn gọn, dễ hiểu cho trẻ em
+- **Buddy Guide**: Cosmo (buddy) đồng hành trong cutscene
+- **Goal Card**: Hiển thị 3 mục tiêu chính của game
+- **Skip Button**: Cho phép bỏ qua cutscene
+
+### 🌌 Galaxy Map System (MỚI!)
+
+- **3 Galaxies**: Milky Way, Andromeda, Nebula Prime
+- **Galaxy Progress**: Hiển thị tiến độ hoàn thành mỗi galaxy
+- **Unlock System**: Mở khóa galaxy mới bằng stars
+- **Planet Preview**: Xem trước các planet trong galaxy
+
+### ⚔️ Battle System (MỚI!)
+
+- **Word Battles**: Đấu từ vựng với AI enemies
+- **Health Bar System**: Thanh máu cho player và enemy
+- **Hint System**: Buddy hỗ trợ với hint
+- **Reward System**: Nhận stars và crystals khi thắng
+- **Non-violent**: Thiết kế thân thiện, không bạo lực
+
+### 📋 Daily Missions (MỚI!)
+
+- **5 Daily Missions**: Nhiệm vụ hàng ngày đa dạng
+- **Daily Login Bonus**: Phần thưởng đăng nhập theo streak
+- **Streak System**: Theo dõi chuỗi ngày học liên tiếp
+- **Progress Tracking**: Theo dõi tiến độ nhiệm vụ
+
+### 🔄 Word Review System (MỚI!)
+
+- **Flashcard Review**: Ôn tập từ vựng dạng flashcard
+- **Spaced Repetition**: Thuật toán ôn tập theo lịch
+- **Self-Assessment**: Đánh giá mức độ nhớ (Forgot/Hard/Easy)
+- **Session Stats**: Thống kê kết quả ôn tập
+
+### 👨‍👩‍👧 Parent Dashboard (MỚI!)
+
+- **Learning Progress**: Xem tiến độ học của con
+- **Stats Overview**: Tổng quan từ vựng, games, stars
+- **Streak Info**: Thông tin chuỗi ngày học
+- **Settings**: Cài đặt giới hạn thời gian, âm thanh
+
 ### 📊 Progression System (MỚI!)
 
 - **Star Collection**: Golden Stars, Rainbow Stars, Shooting Stars

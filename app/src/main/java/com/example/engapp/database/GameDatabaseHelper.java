@@ -12,9 +12,10 @@ import java.util.List;
 public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "space_english_game.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table names
+    public static final String TABLE_GALAXIES = "galaxies";
     public static final String TABLE_PLANETS = "planets";
     public static final String TABLE_SCENES = "scenes";
     public static final String TABLE_WORDS = "words";
@@ -23,6 +24,11 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_USER_PROGRESS = "user_progress";
     public static final String TABLE_COLLECTED_ITEMS = "collected_items";
     public static final String TABLE_BADGES = "badges";
+    public static final String TABLE_BUDDIES = "buddies";
+    public static final String TABLE_BUDDY_SKILLS = "buddy_skills";
+    public static final String TABLE_BATTLES = "battles";
+    public static final String TABLE_DAILY_MISSIONS = "daily_missions";
+    public static final String TABLE_INVENTORY = "inventory";
 
     private static GameDatabaseHelper instance;
     private Context context;
@@ -41,9 +47,25 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create Planets table
+        // Create Galaxies table (Phase 2)
+        db.execSQL("CREATE TABLE " + TABLE_GALAXIES + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "galaxy_key TEXT UNIQUE," +
+            "name TEXT," +
+            "name_vi TEXT," +
+            "description TEXT," +
+            "emoji TEXT," +
+            "theme_color TEXT," +
+            "background_image TEXT," +
+            "required_stars INTEGER DEFAULT 0," +
+            "order_index INTEGER," +
+            "is_unlocked INTEGER DEFAULT 0" +
+        ")");
+
+        // Create Planets table (updated with galaxy_id)
         db.execSQL("CREATE TABLE " + TABLE_PLANETS + " (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "galaxy_id INTEGER DEFAULT 1," +
             "planet_key TEXT UNIQUE," +
             "name TEXT," +
             "name_vi TEXT," +
@@ -58,7 +80,8 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "skill_focus TEXT," +
             "required_fuel_cells INTEGER DEFAULT 0," +
             "order_index INTEGER," +
-            "is_unlocked INTEGER DEFAULT 0" +
+            "is_unlocked INTEGER DEFAULT 0," +
+            "FOREIGN KEY(galaxy_id) REFERENCES galaxies(id)" +
         ")");
 
         // Create Scenes table (5 scenes per planet)
@@ -174,12 +197,83 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "earned_date TEXT" +
         ")");
 
+        // Create Buddies table (Phase 6)
+        db.execSQL("CREATE TABLE " + TABLE_BUDDIES + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "buddy_key TEXT UNIQUE," +
+            "name TEXT," +
+            "name_vi TEXT," +
+            "emoji TEXT," +
+            "description TEXT," +
+            "level INTEGER DEFAULT 1," +
+            "experience INTEGER DEFAULT 0," +
+            "is_active INTEGER DEFAULT 0," +
+            "is_unlocked INTEGER DEFAULT 0" +
+        ")");
+
+        // Create Buddy Skills table (Phase 6)
+        db.execSQL("CREATE TABLE " + TABLE_BUDDY_SKILLS + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "buddy_id INTEGER," +
+            "skill_key TEXT," +
+            "skill_name TEXT," +
+            "skill_type TEXT," +  // hint, shield, reward_boost
+            "cooldown_seconds INTEGER DEFAULT 0," +
+            "is_unlocked INTEGER DEFAULT 0," +
+            "FOREIGN KEY(buddy_id) REFERENCES buddies(id)" +
+        ")");
+
+        // Create Battles table (Phase 5)
+        db.execSQL("CREATE TABLE " + TABLE_BATTLES + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "planet_id INTEGER," +
+            "battle_key TEXT," +
+            "name TEXT," +
+            "name_vi TEXT," +
+            "difficulty INTEGER DEFAULT 1," +
+            "max_errors INTEGER DEFAULT 3," +
+            "questions_count INTEGER DEFAULT 5," +
+            "reward_stars INTEGER DEFAULT 3," +
+            "reward_crystals INTEGER DEFAULT 10," +
+            "is_completed INTEGER DEFAULT 0," +
+            "best_score INTEGER DEFAULT 0," +
+            "FOREIGN KEY(planet_id) REFERENCES planets(id)" +
+        ")");
+
+        // Create Daily Missions table (Phase 8)
+        db.execSQL("CREATE TABLE " + TABLE_DAILY_MISSIONS + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "mission_key TEXT," +
+            "title TEXT," +
+            "description TEXT," +
+            "target_value INTEGER," +
+            "current_value INTEGER DEFAULT 0," +
+            "reward_stars INTEGER," +
+            "reward_crystals INTEGER," +
+            "mission_date TEXT," +
+            "is_completed INTEGER DEFAULT 0" +
+        ")");
+
+        // Create Inventory table (Phase 7)
+        db.execSQL("CREATE TABLE " + TABLE_INVENTORY + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "user_id TEXT DEFAULT 'default'," +
+            "item_type TEXT," +  // star, fuel, crystal
+            "amount INTEGER DEFAULT 0," +
+            "last_updated TEXT" +
+        ")");
+
         // Insert initial data
         insertInitialData(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAILY_MISSIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BATTLES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDDY_SKILLS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDDIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COLLECTED_ITEMS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BADGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_PROGRESS);
@@ -188,52 +282,71 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORDS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCENES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLANETS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALAXIES);
         onCreate(db);
     }
 
     private void insertInitialData(SQLiteDatabase db) {
-        // Insert 9 planets
-        insertPlanet(db, "coloria_prime", "Coloria Prime", "Hành tinh Sắc Màu",
+        // Insert 3 Galaxies (Phase 2)
+        insertGalaxy(db, "milky_way", "Milky Way", "Dải Ngân Hà",
+            "Your home galaxy - start your adventure here!", "🌌", "#4A90D9", 0, 1, 1);
+        insertGalaxy(db, "andromeda", "Andromeda", "Thiên Hà Tiên Nữ",
+            "A beautiful spiral galaxy with advanced civilizations", "🌀", "#9B59B6", 15, 2, 0);
+        insertGalaxy(db, "nebula_prime", "Nebula Prime", "Tinh Vân Nguyên Thủy",
+            "Ancient mysteries await in this colorful nebula", "✨", "#E74C3C", 30, 3, 0);
+
+        // Insert Buddies (Phase 6)
+        insertBuddy(db, "cosmo", "Cosmo", "Cosmo", "🤖",
+            "A friendly robot companion who loves learning!", 1, 1);
+        insertBuddy(db, "luna", "Luna", "Luna", "🐱",
+            "A curious space cat who collects word crystals!", 0, 0);
+        insertBuddy(db, "nova", "Nova", "Nova", "🦊",
+            "A clever fox with special hint abilities!", 0, 0);
+
+        // Insert 9 planets (Galaxy 1: Milky Way - planets 1-3)
+        insertPlanet(db, 1, "coloria_prime", "Coloria Prime", "Hành tinh Sắc Màu",
             "Thành phố pha lê với cầu vồng và laser màu", "🌈", "#FF6B6B",
             "crystal_city", "Prism Shards", "💎",
             "Adjectives (big/small)", "Colors & Shapes", 0, 1, 1);
 
-        insertPlanet(db, "toytopia_orbit", "Toytopia Orbit", "Quỹ đạo Đồ Chơi",
+        insertPlanet(db, 1, "toytopia_orbit", "Toytopia Orbit", "Quỹ đạo Đồ Chơi",
             "Công viên robot đồ chơi, tàu lửa mini, nhà bóng", "🎮", "#4ECDC4",
             "toy_park", "Sticker Toys", "🎨",
             "Prepositions", "Toys & Positions", 3, 2, 0);
 
-        insertPlanet(db, "animania_wild", "Animania Wild", "Sở Thú Ngoài Hành Tinh",
+        insertPlanet(db, 1, "animania_wild", "Animania Wild", "Sở Thú Ngoài Hành Tinh",
             "Mái vòm rừng, savannah, hang đêm, băng tuyết", "🦁", "#45B7D1",
             "alien_zoo", "Animal Badges", "🏅",
             "Can/Can't", "Animals & Actions", 5, 3, 0);
 
-        insertPlanet(db, "citytron_nova", "Citytron Nova", "Thành Phố Tương Lai",
+        // Galaxy 2: Andromeda - planets 4-6
+        insertPlanet(db, 2, "citytron_nova", "Citytron Nova", "Thành Phố Tương Lai",
             "Tàu điện không gian, biển neon, toà tháp", "🌆", "#96CEB4",
             "future_city", "Metro Tickets", "🎫",
             "There is/are", "Places & Directions", 8, 4, 0);
 
-        insertPlanet(db, "foodora_station", "Foodora Station", "Trạm Ẩm Thực",
+        insertPlanet(db, 2, "foodora_station", "Foodora Station", "Trạm Ẩm Thực",
             "Chợ liên ngân hà, bếp tàu vũ trụ, nông trại sao", "🍕", "#FFEAA7",
             "space_kitchen", "Recipe Cards", "📜",
             "Countable/Uncountable", "Food & Shopping", 12, 5, 0);
 
-        insertPlanet(db, "weatheron_sky", "Weatheron Sky", "Bầu Trời Thời Tiết",
+        insertPlanet(db, 2, "weatheron_sky", "Weatheron Sky", "Bầu Trời Thời Tiết",
             "Cảng mây, bão điện, thị trấn tuyết", "⛈️", "#74B9FF",
             "cloud_port", "Weather Orbs", "🔮",
             "Because/So", "Weather & Clothes", 15, 6, 0);
 
-        insertPlanet(db, "robolab_command", "RoboLab Command", "Phòng Chỉ Huy Robot",
+        // Galaxy 3: Nebula Prime - planets 7-9
+        insertPlanet(db, 3, "robolab_command", "RoboLab Command", "Phòng Chỉ Huy Robot",
             "Nhà máy mạch điện, drone bay, đường hầm laser", "🤖", "#A29BFE",
             "robot_factory", "Circuit Parts", "⚡",
             "Imperatives", "Commands & Sequences", 18, 7, 0);
 
-        insertPlanet(db, "timelapse_base", "TimeLapse Base", "Căn Cứ Thời Gian",
+        insertPlanet(db, 3, "timelapse_base", "TimeLapse Base", "Căn Cứ Thời Gian",
             "Tháp đồng hồ, cầu ngày-đêm, trạm lịch tuần", "⏰", "#FD79A8",
             "time_tower", "Time Crystals", "⌛",
             "Present Simple", "Time & Routines", 22, 8, 0);
 
-        insertPlanet(db, "storyverse_galaxy", "Storyverse Galaxy", "Thiên Hà Truyện Kể",
+        insertPlanet(db, 3, "storyverse_galaxy", "Storyverse Galaxy", "Thiên Hà Truyện Kể",
             "Lâu đài sao, rừng phép, thư viện vũ trụ", "📚", "#E17055",
             "story_castle", "Story Pages", "📖",
             "Past Simple", "Storytelling", 25, 9, 0);
@@ -374,11 +487,42 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         insertBadges(db);
     }
 
-    private void insertPlanet(SQLiteDatabase db, String key, String name, String nameVi,
+    private void insertGalaxy(SQLiteDatabase db, String key, String name, String nameVi,
+            String description, String emoji, String color, int requiredStars, int order, int unlocked) {
+        ContentValues values = new ContentValues();
+        values.put("galaxy_key", key);
+        values.put("name", name);
+        values.put("name_vi", nameVi);
+        values.put("description", description);
+        values.put("emoji", emoji);
+        values.put("theme_color", color);
+        values.put("required_stars", requiredStars);
+        values.put("order_index", order);
+        values.put("is_unlocked", unlocked);
+        db.insert(TABLE_GALAXIES, null, values);
+    }
+
+    private void insertBuddy(SQLiteDatabase db, String key, String name, String nameVi,
+            String emoji, String description, int isActive, int isUnlocked) {
+        ContentValues values = new ContentValues();
+        values.put("buddy_key", key);
+        values.put("name", name);
+        values.put("name_vi", nameVi);
+        values.put("emoji", emoji);
+        values.put("description", description);
+        values.put("level", 1);
+        values.put("experience", 0);
+        values.put("is_active", isActive);
+        values.put("is_unlocked", isUnlocked);
+        db.insert(TABLE_BUDDIES, null, values);
+    }
+
+    private void insertPlanet(SQLiteDatabase db, int galaxyId, String key, String name, String nameVi,
             String description, String emoji, String color, String bgImage,
             String collectible, String collectibleEmoji, String grammar, String skill,
             int requiredFuel, int order, int unlocked) {
         ContentValues values = new ContentValues();
+        values.put("galaxy_id", galaxyId);
         values.put("planet_key", key);
         values.put("name", name);
         values.put("name_vi", nameVi);
@@ -1080,6 +1224,180 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         public String requirementType;
         public int requirementValue;
         public boolean isEarned;
+    }
+
+    public static class GalaxyData {
+        public int id;
+        public String galaxyKey;
+        public String name;
+        public String nameVi;
+        public String description;
+        public String emoji;
+        public String themeColor;
+        public String backgroundImage;
+        public int requiredStars;
+        public int orderIndex;
+        public boolean isUnlocked;
+    }
+
+    public static class BuddyData {
+        public int id;
+        public String buddyKey;
+        public String name;
+        public String nameVi;
+        public String emoji;
+        public String description;
+        public int level;
+        public int experience;
+        public boolean isActive;
+        public boolean isUnlocked;
+    }
+
+    // ============ GALAXY QUERY METHODS ============
+
+    public List<GalaxyData> getAllGalaxies() {
+        List<GalaxyData> galaxies = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_GALAXIES, null, null, null, null, null, "order_index ASC");
+
+        while (cursor.moveToNext()) {
+            galaxies.add(cursorToGalaxy(cursor));
+        }
+        cursor.close();
+        return galaxies;
+    }
+
+    public GalaxyData getGalaxyById(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_GALAXIES, null, "id = ?",
+            new String[]{String.valueOf(id)}, null, null, null);
+
+        GalaxyData galaxy = null;
+        if (cursor.moveToFirst()) {
+            galaxy = cursorToGalaxy(cursor);
+        }
+        cursor.close();
+        return galaxy;
+    }
+
+    public List<PlanetData> getPlanetsForGalaxy(int galaxyId) {
+        List<PlanetData> planets = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_PLANETS, null, "galaxy_id = ?",
+            new String[]{String.valueOf(galaxyId)}, null, null, "order_index ASC");
+
+        while (cursor.moveToNext()) {
+            planets.add(cursorToPlanet(cursor));
+        }
+        cursor.close();
+        return planets;
+    }
+
+    public void unlockGalaxy(int galaxyId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("is_unlocked", 1);
+        db.update(TABLE_GALAXIES, values, "id = ?", new String[]{String.valueOf(galaxyId)});
+    }
+
+    private GalaxyData cursorToGalaxy(Cursor c) {
+        GalaxyData g = new GalaxyData();
+        g.id = c.getInt(c.getColumnIndexOrThrow("id"));
+        g.galaxyKey = c.getString(c.getColumnIndexOrThrow("galaxy_key"));
+        g.name = c.getString(c.getColumnIndexOrThrow("name"));
+        g.nameVi = c.getString(c.getColumnIndexOrThrow("name_vi"));
+        g.description = c.getString(c.getColumnIndexOrThrow("description"));
+        g.emoji = c.getString(c.getColumnIndexOrThrow("emoji"));
+        g.themeColor = c.getString(c.getColumnIndexOrThrow("theme_color"));
+        g.requiredStars = c.getInt(c.getColumnIndexOrThrow("required_stars"));
+        g.orderIndex = c.getInt(c.getColumnIndexOrThrow("order_index"));
+        g.isUnlocked = c.getInt(c.getColumnIndexOrThrow("is_unlocked")) == 1;
+        return g;
+    }
+
+    // ============ BUDDY QUERY METHODS ============
+
+    public List<BuddyData> getAllBuddies() {
+        List<BuddyData> buddies = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_BUDDIES, null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            buddies.add(cursorToBuddy(cursor));
+        }
+        cursor.close();
+        return buddies;
+    }
+
+    public BuddyData getActiveBuddy() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_BUDDIES, null, "is_active = 1",
+            null, null, null, null);
+
+        BuddyData buddy = null;
+        if (cursor.moveToFirst()) {
+            buddy = cursorToBuddy(cursor);
+        }
+        cursor.close();
+        return buddy;
+    }
+
+    public void setActiveBuddy(int buddyId) {
+        SQLiteDatabase db = getWritableDatabase();
+        // First deactivate all buddies
+        ContentValues deactivate = new ContentValues();
+        deactivate.put("is_active", 0);
+        db.update(TABLE_BUDDIES, deactivate, null, null);
+
+        // Then activate the selected one
+        ContentValues activate = new ContentValues();
+        activate.put("is_active", 1);
+        db.update(TABLE_BUDDIES, activate, "id = ?", new String[]{String.valueOf(buddyId)});
+    }
+
+    public void unlockBuddy(int buddyId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("is_unlocked", 1);
+        db.update(TABLE_BUDDIES, values, "id = ?", new String[]{String.valueOf(buddyId)});
+    }
+
+    public void addBuddyExperience(int buddyId, int exp) {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.query(TABLE_BUDDIES, new String[]{"experience", "level"},
+            "id = ?", new String[]{String.valueOf(buddyId)}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            int currentExp = cursor.getInt(0);
+            int currentLevel = cursor.getInt(1);
+            int newExp = currentExp + exp;
+            int expNeeded = currentLevel * 100; // 100 exp per level
+
+            ContentValues values = new ContentValues();
+            if (newExp >= expNeeded) {
+                values.put("level", currentLevel + 1);
+                values.put("experience", newExp - expNeeded);
+            } else {
+                values.put("experience", newExp);
+            }
+            db.update(TABLE_BUDDIES, values, "id = ?", new String[]{String.valueOf(buddyId)});
+        }
+        cursor.close();
+    }
+
+    private BuddyData cursorToBuddy(Cursor c) {
+        BuddyData b = new BuddyData();
+        b.id = c.getInt(c.getColumnIndexOrThrow("id"));
+        b.buddyKey = c.getString(c.getColumnIndexOrThrow("buddy_key"));
+        b.name = c.getString(c.getColumnIndexOrThrow("name"));
+        b.nameVi = c.getString(c.getColumnIndexOrThrow("name_vi"));
+        b.emoji = c.getString(c.getColumnIndexOrThrow("emoji"));
+        b.description = c.getString(c.getColumnIndexOrThrow("description"));
+        b.level = c.getInt(c.getColumnIndexOrThrow("level"));
+        b.experience = c.getInt(c.getColumnIndexOrThrow("experience"));
+        b.isActive = c.getInt(c.getColumnIndexOrThrow("is_active")) == 1;
+        b.isUnlocked = c.getInt(c.getColumnIndexOrThrow("is_unlocked")) == 1;
+        return b;
     }
 }
 

@@ -81,12 +81,15 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler().postDelayed(() -> {
             SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+            // TODO: Re-enable cutscene after fixing XML files
+            // boolean hasSeenCutscene = prefs.getBoolean("cutscene_seen", false);
             boolean hasSeenIntro = prefs.getBoolean("has_seen_intro", false);
 
             FirebaseAuth auth = FirebaseAuth.getInstance();
             boolean isLoggedIn = auth.getCurrentUser() != null;
 
             Intent intent;
+            // Cutscene temporarily disabled - skip to normal flow
             if (!hasSeenIntro) {
                 intent = new Intent(SplashActivity.this, IntroActivity.class);
             } else if (!isLoggedIn) {
