@@ -43,6 +43,21 @@
             android:name=".GalaxyMapActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+        <!-- Galaxy Planets Activity - Show planets of selected galaxy -->
+        <activity
+            android:name=".GalaxyPlanetsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Interactive Galaxy Map Activity - Visual galaxy map -->
+        <activity
+            android:name=".InteractiveGalaxyMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Interactive Planet Map Activity - Visual planet map with spaceship animation -->
+        <activity
+            android:name=".InteractivePlanetMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <!-- Battle Activity - Word battles -->
         <activity
             android:name=".BattleActivity"

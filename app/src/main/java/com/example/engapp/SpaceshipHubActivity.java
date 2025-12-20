@@ -29,6 +29,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private RecyclerView recyclerPlanets;
     private TextView tvPlayerName, tvLevel, tvStars, tvFuelCells, tvCrystals;
     private TextView tvBuddyMessage, tvDailyProgress;
+    private TextView tvCurrentPlanetName, tvCurrentPlanetEmoji, tvCurrentPlanetProgress;
     private ProgressBar progressLevel, progressDailyMission;
     private CardView cardAvatar;
 
@@ -71,7 +72,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         TextView tvBuddy = findViewById(R.id.tvBuddy);
         if (tvBuddy != null && buddyIndex < buddyEmojis.length) {
             tvBuddy.setText(buddyEmojis[buddyIndex]);
-            // Add floating animation
             Animation floatAnim = AnimationUtils.loadAnimation(this, R.anim.float_up_down);
             tvBuddy.startAnimation(floatAnim);
         }
@@ -93,6 +93,9 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         tvCrystals = findViewById(R.id.tvCrystals);
         tvBuddyMessage = findViewById(R.id.tvBuddyMessage);
         tvDailyProgress = findViewById(R.id.tvDailyProgress);
+        tvCurrentPlanetName = findViewById(R.id.tvCurrentPlanetName);
+        tvCurrentPlanetEmoji = findViewById(R.id.tvCurrentPlanetEmoji);
+        tvCurrentPlanetProgress = findViewById(R.id.tvCurrentPlanetProgress);
         progressLevel = findViewById(R.id.progressLevel);
         progressDailyMission = findViewById(R.id.progressDailyMission);
         cardAvatar = findViewById(R.id.cardAvatar);
@@ -110,6 +113,26 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             cardDailyMission.setOnClickListener(v -> {
                 Intent intent = new Intent(this, DailyMissionsActivity.class);
                 startActivity(intent);
+            });
+        }
+
+        // Current Planet card click
+        CardView cardCurrentPlanet = findViewById(R.id.cardCurrentPlanet);
+        if (cardCurrentPlanet != null) {
+            cardCurrentPlanet.setOnClickListener(v -> {
+                if (userProgress != null) {
+                    PlanetData currentPlanet = dbHelper.getPlanetById(userProgress.currentPlanetId);
+                    if (currentPlanet != null) {
+                        Intent intent = new Intent(this, PlanetMapActivity.class);
+                        intent.putExtra("planet_id", currentPlanet.id);
+                        intent.putExtra("planet_name", currentPlanet.name);
+                        intent.putExtra("planet_name_vi", currentPlanet.nameVi);
+                        intent.putExtra("planet_emoji", currentPlanet.emoji);
+                        intent.putExtra("planet_color", currentPlanet.themeColor);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.warp_in, R.anim.warp_out);
+                    }
+                }
             });
         }
 
@@ -132,7 +155,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             });
         }
 
-        // Quick Actions - Battle
+        // Quick Actions - Battle (Old system with ABCD and images)
         CardView cardBattle = findViewById(R.id.cardBattle);
         if (cardBattle != null) {
             cardBattle.setOnClickListener(v -> {
@@ -156,18 +179,39 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             tvCrystals.setText(String.valueOf(userProgress.totalCrystals));
             tvLevel.setText(String.valueOf(userProgress.currentLevel));
 
-            // XP progress (every 100 XP = 1 level)
             int xpInLevel = userProgress.experiencePoints % 100;
             progressLevel.setProgress(xpInLevel);
 
-            // Daily mission progress (learn 10 words)
             int dailyProgress = Math.min(userProgress.wordsLearned % 10, 10);
             progressDailyMission.setProgress(dailyProgress);
             tvDailyProgress.setText(dailyProgress + "/10 từ");
+
+            updateCurrentPlanetInfo();
         }
 
         if (recyclerPlanets.getAdapter() != null) {
             recyclerPlanets.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private void updateCurrentPlanetInfo() {
+        if (userProgress != null) {
+            PlanetData currentPlanet = dbHelper.getPlanetById(userProgress.currentPlanetId);
+            if (currentPlanet != null) {
+                tvCurrentPlanetName.setText(currentPlanet.nameVi);
+                tvCurrentPlanetEmoji.setText(currentPlanet.emoji);
+
+                List<SceneData> scenes = dbHelper.getScenesForPlanet(currentPlanet.id);
+                int completed = 0;
+                for (SceneData scene : scenes) {
+                    if (scene.isCompleted) completed++;
+                }
+                tvCurrentPlanetProgress.setText("Hoàn thành: " + completed + "/" + scenes.size() + " nhiệm vụ");
+            } else {
+                tvCurrentPlanetName.setText("Coloria");
+                tvCurrentPlanetEmoji.setText("🎨");
+                tvCurrentPlanetProgress.setText("Bắt đầu nhiệm vụ đầu tiên!");
+            }
         }
     }
 
@@ -192,27 +236,24 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Setup Galaxy Map FAB button
         com.google.android.material.floatingactionbutton.FloatingActionButton fabGalaxyMap =
             findViewById(R.id.fabGalaxyMap);
         if (fabGalaxyMap != null) {
             fabGalaxyMap.setOnClickListener(v -> {
-                // Navigate to Interactive Star Map
+                // Navigate to Interactive Star Map (same as initial app screen)
                 Intent intent = new Intent(this, InteractiveStarMapActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_scale_in, 0);
             });
 
-            // Add pulse animation to attract attention
             Animation pulseAnim = AnimationUtils.loadAnimation(this, R.anim.pulse);
             fabGalaxyMap.startAnimation(pulseAnim);
         }
 
         btnNavAdventure.setOnClickListener(v -> {
-            // Button press animation
             v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_press));
-            // Open Word Battle game (Bookworm Adventures style)
-            Intent intent = new Intent(this, WordBattleActivity.class);
+            Intent intent = new Intent(this, BattleActivity.class);
+            intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
         });
@@ -235,17 +276,17 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             int currentFuel = userProgress != null ? userProgress.totalFuelCells : 0;
 
             if (currentFuel >= fuelNeeded) {
-                // Unlock the planet
                 dbHelper.unlockPlanet(planet.id);
                 planet.isUnlocked = true;
                 Toast.makeText(this, "🔓 Mở khóa " + planet.nameVi + "!", Toast.LENGTH_SHORT).show();
+                loadData();
+                updateUI();
             } else {
                 Toast.makeText(this, "Cần " + fuelNeeded + " 🔋 Fuel Cells để mở khóa!", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
 
-        // Use PlanetMapActivity for learning path nodes
         Intent intent = new Intent(this, PlanetMapActivity.class);
         intent.putExtra("planet_id", planet.id);
         intent.putExtra("planet_name", planet.name);
@@ -258,7 +299,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Close app instead of going back
         finishAffinity();
     }
 
@@ -267,15 +307,15 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     class PlanetAdapter extends RecyclerView.Adapter<PlanetAdapter.PlanetViewHolder> {
 
         private int[] gradientColors = {
-            Color.parseColor("#FF6B6B"), // Coloria - Red/Pink
-            Color.parseColor("#4ECDC4"), // Toytopia - Teal
-            Color.parseColor("#45B7D1"), // Animania - Blue
-            Color.parseColor("#96CEB4"), // Citytron - Green
-            Color.parseColor("#FFEAA7"), // Foodora - Yellow
-            Color.parseColor("#74B9FF"), // Weatheron - Light Blue
-            Color.parseColor("#A29BFE"), // RoboLab - Purple
-            Color.parseColor("#FD79A8"), // TimeLapse - Pink
-            Color.parseColor("#E17055"), // Storyverse - Orange
+            Color.parseColor("#FF6B6B"),
+            Color.parseColor("#4ECDC4"),
+            Color.parseColor("#45B7D1"),
+            Color.parseColor("#96CEB4"),
+            Color.parseColor("#FFEAA7"),
+            Color.parseColor("#74B9FF"),
+            Color.parseColor("#A29BFE"),
+            Color.parseColor("#FD79A8"),
+            Color.parseColor("#E17055"),
         };
 
         @NonNull
@@ -296,11 +336,9 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             holder.tvSkillFocus.setText("📚 " + planet.skillFocus);
             holder.tvCollectibleEmoji.setText(planet.collectibleEmoji);
 
-            // Set gradient background color based on planet
             int colorIndex = position % gradientColors.length;
             holder.planetContainer.setBackgroundColor(gradientColors[colorIndex]);
 
-            // Handle lock state
             if (planet.isUnlocked) {
                 holder.lockOverlay.setVisibility(View.GONE);
                 holder.btnPlay.setVisibility(View.VISIBLE);
@@ -310,11 +348,15 @@ public class SpaceshipHubActivity extends AppCompatActivity {
                 holder.tvRequiredFuel.setText(String.valueOf(planet.requiredFuelCells));
             }
 
-            // Progress (placeholder - should be calculated from scenes)
-            holder.progressPlanet.setProgress(0);
-            holder.tvProgress.setText("0%");
+            List<SceneData> scenes = dbHelper.getScenesForPlanet(planet.id);
+            int completed = 0;
+            for (SceneData scene : scenes) {
+                if (scene.isCompleted) completed++;
+            }
+            int progress = scenes.size() > 0 ? (completed * 100 / scenes.size()) : 0;
+            holder.progressPlanet.setProgress(progress);
+            holder.tvProgress.setText(progress + "%");
 
-            // Click listener
             holder.itemView.setOnClickListener(v -> openPlanet(planet));
             holder.btnPlay.setOnClickListener(v -> openPlanet(planet));
         }
@@ -354,3 +396,4 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         }
     }
 }
+

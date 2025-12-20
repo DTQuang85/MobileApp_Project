@@ -157,7 +157,21 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         });
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
-            startActivity(new Intent(this, WordBattleActivity.class));
+            // Use old Battle system (ABCD + images) instead of WordBattle
+            String currentPlanetId = travelManager.getCurrentPlanetId();
+            Intent intent = new Intent(this, BattleActivity.class);
+            if (currentPlanetId != null) {
+                // Try to convert planet ID to int (assuming format like "planet_1" -> 1)
+                try {
+                    int planetId = Integer.parseInt(currentPlanetId.replace("planet_", ""));
+                    intent.putExtra("planet_id", planetId);
+                } catch (NumberFormatException e) {
+                    intent.putExtra("planet_id", 1);
+                }
+            } else {
+                intent.putExtra("planet_id", 1);
+            }
+            startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
         });
 

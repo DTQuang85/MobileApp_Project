@@ -90,21 +90,23 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
         rvGalaxies.setAdapter(adapter);
 
         // Buddy speech
-        tvBuddyText.setText("Choose a galaxy to explore! Each galaxy has new planets with words to learn! 🚀");
+        tvBuddyText.setText("Chọn một thiên hà để khám phá! Mỗi thiên hà có các hành tinh với từ vựng mới! 🚀");
     }
 
     @Override
     public void onGalaxyClick(GalaxyData galaxy) {
         if (!galaxy.isUnlocked) {
-            Toast.makeText(this, "Need " + galaxy.starsRequired + " ⭐ to unlock this galaxy!",
+            Toast.makeText(this, "Cần " + galaxy.starsRequired + " ⭐ để mở khóa thiên hà này!",
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Navigate to SpaceshipHub with selected galaxy
-        Intent intent = new Intent(this, SpaceshipHubActivity.class);
+        // Navigate to GalaxyPlanetsActivity to show planets of this galaxy
+        Intent intent = new Intent(this, GalaxyPlanetsActivity.class);
         intent.putExtra("galaxy_id", galaxy.id);
         intent.putExtra("galaxy_name", galaxy.name);
+        intent.putExtra("galaxy_name_vi", galaxy.nameVi);
+        intent.putExtra("galaxy_emoji", galaxy.emoji);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_scale_in, 0);
     }
