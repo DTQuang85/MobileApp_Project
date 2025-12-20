@@ -39,13 +39,42 @@ public class InteractiveGalaxyMapActivity extends AppCompatActivity {
 
         // Set galaxy click listener
         galaxyMapView.setOnGalaxyClickListener((galaxyId, galaxyName, galaxyEmoji) -> {
-            // Navigate to Interactive Planet Map
-            Intent intent = new Intent(this, InteractivePlanetMapActivity.class);
+            // Navigate to Interactive Star Map (Planet Map)
+            Intent intent = new Intent(this, InteractiveStarMapActivity.class);
             intent.putExtra("galaxy_id", galaxyId);
             intent.putExtra("galaxy_name", galaxyName);
             intent.putExtra("galaxy_emoji", galaxyEmoji);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
+        });
+
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
+        findViewById(R.id.btnNavHub).setOnClickListener(v -> {
+            startActivity(new Intent(this, SpaceshipHubActivity.class));
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
+
+        findViewById(R.id.btnNavWordLab).setOnClickListener(v -> {
+            startActivity(new Intent(this, WordLabActivity.class));
+        });
+
+        findViewById(R.id.btnNavMap).setOnClickListener(v -> {
+            // Already on Galaxy Map - do nothing
+            android.widget.Toast.makeText(this, "Đang ở Bản đồ Thiên hà 🌌", android.widget.Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
+            Intent intent = new Intent(this, BattleActivity.class);
+            intent.putExtra("planet_id", 1); // Default to first planet
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_scale_in, 0);
+        });
+
+        findViewById(R.id.btnNavBuddy).setOnClickListener(v -> {
+            startActivity(new Intent(this, BuddyRoomActivity.class));
         });
     }
 

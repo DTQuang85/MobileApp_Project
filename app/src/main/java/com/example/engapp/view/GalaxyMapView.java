@@ -51,27 +51,32 @@ public class GalaxyMapView extends View {
 
         lockPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         lockPaint.setColor(Color.parseColor("#1A202C"));
-        lockPaint.setAlpha(180);
+        lockPaint.setAlpha(200);
 
         galaxyNodes = new ArrayList<>();
+
+        // Enable hardware acceleration for smooth animations
+        setLayerType(LAYER_TYPE_HARDWARE, null);
     }
 
     public void loadGalaxies(int stars) {
         this.userStars = stars;
         galaxyNodes.clear();
 
-        // Define galaxy positions and data
-        // Galaxy 1: Beginner (0,0,0)
+        // Define galaxy positions in a more realistic arrangement
+        // Center of screen with spiral/circular arrangement
+
+        // Galaxy 1: Beginner - Center-left position
         galaxyNodes.add(new GalaxyNode(1, "🌌", "Beginner Galaxy",
-            0.3f, 0.3f, 0, true, Color.parseColor("#6366F1")));
+            0.25f, 0.5f, 0, true, Color.parseColor("#6366F1")));
 
-        // Galaxy 2: Explorer (30 stars)
+        // Galaxy 2: Explorer - Top-right position
         galaxyNodes.add(new GalaxyNode(2, "🌠", "Explorer Galaxy",
-            0.5f, 0.5f, 30, stars >= 30, Color.parseColor("#8B5CF6")));
+            0.65f, 0.3f, 30, stars >= 30, Color.parseColor("#8B5CF6")));
 
-        // Galaxy 3: Advanced (60 stars)
+        // Galaxy 3: Advanced - Bottom-right position
         galaxyNodes.add(new GalaxyNode(3, "✨", "Advanced Galaxy",
-            0.7f, 0.7f, 60, stars >= 60, Color.parseColor("#EC4899")));
+            0.65f, 0.7f, 60, stars >= 60, Color.parseColor("#EC4899")));
 
         invalidate();
     }
@@ -87,60 +92,92 @@ public class GalaxyMapView extends View {
         int width = getWidth();
         int height = getHeight();
 
+        // Draw random stars in background
+        Paint starPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        starPaint.setColor(Color.WHITE);
+        starPaint.setAlpha(150);
+        for (int i = 0; i < 50; i++) {
+            float starX = (i * 137.5f) % width;
+            float starY = (i * 211.3f) % height;
+            float starRadius = (i % 3) + 1;
+            canvas.drawCircle(starX, starY, starRadius, starPaint);
+        }
+
         // Draw connection lines between galaxies
         for (int i = 0; i < galaxyNodes.size() - 1; i++) {
             GalaxyNode from = galaxyNodes.get(i);
             GalaxyNode to = galaxyNodes.get(i + 1);
 
-            float startX = from.x * width;
-            float startY = from.y * height;
-            float endX = to.x * width;
-            float endY = to.y * height;
+            if (to.isUnlocked || from.isUnlocked) {
+                float startX = from.x * width;
+                float startY = from.y * height;
+                float endX = to.x * width;
+                float endY = to.y * height;
 
-            // Draw dashed line
-            linePaint.setPathEffect(new android.graphics.DashPathEffect(new float[]{20, 10}, 0));
-            canvas.drawLine(startX, startY, endX, endY, linePaint);
+                // Draw curved line with glow
+                linePaint.setColor(Color.parseColor("#6366F1"));
+                linePaint.setStrokeWidth(3);
+                linePaint.setAlpha(to.isUnlocked ? 200 : 80);
+                linePaint.setPathEffect(new android.graphics.DashPathEffect(new float[]{20, 10}, 0));
+                canvas.drawLine(startX, startY, endX, endY, linePaint);
+            }
         }
 
         // Draw galaxy nodes
         for (GalaxyNode node : galaxyNodes) {
             float x = node.x * width;
             float y = node.y * height;
-            float radius = 80;
+            float radius = 100;
 
-            // Draw galaxy circle
+            // Draw glow effect for unlocked galaxies
             if (node.isUnlocked) {
+                Paint glowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                glowPaint.setStyle(Paint.Style.FILL);
+                glowPaint.setColor(node.color);
+
+                // Outer glow
+                glowPaint.setAlpha(30);
+                canvas.drawCircle(x, y, radius + 30, glowPaint);
+                glowPaint.setAlpha(60);
+                canvas.drawCircle(x, y, radius + 15, glowPaint);
+
+                // Main circle
                 galaxyPaint.setColor(node.color);
+                galaxyPaint.setAlpha(255);
             } else {
                 galaxyPaint.setColor(Color.parseColor("#2D3748"));
+                galaxyPaint.setAlpha(200);
             }
             canvas.drawCircle(x, y, radius, galaxyPaint);
 
             // Draw emoji
+            textPaint.setTextSize(70);
             if (node.isUnlocked) {
                 textPaint.setAlpha(255);
             } else {
                 textPaint.setAlpha(100);
             }
-            canvas.drawText(node.emoji, x, y + 20, textPaint);
+            canvas.drawText(node.emoji, x, y + 25, textPaint);
 
             // Draw lock if not unlocked
             if (!node.isUnlocked) {
                 canvas.drawCircle(x, y, radius, lockPaint);
-                textPaint.setTextSize(40);
-                canvas.drawText("🔒", x, y + 15, textPaint);
-                textPaint.setTextSize(60);
+                textPaint.setTextSize(50);
+                canvas.drawText("🔒", x, y + 20, textPaint);
 
                 // Draw required stars
-                textPaint.setTextSize(30);
-                canvas.drawText(node.starsRequired + "⭐", x, y + radius + 40, textPaint);
-                textPaint.setTextSize(60);
+                textPaint.setTextSize(32);
+                textPaint.setAlpha(255);
+                canvas.drawText(node.starsRequired + " ⭐", x, y + radius + 50, textPaint);
             }
 
             // Draw galaxy name below
-            textPaint.setTextSize(28);
+            textPaint.setTextSize(26);
             textPaint.setAlpha(255);
-            canvas.drawText(node.name, x, y + radius + 80, textPaint);
+            textPaint.setColor(Color.WHITE);
+            canvas.drawText(node.name, x, y + radius + 90, textPaint);
+
+            // Reset text size
             textPaint.setTextSize(60);
         }
     }
@@ -158,9 +195,15 @@ public class GalaxyMapView extends View {
                     Math.pow(touchX - nodeX, 2) + Math.pow(touchY - nodeY, 2)
                 );
 
-                if (distance <= 80) {
+                // Match the radius used in onDraw (100)
+                if (distance <= 100) {
                     if (node.isUnlocked && listener != null) {
                         listener.onGalaxyClick(node.id, node.name, node.emoji);
+                    } else if (!node.isUnlocked) {
+                        // Show toast about stars required
+                        android.widget.Toast.makeText(getContext(),
+                            "Cần " + node.starsRequired + " ⭐ để mở khóa!",
+                            android.widget.Toast.LENGTH_SHORT).show();
                     }
                     return true;
                 }

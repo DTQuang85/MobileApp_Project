@@ -62,6 +62,9 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     // Data
     private List<Planet> planets;
     private Planet selectedPlanet;
+    private int galaxyId = 1; // Current galaxy ID
+    private String galaxyName = "Beginner Galaxy";
+    private String galaxyEmoji = "🌌";
 
     // Activity result launcher for travel
     private ActivityResultLauncher<Intent> travelLauncher;
@@ -70,6 +73,14 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interactive_star_map);
+
+        // Get galaxy info from intent
+        galaxyId = getIntent().getIntExtra("galaxy_id", 1);
+        galaxyName = getIntent().getStringExtra("galaxy_name");
+        galaxyEmoji = getIntent().getStringExtra("galaxy_emoji");
+
+        if (galaxyName == null) galaxyName = "Beginner Galaxy";
+        if (galaxyEmoji == null) galaxyEmoji = "🌌";
 
         initManagers();
         initViews();
@@ -148,12 +159,10 @@ public class InteractiveStarMapActivity extends AppCompatActivity
             startActivity(new Intent(this, WordLabActivity.class));
         });
 
-        findViewById(R.id.btnNavMap).setOnClickListener(v -> {
-            // Already on map - do nothing or scroll to current location
-            String currentPlanetId = travelManager.getCurrentPlanetId();
-            if (currentPlanetId != null) {
-                starMapView.focusOnPlanet(currentPlanetId);
-            }
+        // FAB Galaxy Map - Navigate back to Galaxy selection
+        findViewById(R.id.fabGalaxyMap).setOnClickListener(v -> {
+            startActivity(new Intent(this, InteractiveGalaxyMapActivity.class));
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
@@ -211,7 +220,20 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     }
 
     private void loadPlanets() {
-        planets = GameDataProvider.getAllPlanets();
+        // Get all planets
+        List<Planet> allPlanets = GameDataProvider.getAllPlanets();
+
+        // Filter planets by galaxy
+        // Galaxy 1: planets 0-3 (indices 0,1,2,3) - 4 planets
+        // Galaxy 2: planets 4-7 (indices 4,5,6,7) - 4 planets
+        // Galaxy 3: planets 8-11 (indices 8,9,10,11) - 4 planets
+        planets = new java.util.ArrayList<>();
+        int startIndex = (galaxyId - 1) * 4;
+        int endIndex = startIndex + 4;
+
+        for (int i = startIndex; i < endIndex && i < allPlanets.size(); i++) {
+            planets.add(allPlanets.get(i));
+        }
 
         // Update unlock status
         for (Planet planet : planets) {

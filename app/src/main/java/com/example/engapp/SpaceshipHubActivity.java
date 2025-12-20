@@ -136,22 +136,12 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             });
         }
 
-        // Quick Actions - Word Review
-        CardView cardWordReview = findViewById(R.id.cardWordReview);
-        if (cardWordReview != null) {
-            cardWordReview.setOnClickListener(v -> {
-                Intent intent = new Intent(this, WordReviewActivity.class);
-                startActivity(intent);
-            });
-        }
-
         // Quick Actions - Galaxy Map
         CardView cardGalaxyMap = findViewById(R.id.cardGalaxyMap);
         if (cardGalaxyMap != null) {
             cardGalaxyMap.setOnClickListener(v -> {
-                Intent intent = new Intent(this, GalaxyMapActivity.class);
+                Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.fade_scale_in, 0);
             });
         }
 
@@ -240,8 +230,8 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             findViewById(R.id.fabGalaxyMap);
         if (fabGalaxyMap != null) {
             fabGalaxyMap.setOnClickListener(v -> {
-                // Navigate to Interactive Star Map (same as initial app screen)
-                Intent intent = new Intent(this, InteractiveStarMapActivity.class);
+                // Navigate to Interactive Galaxy Map
+                Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_scale_in, 0);
             });
@@ -287,12 +277,18 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             }
         }
 
+        // Determine which galaxy this planet belongs to
+        // Galaxy 1: planets 1-4, Galaxy 2: planets 5-8, Galaxy 3: planets 9-12
+        int galaxyId = ((planet.id - 1) / 4) + 1;
+
+        // Navigate to PlanetMapActivity (games for this planet)
         Intent intent = new Intent(this, PlanetMapActivity.class);
         intent.putExtra("planet_id", planet.id);
         intent.putExtra("planet_name", planet.name);
         intent.putExtra("planet_name_vi", planet.nameVi);
         intent.putExtra("planet_emoji", planet.emoji);
         intent.putExtra("planet_color", planet.themeColor);
+        intent.putExtra("galaxy_id", galaxyId);
         startActivity(intent);
         overridePendingTransition(R.anim.warp_in, R.anim.warp_out);
     }

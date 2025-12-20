@@ -242,6 +242,16 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // ============ HARDCODED TEST ACCOUNT ============
+        // Email: admin@test.com
+        // Password: 123456
+        if (email.equals("admin@test.com") && password.equals("123456")) {
+            Toast.makeText(this, "✅ Đăng nhập thành công với tài khoản test!", Toast.LENGTH_SHORT).show();
+            goHome("Admin Test");
+            return;
+        }
+        // ================================================
+
         showLoading(true);
 
         // CHỈ ĐĂNG NHẬP, KHÔNG TỰ ĐỘNG ĐĂNG KÝ

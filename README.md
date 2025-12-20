@@ -21,6 +21,7 @@
 
 - [Giới thiệu](#-giới-thiệu)
 - [Tính năng](#-tính-năng)
+- [Đăng nhập](#-đăng-nhập)
 - [Cấu trúc dự án](#-cấu-trúc-dự-án)
 - [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
 - [Cài đặt](#-cài-đặt)
@@ -28,18 +29,16 @@
 - [Kiến trúc ứng dụng](#-kiến-trúc-ứng-dụng)
 - [Cơ sở dữ liệu](#-cơ-sở-dữ-liệu)
 - [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
-- [Đóng góp](#-đóng-góp)
-- [Giấy phép](#-giấy-phép)
 
 ---
 
 ## 🌟 Giới thiệu
 
-**Space English** là ứng dụng học tiếng Anh dành cho trẻ em từ **5-12 tuổi**, được thiết kế với chủ đề **du hành vũ trụ** hấp dẫn. Trẻ em sẽ lái tàu vũ trụ khám phá 9 hành tinh, mỗi hành tinh là một chủ đề học tập khác nhau với từ vựng, ngữ pháp và các mini-game tương tác.
+**Space English** là ứng dụng học tiếng Anh dành cho trẻ em từ **5-12 tuổi**, được thiết kế với chủ đề **du hành vũ trụ** hấp dẫn. Trẻ em sẽ lái tàu vũ trụ khám phá **3 thiên hà với 12 hành tinh**, mỗi hành tinh là một chủ đề học tập khác nhau với từ vựng, ngữ pháp và các mini-game tương tác.
 
 ### 🎯 Mục tiêu giáo dục
 
-- **Từ vựng**: 200+ từ vựng phân theo chủ đề
+- **Từ vựng**: 300+ từ vựng phân theo chủ đề
 - **Ngữ pháp**: Các cấu trúc câu cơ bản phù hợp lứa tuổi
 - **Kỹ năng**: Nghe, Nói, Đọc, Viết
 - **Phát âm**: Hỗ trợ Text-to-Speech phát âm chuẩn
@@ -48,19 +47,31 @@
 
 ## ✨ Tính năng
 
-### 🪐 9 Hành tinh học tập
+### 🌌 3 Thiên hà với 12 Hành tinh học tập
 
+#### Galaxy 1: Beginner Galaxy (🌌 Thiên hà Khởi đầu)
 | # | Hành tinh | Chủ đề | Kỹ năng |
 |---|-----------|--------|---------|
 | 1 | **Coloria Prime** 🌈 | Màu sắc & Hình khối | Tính từ (big/small) |
 | 2 | **Toytopia Orbit** 🎮 | Đồ chơi & Vị trí | Giới từ (in/on/under) |
 | 3 | **Animania Wild** 🦁 | Động vật & Khả năng | can/can't |
-| 4 | **Citytron Nova** 🏙️ | Thành phố & Chỉ đường | there is/are |
-| 5 | **Foodora Station** 🍕 | Ẩm thực & Mua sắm | How many/How much |
-| 6 | **Weatheron Sky** ⛅ | Thời tiết & Trang phục | because |
-| 7 | **RoboLab Command** 🤖 | Robot & Chuỗi lệnh | first/then/next/finally |
-| 8 | **TimeLapse Base** ⏰ | Thời gian & Thói quen | Present Simple |
-| 9 | **Storyverse Galaxy** 📚 | Kể chuyện | Past Simple |
+| 4 | **Numberia Station** 🔢 | Số học & Đếm | How many? |
+
+#### Galaxy 2: Explorer Galaxy (🌠 Thiên hà Khám phá)
+| # | Hành tinh | Chủ đề | Kỹ năng |
+|---|-----------|--------|---------|
+| 5 | **Citytron Nova** 🏙️ | Thành phố & Chỉ đường | there is/are |
+| 6 | **Foodora Station** 🍕 | Ẩm thực & Mua sắm | How many/How much |
+| 7 | **Weatheron Sky** ⛅ | Thời tiết & Trang phục | because/so |
+| 8 | **Familia Home** 🏠 | Gia đình & Nhà cửa | Possessive |
+
+#### Galaxy 3: Advanced Galaxy (✨ Thiên hà Nâng cao)
+| # | Hành tinh | Chủ đề | Kỹ năng |
+|---|-----------|--------|---------|
+| 9 | **RoboLab Command** 🤖 | Robot & Chuỗi lệnh | Imperatives |
+| 10 | **TimeLapse Base** ⏰ | Thời gian & Thói quen | Present Simple |
+| 11 | **Storyverse Galaxy** 📚 | Kể chuyện | Past Simple |
+| 12 | **Natura Wilderness** 🌳 | Thiên nhiên & Môi trường | Comparatives |
 
 ### 🎮 5 Scene mỗi hành tinh
 
@@ -72,32 +83,36 @@
 
 ### 🏠 Spaceship Hub (Tàu Mẹ)
 
-- **Galaxy Map**: Bản đồ 9 hành tinh với hệ thống mở khóa
-- **Word Lab**: Phòng ôn tập từ vựng đã học
-- **Buddy Room**: Chọn và tương tác với buddy đồng hành
-- **Profile**: Hồ sơ cá nhân với avatar và thống kê
+- **🌌 Galaxy Map**: Bản đồ thiên hà dạng tròn với hiệu ứng glow
+- **🗺️ Planet Map**: Xem 12 hành tinh và tiến độ học tập
+- **📚 Word Lab**: Phòng ôn tập từ vựng đã học
+- **🤖 Buddy Room**: Chọn và tương tác với buddy đồng hành
+- **👤 Profile**: Hồ sơ cá nhân với avatar và thống kê
+- **⚔️ Battle**: Chế độ đối kháng với câu hỏi tiếng Anh
 
 ### 🎁 Hệ thống thưởng
 
-- ⭐ **Stars**: Thu thập sao từ các mini-game
+- ⭐ **Stars**: Thu thập sao từ các mini-game (mở khóa thiên hà mới)
 - 🔋 **Fuel Cells**: Mở khóa hành tinh mới
 - 💎 **Crystals**: Thu thập từ vựng
 - 🏅 **Badges**: Huy hiệu thành tích
 
-### 🐾 Buddy đồng hành
+### 🌌 Interactive Galaxy Map
 
-| Buddy | Tên | Tính cách |
-|-------|-----|-----------|
-| 🤖 | Robo-Buddy | Robot thông minh, logic |
-| 👽 | Alien-Friend | Người ngoài hành tinh vui vẻ |
-| 🐱 | Kitty-Pal | Mèo dễ thương |
-| 🦊 | Foxy-Guide | Cáo thông minh |
-| 🐲 | Dragon | *Mở khóa sau 3 hành tinh* |
-| 🦄 | Unicorn | *Mở khóa sau 5 hành tinh* |
-| 🐼 | Panda | *Mở khóa sau 7 hành tinh* |
-| 🦁 | Lion | *Mở khóa sau 9 hành tinh* |
+Bản đồ thiên hà với hiệu ứng visual đẹp mắt:
+- ⭐ 50 ngôi sao background
+- 🌟 Glow effects cho galaxy đã mở khóa
+- 🔗 Connection lines giữa các galaxy
+- 🔒 Lock overlay với yêu cầu stars
+- 💫 Touch interactions mượt mà
 
-### 🌌 Interactive Star Map (MỚI!)
+### 🗺️ Interactive Star Map
+
+Bản đồ hành tinh với khả năng zoom, pan:
+- 🪐 Hiển thị 4 planets mỗi galaxy
+- 🎨 Màu sắc phân biệt theo chủ đề
+- 🔓 Unlock system dựa trên fuel cells
+- 🚀 Travel between planets với animation
 
 - **Pan & Zoom**: Kéo và phóng to/thu nhỏ bản đồ ngân hà
 - **Visual Planet States**: Hành tinh khóa/mở khóa/đang ở được hiển thị trực quan
@@ -171,6 +186,25 @@
 - **Badge System**: Huy hiệu cho các achievements
 - **Daily Streak**: Theo dõi chuỗi ngày học liên tục
 - **Level Up**: Hệ thống level với XP
+
+---
+
+## 🔐 Đăng nhập
+
+### Tài khoản test hardcoded
+
+Để test nhanh mà không cần Firebase:
+
+```
+📧 Email: admin@test.com
+🔑 Password: 123456
+```
+
+### Các phương thức đăng nhập khác
+
+1. **Email/Password**: Đăng ký tài khoản mới với email
+2. **Google Sign-In**: Đăng nhập bằng tài khoản Google
+3. **Quên mật khẩu**: Reset password qua email
 
 ---
 
@@ -315,23 +349,30 @@ File → Open → Chọn thư mục project
 ```
 🚀 Spaceship Hub (Tàu Mẹ)
     │
-    ├─→ 🌌 Interactive Star Map (Bản đồ Ngân Hà)
+    ├─→ 🌌 Interactive Galaxy Map (Bản đồ Thiên Hà)
     │       │
-    │       ├─→ 🚀 Space Travel Animation
-    │       │       │
-    │       │       └─→ 🪐 Planet (Hành tinh)
-    │       │               │
-    │       │               ├─→ 📚 Landing Zone (Học từ)
-    │       │               ├─→ 🔮 Explore Area (Thu thập)
-    │       │               ├─→ 💬 Dialogue Dock (Hội thoại)
-    │       │               ├─→ 🧩 Puzzle Zone (Xếp câu)
-    │       │               └─→ 👾 Boss Gate (Thử thách)
+    │       ├─→ Galaxy 1 (Beginner) 🌌
+    │       │       └─→ 🗺️ Planet Map (4 planets: 1-4)
     │       │
-    │       └─→ 📋 Captain's Log (Nhật ký hành trình)
+    │       ├─→ Galaxy 2 (Explorer) 🌠
+    │       │       └─→ 🗺️ Planet Map (4 planets: 5-8)
+    │       │
+    │       └─→ Galaxy 3 (Advanced) ✨
+    │               └─→ 🗺️ Planet Map (4 planets: 9-12)
+    │
+    ├─→ 🗺️ Planet Map (Interactive Star Map)
+    │       │
+    │       └─→ 🪐 Planet Activities (Chọn hành tinh)
+    │               │
+    │               ├─→ 📚 Landing Zone (Học từ)
+    │               ├─→ 🔮 Explore Area (Thu thập)
+    │               ├─→ 💬 Dialogue Dock (Hội thoại)
+    │               ├─→ 🧩 Puzzle Zone (Xếp câu)
+    │               └─→ 👾 Boss Gate (Thử thách)
     │
     ├─→ 📖 Word Lab (Ôn tập từ vựng)
     │
-    ├─→ ⚔️ Word Battle (Chiến đấu bằng từ vựng)
+    ├─→ ⚔️ Battle (Chiến đấu từ vựng)
     │
     ├─→ 🐾 Buddy Room (Chọn buddy)
     │
@@ -344,9 +385,11 @@ File → Open → Chọn thư mục project
 |------|-----|----------|
 | 🚀 | Tàu Mẹ | SpaceshipHubActivity |
 | 📚 | Từ Vựng | WordLabActivity |
-| 🌌 | Bản Đồ | InteractiveStarMapActivity |
-| ⚔️ | Chiến Đấu | WordBattleActivity |
+| 🌌 | Bản Đồ | InteractiveGalaxyMapActivity / InteractiveStarMapActivity |
+| ⚔️ | Chiến Đấu | BattleActivity |
 | 🤖 | Buddy | BuddyRoomActivity |
+
+**Lưu ý:** Nút giữa (Bản Đồ) là FAB (Floating Action Button) nổi lên giữa thanh navigation.
 
 ### Điều khiển
 
@@ -391,32 +434,49 @@ File → Open → Chọn thư mục project
 
 ## 💾 Cơ sở dữ liệu
 
-### SQLite Tables
+### SQLite Tables (Database Version 4)
 
 | Table | Mô tả |
 |-------|-------|
-| `planets` | Thông tin 9 hành tinh |
+| `galaxies` | Thông tin 3 thiên hà |
+| `planets` | Thông tin 12 hành tinh (4 mỗi galaxy) |
 | `scenes` | 5 scene mỗi hành tinh |
-| `words` | Từ vựng (200+ từ) |
+| `words` | Từ vựng (300+ từ) |
 | `sentences` | Câu mẫu và hội thoại |
 | `minigames` | Cấu hình mini-game |
 | `user_progress` | Tiến độ người chơi |
 | `collected_items` | Vật phẩm đã thu thập |
 | `badges` | Huy hiệu thành tích |
+| `buddies` | Thông tin buddies |
+| `battles` | Lịch sử chiến đấu |
+| `daily_missions` | Nhiệm vụ hàng ngày |
 
 ### Entity Relationship
 
 ```
-planets (1) ──── (n) scenes
-    │                  │
-    │                  │
-    └───── (n) words ──┘
-    │                  │
-    └── (n) sentences ─┘
+galaxies (1) ──── (4) planets
+                        │
+                        ├──── (5) scenes
+                        │          │
+                        ├──── (n) words
+                        │          │
+                        └──── (n) sentences
 
 user_progress ──── collected_items
-              └─── badges
+              ├─── badges
+              ├─── daily_missions
+              └─── battles
+
+buddies ──── buddy_skills
 ```
+
+### Key Data Points
+
+- **3 Galaxies** với unlock system dựa trên stars
+- **12 Planets** (4 per galaxy) với fuel cell requirements
+- **60 Scenes** (5 per planet)
+- **300+ Words** phân theo chủ đề
+- **Progress tracking** cho mỗi scene, planet, galaxy
 
 ---
 
@@ -536,8 +596,31 @@ Space Blue:  #2D3561
 
 ## 📝 Changelog
 
-### v1.1.0 (2024-12-20) - 🌌 Galaxy Expansion Update
-- ✨ **Interactive Star Map**: Bản đồ ngân hà với pan/zoom
+### v2.0.0 (2024-12-21) - 🌌 Galaxy System & Planet Expansion
+- ✨ **Galaxy Map System**: 3 thiên hà với interactive visual map
+  - 🌌 Beginner Galaxy (Thiên hà Khởi đầu)
+  - 🌠 Explorer Galaxy (Thiên hà Khám phá)
+  - ✨ Advanced Galaxy (Thiên hà Nâng cao)
+- 🪐 **12 Planets**: Mở rộng từ 9 lên 12 hành tinh (4 mỗi galaxy)
+  - Thêm Planet 4: Numberia Station (Numbers & Counting)
+  - Thêm Planet 8: Familia Home (Family & Home)
+  - Thêm Planet 12: Natura Wilderness (Nature & Environment)
+- 🎨 **Galaxy Map Visual**: 
+  - Hiệu ứng glow cho galaxy đã unlock
+  - 50 ngôi sao background
+  - Connection lines giữa các galaxy
+  - Lock overlay với yêu cầu stars
+- 🗺️ **Planet Map Integration**: 
+  - Filter 4 planets per galaxy
+  - Navigation flow: Galaxy → Planet Map → Games
+  - FAB center button để quay lại Galaxy Map
+- 🔄 **Data Sync**: Đồng bộ hoàn toàn giữa Planet Map và Spaceship Hub
+- 🎯 **Bottom Navigation**: Thống nhất across all screens
+- 🔐 **Hardcoded Test Account**: admin@test.com / 123456
+- 📊 **Database Version 4**: Updated schema với galaxies và 12 planets
+
+### v1.1.0 (2024-12-20) - 🌌 Interactive Features
+- ✨ **Interactive Star Map**: Bản đồ hành tinh với pan/zoom
 - 🚀 **Space Travel System**: Animation bay giữa các hành tinh
 - 🤖 **Buddy Companion**: Buddy xuất hiện xuyên suốt app
 - 📊 **Progression System**: Hệ thống tiến trình với stars, badges
@@ -556,38 +639,62 @@ Space Blue:  #2D3561
 
 ---
 
-## 📄 Giấy phép
+## 🚀 Quick Start Guide
 
-Dự án này được cấp phép theo [MIT License](LICENSE).
+### Đăng nhập nhanh
 
-```
-MIT License
+1. Mở app
+2. Nhập:
+   - Email: `admin@test.com`
+   - Password: `123456`
+3. Nhấn "Đăng nhập"
 
-Copyright (c) 2024 Space English Team
+### Khám phá thiên hà
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
+1. Từ màn hình chính, app sẽ vào **Galaxy Map**
+2. Chọn một trong 3 galaxy:
+   - 🌌 **Beginner Galaxy** (mở sẵn)
+   - 🌠 **Explorer Galaxy** (cần 30 ⭐)
+   - ✨ **Advanced Galaxy** (cần 60 ⭐)
+3. Vào **Planet Map** để xem 4 planets
+4. Chọn planet để bắt đầu học
+
+### Navigation
+
+- **FAB giữa** (🌌): Quay lại Galaxy Map
+- **Tàu Mẹ** (🚀): Về Spaceship Hub
+- **Từ Vựng** (📚): Ôn tập từ đã học
+- **Chiến Đấu** (⚔️): Chơi Battle mode
+- **Buddy** (🤖): Chọn companion
 
 ---
 
-## 👥 Tác giả
+## 📄 Giấy phép
 
-- **Developer**: [Your Name]
-- **Email**: your.email@example.com
-- **GitHub**: [@your-username](https://github.com/your-username)
+Dự án này được phát triển cho mục đích giáo dục.
 
 ---
 
 ## 🙏 Cảm ơn
 
 - [Google Firebase](https://firebase.google.com/) - Backend services
-- [Material Design](https://material.io/) - UI guidelines
+- [Material Design](https://material.io/) - UI guidelines  
 - [Android Developers](https://developer.android.com/) - Documentation
-- Emoji graphics by [Twemoji](https://twemoji.twitter.com/)
+- [Twemoji](https://twemoji.twitter.com/) - Emoji graphics
 
 ---
+
+<p align="center">
+  <strong>🚀 Made with ❤️ for young learners</strong><br>
+  <em>Space English - Learn English through Space Adventure!</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Version-2.0.0-blue?style=flat-square" alt="Version"/>
+  <img src="https://img.shields.io/badge/Database-v4-green?style=flat-square" alt="Database"/>
+  <img src="https://img.shields.io/badge/Planets-12-purple?style=flat-square" alt="Planets"/>
+  <img src="https://img.shields.io/badge/Galaxies-3-orange?style=flat-square" alt="Galaxies"/>
+</p>
 
 <p align="center">
   Made with ❤️ for Kids Learning English

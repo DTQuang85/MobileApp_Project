@@ -91,6 +91,36 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
 
         // Buddy speech
         tvBuddyText.setText("Chọn một thiên hà để khám phá! Mỗi thiên hà có các hành tinh với từ vựng mới! 🚀");
+
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
+        findViewById(R.id.btnNavHub).setOnClickListener(v -> {
+            startActivity(new Intent(this, SpaceshipHubActivity.class));
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
+
+        findViewById(R.id.btnNavWordLab).setOnClickListener(v -> {
+            startActivity(new Intent(this, WordLabActivity.class));
+        });
+
+        findViewById(R.id.btnNavMap).setOnClickListener(v -> {
+            // Already on Galaxy Map - do nothing or show toast
+            Toast.makeText(this, "Đang ở Bản đồ Thiên hà 🌌", Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
+            // Navigate to battle with current planet
+            Intent intent = new Intent(this, BattleActivity.class);
+            intent.putExtra("planet_id", 1); // Default to first planet
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_scale_in, 0);
+        });
+
+        findViewById(R.id.btnNavBuddy).setOnClickListener(v -> {
+            startActivity(new Intent(this, BuddyRoomActivity.class));
+        });
     }
 
     @Override
@@ -101,8 +131,8 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
             return;
         }
 
-        // Navigate to GalaxyPlanetsActivity to show planets of this galaxy
-        Intent intent = new Intent(this, GalaxyPlanetsActivity.class);
+        // Navigate to InteractiveStarMapActivity (Planet Map) for this galaxy
+        Intent intent = new Intent(this, InteractiveStarMapActivity.class);
         intent.putExtra("galaxy_id", galaxy.id);
         intent.putExtra("galaxy_name", galaxy.name);
         intent.putExtra("galaxy_name_vi", galaxy.nameVi);

@@ -12,7 +12,7 @@ import java.util.List;
 public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "space_english_game.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Table names
     public static final String TABLE_GALAXIES = "galaxies";
@@ -319,37 +319,55 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "alien_zoo", "Animal Badges", "🏅",
             "Can/Can't", "Animals & Actions", 5, 3, 0);
 
-        // Galaxy 2: Andromeda - planets 4-6
+        // NEW: Galaxy 1 - Planet 4
+        insertPlanet(db, 1, "numberia_station", "Numberia Station", "Trạm Số Học",
+            "Vũ trụ số học với vòng đếm, tháp cộng trừ", "🔢", "#F59E0B",
+            "math_space", "Number Gems", "💎",
+            "How many?", "Numbers & Counting", 7, 4, 0);
+
+        // Galaxy 2: Andromeda - planets 5-8
         insertPlanet(db, 2, "citytron_nova", "Citytron Nova", "Thành Phố Tương Lai",
             "Tàu điện không gian, biển neon, toà tháp", "🌆", "#96CEB4",
             "future_city", "Metro Tickets", "🎫",
-            "There is/are", "Places & Directions", 8, 4, 0);
+            "There is/are", "Places & Directions", 8, 5, 0);
 
         insertPlanet(db, 2, "foodora_station", "Foodora Station", "Trạm Ẩm Thực",
             "Chợ liên ngân hà, bếp tàu vũ trụ, nông trại sao", "🍕", "#FFEAA7",
             "space_kitchen", "Recipe Cards", "📜",
-            "Countable/Uncountable", "Food & Shopping", 12, 5, 0);
+            "Countable/Uncountable", "Food & Shopping", 12, 6, 0);
 
         insertPlanet(db, 2, "weatheron_sky", "Weatheron Sky", "Bầu Trời Thời Tiết",
             "Cảng mây, bão điện, thị trấn tuyết", "⛈️", "#74B9FF",
             "cloud_port", "Weather Orbs", "🔮",
-            "Because/So", "Weather & Clothes", 15, 6, 0);
+            "Because/So", "Weather & Clothes", 15, 7, 0);
 
-        // Galaxy 3: Nebula Prime - planets 7-9
+        // NEW: Galaxy 2 - Planet 8
+        insertPlanet(db, 2, "familia_home", "Familia Home", "Nhà Gia Đình",
+            "Ngôi nhà ấm cúng với phòng khách, bếp, vườn", "🏠", "#10B981",
+            "cozy_house", "Family Photos", "📸",
+            "Possessive", "Family & Home", 18, 8, 0);
+
+        // Galaxy 3: Nebula Prime - planets 9-12
         insertPlanet(db, 3, "robolab_command", "RoboLab Command", "Phòng Chỉ Huy Robot",
             "Nhà máy mạch điện, drone bay, đường hầm laser", "🤖", "#A29BFE",
             "robot_factory", "Circuit Parts", "⚡",
-            "Imperatives", "Commands & Sequences", 18, 7, 0);
+            "Imperatives", "Commands & Sequences", 18, 9, 0);
 
         insertPlanet(db, 3, "timelapse_base", "TimeLapse Base", "Căn Cứ Thời Gian",
             "Tháp đồng hồ, cầu ngày-đêm, trạm lịch tuần", "⏰", "#FD79A8",
             "time_tower", "Time Crystals", "⌛",
-            "Present Simple", "Time & Routines", 22, 8, 0);
+            "Present Simple", "Time & Routines", 22, 10, 0);
 
         insertPlanet(db, 3, "storyverse_galaxy", "Storyverse Galaxy", "Thiên Hà Truyện Kể",
             "Lâu đài sao, rừng phép, thư viện vũ trụ", "📚", "#E17055",
             "story_castle", "Story Pages", "📖",
-            "Past Simple", "Storytelling", 25, 9, 0);
+            "Past Simple", "Storytelling", 25, 11, 0);
+
+        // NEW: Galaxy 3 - Planet 12
+        insertPlanet(db, 3, "natura_wilderness", "Natura Wilderness", "Vùng Hoang Dã Thiên Nhiên",
+            "Rừng xanh, sông hồ, núi non và sa mạc", "🌳", "#059669",
+            "nature_forest", "Leaf Tokens", "🍃",
+            "Comparatives", "Nature & Environment", 28, 12, 0);
 
         // Insert scenes for first planet (Coloria Prime)
         long planetId = 1;
@@ -459,6 +477,42 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "Xếp thứ tự câu chuyện", "🧩", 4);
         insertScene(db, 9, "boss_gate", "Dragon Boss", "Boss Rồng",
             "Đánh bại rồng bằng từ", "🐲", 5);
+
+        // Planet 4: Numberia Station
+        insertScene(db, 4, "landing_zone", "Number Learn", "Học Số",
+            "Học đếm và số", "🔢", 1);
+        insertScene(db, 4, "explore_area", "Gem Hunt", "Săn Đá Quý",
+            "Thu thập các số", "🔍", 2);
+        insertScene(db, 4, "dialogue_dock", "Count Talk", "Nói Về Số",
+            "Hỏi đáp về số lượng", "💬", 3);
+        insertScene(db, 4, "puzzle_zone", "Math Puzzle", "Giải Toán",
+            "Ghép số với số lượng", "🧩", 4);
+        insertScene(db, 4, "boss_gate", "Calculator Boss", "Boss Máy Tính",
+            "Đếm đúng để thắng", "🤖", 5);
+
+        // Planet 8: Familia Home
+        insertScene(db, 8, "landing_zone", "Family Meet", "Gặp Gia Đình",
+            "Học về thành viên gia đình", "👨‍👩‍👧", 1);
+        insertScene(db, 8, "explore_area", "Photo Hunt", "Tìm Ảnh",
+            "Thu thập ảnh gia đình", "🔍", 2);
+        insertScene(db, 8, "dialogue_dock", "Family Talk", "Nói Về Gia Đình",
+            "Giới thiệu gia đình", "💬", 3);
+        insertScene(db, 8, "puzzle_zone", "Family Tree", "Cây Gia Đình",
+            "Xếp cây gia đình", "🧩", 4);
+        insertScene(db, 8, "boss_gate", "Reunion Boss", "Boss Đoàn Tụ",
+            "Tìm đúng thành viên", "👪", 5);
+
+        // Planet 12: Natura Wilderness
+        insertScene(db, 12, "landing_zone", "Nature Start", "Bắt Đầu Thiên Nhiên",
+            "Học về thiên nhiên", "🌳", 1);
+        insertScene(db, 12, "explore_area", "Leaf Hunt", "Săn Lá",
+            "Thu thập lá cây", "🔍", 2);
+        insertScene(db, 12, "dialogue_dock", "Nature Talk", "Nói Về Thiên Nhiên",
+            "So sánh cây cối, động vật", "💬", 3);
+        insertScene(db, 12, "puzzle_zone", "Ecosystem", "Hệ Sinh Thái",
+            "Xếp chuỗi thức ăn", "🧩", 4);
+        insertScene(db, 12, "boss_gate", "Forest Boss", "Boss Rừng",
+            "Bảo vệ rừng", "🐻", 5);
 
         // Insert words for Coloria Prime
         insertColoriaWords(db, planetId);

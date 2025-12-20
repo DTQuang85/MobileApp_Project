@@ -96,8 +96,8 @@ public class SplashActivity extends AppCompatActivity {
             } else if (!isLoggedIn) {
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
             } else {
-                // Navigate to Interactive Star Map as main hub
-                intent = new Intent(SplashActivity.this, InteractiveStarMapActivity.class);
+                // Navigate to Interactive Galaxy Map as main hub
+                intent = new Intent(SplashActivity.this, InteractiveGalaxyMapActivity.class);
             }
             
             startActivity(intent);

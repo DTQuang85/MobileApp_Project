@@ -299,6 +299,19 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="70dp"/>
 
+    <!-- Floating Galaxy Map Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabGalaxyMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="42dp"
+        android:elevation="12dp"
+        android:src="@drawable/ic_galaxy_map"
+        app:backgroundTint="@color/primary"
+        app:tint="@color/text_white"
+        app:fabSize="normal"/>
+
     <!-- Bottom Navigation - Same as SpaceshipHub for consistency -->
     <LinearLayout
         android:id="@+id/bottomNav"
@@ -356,29 +369,11 @@
                 android:textSize="11sp"/>
         </LinearLayout>
 
-        <!-- Galaxy Map - Current/Active -->
-        <LinearLayout
-            android:id="@+id/btnNavMap"
+        <!-- Spacer for center FAB -->
+        <View
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackground">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🌌"
-                android:textSize="24sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bản Đồ"
-                android:textColor="@color/star_gold"
-                android:textSize="11sp"/>
-        </LinearLayout>
+            android:layout_weight="1"/>
 
         <LinearLayout
             android:id="@+id/btnNavAdventure"
