@@ -16,6 +16,7 @@ public class UserProgress implements Serializable {
     private int wordsLearned;
     private int gamesCompleted;
     private int planetsUnlocked;
+    private int streakDays;
     private Map<String, Integer> planetStars; // planetId -> stars earned
     private Map<String, Boolean> badges; // badgeId -> earned
     private Map<String, ZoneProgress> zoneProgress;
@@ -28,6 +29,7 @@ public class UserProgress implements Serializable {
         this.wordsLearned = 0;
         this.gamesCompleted = 0;
         this.planetsUnlocked = 1;
+        this.streakDays = 0;
         this.planetStars = new HashMap<>();
         this.badges = new HashMap<>();
         this.zoneProgress = new HashMap<>();
@@ -57,6 +59,9 @@ public class UserProgress implements Serializable {
 
     public int getPlanetsUnlocked() { return planetsUnlocked; }
     public void setPlanetsUnlocked(int planetsUnlocked) { this.planetsUnlocked = planetsUnlocked; }
+
+    public int getStreakDays() { return streakDays; }
+    public void setStreakDays(int streakDays) { this.streakDays = streakDays; }
 
     public Map<String, Integer> getPlanetStars() { return planetStars; }
     public void setPlanetStars(Map<String, Integer> planetStars) { this.planetStars = planetStars; }

@@ -345,6 +345,20 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- Floating Galaxy Map Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabGalaxyMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomNav"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-28dp"
+        android:elevation="12dp"
+        android:src="@drawable/ic_galaxy_map"
+        app:backgroundTint="@color/primary"
+        app:tint="@color/text_white"
+        app:fabSize="normal"/>
+
     <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottomNav"
@@ -402,30 +416,12 @@
                 android:textSize="11sp"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/btnNavBuddy"
+        <!-- Placeholder for FAB -->
+        <View
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackground">
+            android:layout_weight="1"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🤖"
-                android:textSize="24sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Buddy"
-                android:textColor="@color/text_white"
-                android:textSize="11sp"/>
-        </LinearLayout>
-
-        <!-- Adventure Button - NEW -->
         <LinearLayout
             android:id="@+id/btnNavAdventure"
             android:layout_width="0dp"
@@ -450,7 +446,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btnNavBadges"
+            android:id="@+id/btnNavBuddy"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -461,36 +457,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🏆"
+                android:text="🤖"
                 android:textSize="24sp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Huy Hiệu"
-                android:textColor="@color/text_white"
-                android:textSize="11sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/btnNavProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackground">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="👤"
-                android:textSize="24sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hồ Sơ"
+                android:text="Buddy"
                 android:textColor="@color/text_white"
                 android:textSize="11sp"/>
         </LinearLayout>

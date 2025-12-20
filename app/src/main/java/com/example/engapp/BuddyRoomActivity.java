@@ -11,6 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+
+import com.example.engapp.manager.BuddyManager;
+import com.example.engapp.model.BuddyState;
+
 import java.util.Locale;
 import java.util.Random;
 
@@ -26,8 +30,11 @@ public class BuddyRoomActivity extends AppCompatActivity implements TextToSpeech
 
     private TextToSpeech tts;
     private SharedPreferences prefs;
+    private BuddyManager buddyManager;
+
     private String[] buddyEmojis = {"🤖", "👽", "🐱", "🦊"};
     private String[] buddyNames = {"Robo-Buddy", "Alien-Friend", "Kitty-Pal", "Foxy-Guide"};
+    private String[] buddyIds = {BuddyState.BUDDY_ROBOT, BuddyState.BUDDY_ALIEN, BuddyState.BUDDY_CAT, BuddyState.BUDDY_FOX};
     private int currentBuddyIndex = 0;
 
     private String[][] buddyResponses = {
@@ -61,6 +68,7 @@ public class BuddyRoomActivity extends AppCompatActivity implements TextToSpeech
 
         tts = new TextToSpeech(this, this);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        buddyManager = BuddyManager.getInstance(this);
 
         initViews();
         loadSavedBuddy();
@@ -69,9 +77,21 @@ public class BuddyRoomActivity extends AppCompatActivity implements TextToSpeech
     }
 
     private void loadSavedBuddy() {
-        currentBuddyIndex = prefs.getInt(KEY_BUDDY_INDEX, 0);
-        tvCurrentBuddy.setText(buddyEmojis[currentBuddyIndex]);
-        tvBuddyName.setText(buddyNames[currentBuddyIndex]);
+        // Load from BuddyManager instead of SharedPreferences
+        String currentBuddyId = buddyManager.getBuddyState().getCurrentBuddyId();
+        currentBuddyIndex = getBuddyIndexFromId(currentBuddyId);
+        tvCurrentBuddy.setText(buddyManager.getCurrentBuddyEmoji());
+        tvBuddyName.setText(buddyManager.getCurrentBuddyName());
+        tvBuddyLevel.setText("⭐ Level " + buddyManager.getBuddyState().getBuddyLevel());
+    }
+
+    private int getBuddyIndexFromId(String buddyId) {
+        for (int i = 0; i < buddyIds.length; i++) {
+            if (buddyIds[i].equals(buddyId)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     private void initViews() {
@@ -126,17 +146,23 @@ public class BuddyRoomActivity extends AppCompatActivity implements TextToSpeech
 
     private void selectBuddy(int index) {
         currentBuddyIndex = index;
+
+        // Update BuddyManager
+        String buddyId = buddyIds[index];
+        buddyManager.selectBuddy(buddyId);
+
         tvCurrentBuddy.setText(buddyEmojis[index]);
         tvBuddyName.setText(buddyNames[index]);
+        tvBuddyLevel.setText("⭐ Level " + buddyManager.getBuddyState().getBuddyLevel());
 
-        // Save to preferences
+        // Save to preferences (legacy support)
         prefs.edit().putInt(KEY_BUDDY_INDEX, index).apply();
 
         // Animate buddy
         tvCurrentBuddy.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_scale_in));
 
-        // Show greeting
-        String greeting = buddyResponses[index][0];
+        // Show greeting from BuddyManager
+        String greeting = buddyManager.getSpeechForContext(BuddyManager.CONTEXT_IDLE_TAP);
         showBuddyMessage(greeting);
 
         Toast.makeText(this, "Đã chọn " + buddyNames[index] + "! ✨", Toast.LENGTH_SHORT).show();

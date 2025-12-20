@@ -97,6 +97,37 @@
 | 🐼 | Panda | *Mở khóa sau 7 hành tinh* |
 | 🦁 | Lion | *Mở khóa sau 9 hành tinh* |
 
+### 🌌 Interactive Star Map (MỚI!)
+
+- **Pan & Zoom**: Kéo và phóng to/thu nhỏ bản đồ ngân hà
+- **Visual Planet States**: Hành tinh khóa/mở khóa/đang ở được hiển thị trực quan
+- **Twinkle Stars**: Background với hiệu ứng sao nhấp nháy
+- **Planet Info Card**: Xem thông tin chi tiết khi chọn hành tinh
+- **Travel System**: Bay đến hành tinh với animation đẹp mắt
+
+### 🚀 Spaceship Travel System (MỚI!)
+
+- **5 Phases Animation**: Countdown → Liftoff → Hyperspace → Approaching → Landing
+- **Buddy Reactions**: Buddy phản ứng trong suốt chuyến bay
+- **Fuel System**: Hệ thống nhiên liệu với regeneration theo thời gian
+- **Travel Log**: Nhật ký hành trình lưu lại lịch sử
+
+### 🤖 Buddy Companion System (MỚI!)
+
+- **Buddy Overlay**: Buddy xuất hiện trong tất cả màn hình học tập
+- **Contextual Speech**: Buddy nói lời động viên phù hợp ngữ cảnh
+- **Reactions**: Phản ứng khi trả lời đúng/sai
+- **Multiple States**: Idle, Happy, Encouraging, Traveling, Celebrating
+- **Text-to-Speech**: Buddy có thể đọc lời nói
+
+### 📊 Progression System (MỚI!)
+
+- **Star Collection**: Golden Stars, Rainbow Stars, Shooting Stars
+- **Word Crystals**: Thu thập khi học từ mới
+- **Badge System**: Huy hiệu cho các achievements
+- **Daily Streak**: Theo dõi chuỗi ngày học liên tục
+- **Level Up**: Hệ thống level với XP
+
 ---
 
 ## 📁 Cấu trúc dự án
@@ -110,26 +141,43 @@ MobileApp_Project/
 │   │   │   │   ├── adapter/          # RecyclerView Adapters
 │   │   │   │   ├── data/             # Data providers
 │   │   │   │   ├── database/         # SQLite Database Helper
+│   │   │   │   ├── manager/          # Manager classes (NEW!)
+│   │   │   │   │   ├── BuddyManager.java
+│   │   │   │   │   ├── TravelManager.java
+│   │   │   │   │   └── ProgressionManager.java
 │   │   │   │   ├── model/            # Data models
+│   │   │   │   │   ├── Planet.java
+│   │   │   │   │   ├── BuddyState.java
+│   │   │   │   │   ├── SpaceshipData.java
+│   │   │   │   │   ├── TravelLog.java
+│   │   │   │   │   └── Collectible.java
+│   │   │   │   ├── view/             # Custom Views (NEW!)
+│   │   │   │   │   ├── BuddyOverlayView.java
+│   │   │   │   │   └── InteractiveStarMapView.java
 │   │   │   │   │
-│   │   │   │   ├── SplashActivity.java       # Màn hình khởi động
-│   │   │   │   ├── IntroActivity.java        # Intro slides
-│   │   │   │   ├── LoginActivity.java        # Đăng nhập
-│   │   │   │   ├── SpaceshipHubActivity.java # Màn hình chính
-│   │   │   │   ├── PlanetActivity.java       # Chi tiết hành tinh
+│   │   │   │   ├── SplashActivity.java              # Màn hình khởi động
+│   │   │   │   ├── IntroActivity.java               # Intro slides
+│   │   │   │   ├── LoginActivity.java               # Đăng nhập
+│   │   │   │   ├── SpaceshipHubActivity.java        # Tàu mẹ
+│   │   │   │   ├── InteractiveStarMapActivity.java  # Bản đồ ngân hà (NEW!)
+│   │   │   │   ├── SpaceTravelActivity.java         # Animation bay (NEW!)
+│   │   │   │   ├── CaptainsLogActivity.java         # Nhật ký hành trình (NEW!)
+│   │   │   │   ├── PlanetActivity.java              # Chi tiết hành tinh
 │   │   │   │   │
-│   │   │   │   ├── LearnWordsActivity.java   # Scene: Học từ vựng
-│   │   │   │   ├── ExploreActivity.java      # Scene: Thu thập crystals
-│   │   │   │   ├── DialogueActivity.java     # Scene: Hội thoại
-│   │   │   │   ├── PuzzleGameActivity.java   # Scene: Xếp câu
-│   │   │   │   ├── BossGateActivity.java     # Scene: Boss battle
+│   │   │   │   ├── LearnWordsActivity.java          # Scene: Học từ vựng
+│   │   │   │   ├── ExploreActivity.java             # Scene: Thu thập crystals
+│   │   │   │   ├── DialogueActivity.java            # Scene: Hội thoại
+│   │   │   │   ├── PuzzleGameActivity.java          # Scene: Xếp câu
+│   │   │   │   ├── BossGateActivity.java            # Scene: Boss battle
+│   │   │   │   ├── WordBattleActivity.java          # Word Battle game
 │   │   │   │   │
-│   │   │   │   ├── WordLabActivity.java      # Phòng từ vựng
-│   │   │   │   ├── BuddyRoomActivity.java    # Phòng buddy
-│   │   │   │   ├── ProfileActivity.java      # Hồ sơ cá nhân
-│   │   │   │   ├── BadgesActivity.java       # Huy hiệu
+│   │   │   │   ├── WordLabActivity.java             # Phòng từ vựng
+│   │   │   │   ├── BuddyRoomActivity.java           # Phòng buddy
+│   │   │   │   ├── ProfileActivity.java             # Hồ sơ cá nhân
+│   │   │   │   ├── BadgesActivity.java              # Huy hiệu
+│   │   │   │   ├── BaseBuddyActivity.java           # Base Activity với Buddy (NEW!)
 │   │   │   │   │
-│   │   │   │   └── SpaceDialog.java          # Custom dialog theo theme
+│   │   │   │   └── SpaceDialog.java                 # Custom dialog
 │   │   │   │
 │   │   │   ├── res/
 │   │   │   │   ├── layout/           # XML layouts
@@ -221,26 +269,40 @@ File → Open → Chọn thư mục project
 ### Luồng chơi
 
 ```
-🚀 Spaceship Hub
+🚀 Spaceship Hub (Tàu Mẹ)
     │
-    ├─→ 🌍 Galaxy Map (Chọn hành tinh)
+    ├─→ 🌌 Interactive Star Map (Bản đồ Ngân Hà)
     │       │
-    │       └─→ 🪐 Planet (Chọn scene)
-    │               │
-    │               ├─→ 📚 Landing Zone (Học từ)
-    │               ├─→ 🔮 Explore Area (Thu thập)
-    │               ├─→ 💬 Dialogue Dock (Hội thoại)
-    │               ├─→ 🧩 Puzzle Zone (Xếp câu)
-    │               └─→ 👾 Boss Gate (Thử thách)
+    │       ├─→ 🚀 Space Travel Animation
+    │       │       │
+    │       │       └─→ 🪐 Planet (Hành tinh)
+    │       │               │
+    │       │               ├─→ 📚 Landing Zone (Học từ)
+    │       │               ├─→ 🔮 Explore Area (Thu thập)
+    │       │               ├─→ 💬 Dialogue Dock (Hội thoại)
+    │       │               ├─→ 🧩 Puzzle Zone (Xếp câu)
+    │       │               └─→ 👾 Boss Gate (Thử thách)
+    │       │
+    │       └─→ 📋 Captain's Log (Nhật ký hành trình)
     │
     ├─→ 📖 Word Lab (Ôn tập từ vựng)
     │
-    ├─→ 🐾 Buddy Room (Chọn buddy)
+    ├─→ ⚔️ Word Battle (Chiến đấu bằng từ vựng)
     │
-    ├─→ 🏅 Badges (Xem huy hiệu)
+    ├─→ 🐾 Buddy Room (Chọn buddy)
     │
     └─→ 👤 Profile (Hồ sơ cá nhân)
 ```
+
+### Bottom Navigation (Thống nhất giữa các màn hình)
+
+| Icon | Tên | Màn hình |
+|------|-----|----------|
+| 🚀 | Tàu Mẹ | SpaceshipHubActivity |
+| 📚 | Từ Vựng | WordLabActivity |
+| 🌌 | Bản Đồ | InteractiveStarMapActivity |
+| ⚔️ | Chiến Đấu | WordBattleActivity |
+| 🤖 | Buddy | BuddyRoomActivity |
 
 ### Điều khiển
 
@@ -339,6 +401,8 @@ user_progress ──── collected_items
 | ViewPager2 | Intro slides |
 | Glide | Load hình ảnh |
 | CircleImageView | Avatar tròn |
+| Lottie | Vector animations |
+| Gson | JSON serialization |
 
 ### Media
 | Thư viện | Mục đích |
@@ -427,6 +491,16 @@ Space Blue:  #2D3561
 ---
 
 ## 📝 Changelog
+
+### v1.1.0 (2024-12-20) - 🌌 Galaxy Expansion Update
+- ✨ **Interactive Star Map**: Bản đồ ngân hà với pan/zoom
+- 🚀 **Space Travel System**: Animation bay giữa các hành tinh
+- 🤖 **Buddy Companion**: Buddy xuất hiện xuyên suốt app
+- 📊 **Progression System**: Hệ thống tiến trình với stars, badges
+- 🎨 **Splash Screen mới**: Thiết kế đẹp hơn với orbit animation
+- 🧭 **Bottom Navigation thống nhất**: Dễ dàng di chuyển giữa các màn hình
+- 📋 **Captain's Log**: Nhật ký hành trình
+- ⚔️ **Word Battle**: Game chiến đấu bằng từ vựng
 
 ### v1.0.0 (2024-12-18)
 - 🎉 Release đầu tiên

@@ -107,45 +107,94 @@
         android:gravity="center"
         android:padding="32dp">
 
-        <!-- Rocket with fire animation -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical"
-            android:gravity="center">
+        <!-- Rocket with orbiting planets -->
+        <FrameLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginBottom="24dp">
 
-            <!-- Rocket -->
+            <!-- Orbit ring decoration -->
+            <View
+                android:id="@+id/orbitRing"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_orbit_ring"
+                android:alpha="0.3"/>
+
+            <!-- Small orbiting planet 1 -->
+            <TextView
+                android:id="@+id/orbitPlanet1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:text="🌍"
+                android:textSize="24sp"/>
+
+            <!-- Small orbiting planet 2 -->
+            <TextView
+                android:id="@+id/orbitPlanet2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="30dp"
+                android:text="🪐"
+                android:textSize="20sp"/>
+
+            <!-- Main Rocket - centered and larger -->
             <TextView
                 android:id="@+id/tvLogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="🚀"
-                android:textSize="100sp"/>
+                android:textSize="100sp"
+                android:rotation="-45"/>
 
-            <!-- Fire effect - below rocket -->
+            <!-- Sparkle effects around rocket -->
             <TextView
-                android:id="@+id/tvFire"
+                android:id="@+id/sparkle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-30dp"
-                android:text="🔥"
-                android:textSize="50sp"/>
-        </LinearLayout>
+                android:layout_gravity="top|end"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="30dp"
+                android:text="✨"
+                android:textSize="20sp"/>
 
-        <!-- App Name -->
+            <TextView
+                android:id="@+id/sparkle2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginBottom="50dp"
+                android:layout_marginStart="35dp"
+                android:text="💫"
+                android:textSize="16sp"/>
+
+        </FrameLayout>
+
+        <!-- Hidden fire element - kept for code compatibility but invisible -->
+        <TextView
+            android:id="@+id/tvFire"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"/>
+
+        <!-- App Name with gradient effect -->
         <TextView
             android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Space English"
-            android:textSize="36sp"
+            android:textSize="38sp"
             android:textStyle="bold"
             android:textColor="@color/text_white"
-            android:shadowColor="#80000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="4"
+            android:shadowColor="#4ECDC4"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="12"
             android:layout_marginBottom="8dp"/>
 
         <!-- Tagline -->
@@ -153,9 +202,20 @@
             android:id="@+id/tvTagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌟 Phiêu lưu học tiếng Anh! 🌟"
-            android:textSize="18sp"
-            android:textColor="@color/star_gold"/>
+            android:text="Phiêu lưu học tiếng Anh cùng bạn bè!"
+            android:textSize="16sp"
+            android:textColor="@color/star_gold"
+            android:gravity="center"/>
+
+        <!-- Buddy welcome -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="🤖 Buddy đang chờ bạn!"
+            android:textSize="14sp"
+            android:textColor="@color/text_white"
+            android:alpha="0.8"/>
 
         <!-- Loading -->
         <LinearLayout
@@ -163,7 +223,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="48dp">
+            android:layout_marginTop="40dp">
 
             <ProgressBar
                 android:layout_width="24dp"
@@ -173,7 +233,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="  Đang khởi động tàu..."
+                android:text="  Đang chuẩn bị hành trình..."
                 android:textColor="@color/text_white"
                 android:textSize="14sp"
                 android:alpha="0.8"/>
@@ -187,7 +247,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
-        android:text="v1.0 - Made for Kids 🎮"
+        android:text="v1.0 - Made with ❤️ for Kids"
         android:textColor="@color/text_white"
         android:textSize="12sp"
         android:alpha="0.6"/>

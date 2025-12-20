@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.data.GameDataProvider;
 import com.example.engapp.model.Planet;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-public class GuessNameGameActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSpeech.OnInitListener {
 
     private TextView tvScore, tvQuestion, tvEmoji;
     private TextView tvAnswer1, tvAnswer2, tvAnswer3, tvAnswer4;
@@ -192,6 +191,9 @@ public class GuessNameGameActivity extends AppCompatActivity implements TextToSp
 
             showResult(true, currentWord);
             speakWord(currentWord.getEnglish());
+
+            // Buddy celebrates correct answer
+            onCorrectAnswer();
         } else {
             // Wrong answer
             lives--;
@@ -199,6 +201,9 @@ public class GuessNameGameActivity extends AppCompatActivity implements TextToSp
             correctCard.setCardBackgroundColor(getColor(R.color.correct_green));
 
             showResult(false, currentWord);
+
+            // Buddy encourages after wrong answer
+            onWrongAnswer();
 
             if (lives <= 0) {
                 handler.postDelayed(this::endGame, 1500);
@@ -243,8 +248,16 @@ public class GuessNameGameActivity extends AppCompatActivity implements TextToSp
         int percentage = (score * 100) / (totalQuestions * 10);
         int stars = percentage >= 90 ? 3 : percentage >= 70 ? 2 : percentage >= 50 ? 1 : 0;
 
-        // Save progress
+        // Save progress using both old and new systems
         saveProgress(stars);
+
+        // Record in new progression system
+        recordGameCompleted("guess_name", stars * 10);
+
+        // Trigger Buddy celebration if good performance
+        if (stars >= 2) {
+            onZoneCompleted();
+        }
 
         String message = "Điểm: " + score + "/" + (totalQuestions * 10) + "\n";
         message += "⭐".repeat(stars) + (stars < 3 ? "☆".repeat(3 - stars) : "");

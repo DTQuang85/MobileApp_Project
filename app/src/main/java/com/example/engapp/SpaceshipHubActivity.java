@@ -32,7 +32,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private ProgressBar progressLevel, progressDailyMission;
     private CardView cardAvatar;
 
-    private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavBadges, btnNavProfile, btnNavAdventure;
+    private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavAdventure;
 
     private GameDatabaseHelper dbHelper;
     private List<PlanetData> planets;
@@ -100,8 +100,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         btnNavHub = findViewById(R.id.btnNavHub);
         btnNavWordLab = findViewById(R.id.btnNavWordLab);
         btnNavBuddy = findViewById(R.id.btnNavBuddy);
-        btnNavBadges = findViewById(R.id.btnNavBadges);
-        btnNavProfile = findViewById(R.id.btnNavProfile);
         btnNavAdventure = findViewById(R.id.btnNavAdventure);
 
         cardAvatar.setOnClickListener(v -> openProfile());
@@ -155,10 +153,21 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btnNavBadges.setOnClickListener(v -> {
-            Intent intent = new Intent(this, BadgesActivity.class);
-            startActivity(intent);
-        });
+        // Setup Galaxy Map FAB button
+        com.google.android.material.floatingactionbutton.FloatingActionButton fabGalaxyMap =
+            findViewById(R.id.fabGalaxyMap);
+        if (fabGalaxyMap != null) {
+            fabGalaxyMap.setOnClickListener(v -> {
+                // Navigate to Interactive Star Map
+                Intent intent = new Intent(this, InteractiveStarMapActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+
+            // Add pulse animation to attract attention
+            Animation pulseAnim = AnimationUtils.loadAnimation(this, R.anim.pulse);
+            fabGalaxyMap.startAnimation(pulseAnim);
+        }
 
         btnNavAdventure.setOnClickListener(v -> {
             // Button press animation
@@ -168,12 +177,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
         });
-
-        // Add pulse animation to battle button to attract attention
-        Animation pulseAnim = AnimationUtils.loadAnimation(this, R.anim.pulse);
-        btnNavAdventure.startAnimation(pulseAnim);
-
-        btnNavProfile.setOnClickListener(v -> openProfile());
     }
 
     private void openProfile() {

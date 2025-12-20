@@ -160,5 +160,22 @@
         <activity 
             android:name=".BehavioralPracticeActivity"
             android:windowSoftInputMode="adjustResize"/>
+
+        <!-- New Interactive Star Map Activity -->
+        <activity
+            android:name=".InteractiveStarMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Space Travel Animation Activity -->
+        <activity
+            android:name=".SpaceTravelActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait"/>
+
+        <!-- Captain's Log Activity -->
+        <activity
+            android:name=".CaptainsLogActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
     </application>
 </manifest>

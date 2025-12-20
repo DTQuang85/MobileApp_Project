@@ -83,6 +83,9 @@ dependencies {
     implementation("androidx.media3:media3-datasource:1.2.0")
     implementation("androidx.media3:media3-decoder:1.2.0")
 
+    // Gson for JSON serialization
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // Test
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

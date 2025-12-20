@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -44,16 +45,24 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
 
-        // Rocket fire animation
-        if (tvFire != null) {
-            Animation fireAnim = AnimationUtils.loadAnimation(this, R.anim.rocket_fire);
-            tvFire.startAnimation(fireAnim);
+        // Rocket floating animation (no fire)
+        if (tvLogo != null) {
+            Animation floatAnim = AnimationUtils.loadAnimation(this, R.anim.float_up_down);
+            tvLogo.startAnimation(floatAnim);
         }
 
-        // Rocket animation
-        if (tvLogo != null) {
-            Animation rocketAnim = AnimationUtils.loadAnimation(this, R.anim.rocket_fire);
-            tvLogo.startAnimation(rocketAnim);
+        // Orbit ring rotation
+        View orbitRing = findViewById(R.id.orbitRing);
+        if (orbitRing != null) {
+            android.view.animation.RotateAnimation rotateAnim = new android.view.animation.RotateAnimation(
+                0, 360,
+                android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f,
+                android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f
+            );
+            rotateAnim.setDuration(10000);
+            rotateAnim.setRepeatCount(android.view.animation.Animation.INFINITE);
+            rotateAnim.setInterpolator(new android.view.animation.LinearInterpolator());
+            orbitRing.startAnimation(rotateAnim);
         }
 
         // App name animation
@@ -83,7 +92,8 @@ public class SplashActivity extends AppCompatActivity {
             } else if (!isLoggedIn) {
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
             } else {
-                intent = new Intent(SplashActivity.this, SpaceshipHubActivity.class);
+                // Navigate to Interactive Star Map as main hub
+                intent = new Intent(SplashActivity.this, InteractiveStarMapActivity.class);
             }
             
             startActivity(intent);

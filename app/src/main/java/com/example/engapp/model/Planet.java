@@ -20,6 +20,15 @@ public class Planet implements Serializable {
     private int starsEarned;
     private String backgroundImage;
 
+    // New fields for interactive star map
+    private float mapPositionX;
+    private float mapPositionY;
+    private float orbitRadius;
+    private float orbitSpeed;
+    private boolean isRealPlanet; // Solar System vs fictional
+    private String buddyComment;
+    private String unlockAnimationType;
+
     public Planet() {}
 
     public Planet(String id, String name, String nameVi, String emoji, int color, String timeEra) {
@@ -67,6 +76,28 @@ public class Planet implements Serializable {
 
     public String getBackgroundImage() { return backgroundImage; }
     public void setBackgroundImage(String backgroundImage) { this.backgroundImage = backgroundImage; }
+
+    // New getters and setters for star map
+    public float getMapPositionX() { return mapPositionX; }
+    public void setMapPositionX(float mapPositionX) { this.mapPositionX = mapPositionX; }
+
+    public float getMapPositionY() { return mapPositionY; }
+    public void setMapPositionY(float mapPositionY) { this.mapPositionY = mapPositionY; }
+
+    public float getOrbitRadius() { return orbitRadius; }
+    public void setOrbitRadius(float orbitRadius) { this.orbitRadius = orbitRadius; }
+
+    public float getOrbitSpeed() { return orbitSpeed; }
+    public void setOrbitSpeed(float orbitSpeed) { this.orbitSpeed = orbitSpeed; }
+
+    public boolean isRealPlanet() { return isRealPlanet; }
+    public void setRealPlanet(boolean realPlanet) { isRealPlanet = realPlanet; }
+
+    public String getBuddyComment() { return buddyComment; }
+    public void setBuddyComment(String buddyComment) { this.buddyComment = buddyComment; }
+
+    public String getUnlockAnimationType() { return unlockAnimationType; }
+    public void setUnlockAnimationType(String unlockAnimationType) { this.unlockAnimationType = unlockAnimationType; }
 
     public int getProgress() {
         if (zones == null || zones.isEmpty()) return 0;

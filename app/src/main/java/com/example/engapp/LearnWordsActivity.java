@@ -9,14 +9,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
 import java.util.List;
 import java.util.Locale;
 
-public class LearnWordsActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class LearnWordsActivity extends BaseBuddyActivity implements TextToSpeech.OnInitListener {
 
     private TextView tvProgress, tvWordEmoji, tvEnglish, tvPronunciation, tvVietnamese;
     private TextView tvExample, tvExampleVi;
@@ -155,14 +154,22 @@ public class LearnWordsActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void completeScene() {
-        // Mark words as learned
+        // Mark words as learned and record progress
         for (WordData word : words) {
             dbHelper.markWordAsLearned(word.id);
+            // Record in new progression system
+            recordWordLearned(word.english, word.vietnamese, String.valueOf(planetId));
         }
 
         // Update scene progress
         dbHelper.updateSceneProgress(sceneId, 3);
         dbHelper.addStars(3);
+
+        // Add stars through new progression system
+        addStars(3, "learn_words_" + sceneId);
+
+        // Trigger Buddy celebration
+        onZoneCompleted();
 
         String message = "Bạn đã học " + words.size() + " từ mới!";
         SpaceDialog.showSuccess(this, message, 3, () -> finish());
