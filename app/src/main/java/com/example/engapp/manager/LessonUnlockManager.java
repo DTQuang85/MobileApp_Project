@@ -303,6 +303,30 @@ public class LessonUnlockManager {
         return getUnlockedPlanets().contains(planetKey);
     }
 
+    public Set<String> getUnlockedPlanetsCopy() {
+        return new HashSet<>(getUnlockedPlanets());
+    }
+
+    public void mergeUnlockedPlanets(Set<String> planetKeys) {
+        if (planetKeys == null || planetKeys.isEmpty()) {
+            return;
+        }
+        Set<String> unlocked = getUnlockedPlanets();
+        boolean changed = false;
+        for (String key : planetKeys) {
+            if (unlocked.add(key)) {
+                changed = true;
+                GameDatabaseHelper.PlanetData planet = dbHelper.getPlanetByKey(key);
+                if (planet != null) {
+                    refreshPlanetLessons(planet.id);
+                }
+            }
+        }
+        if (changed) {
+            saveUnlockedPlanets(unlocked);
+        }
+    }
+
     /**
      * Mở khóa một planet
      * @param planetKey Key của planet (ví dụ: "animal", "color")

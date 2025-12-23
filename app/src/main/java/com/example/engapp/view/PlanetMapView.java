@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.PlanetData;
 import com.example.engapp.manager.ProgressionManager;
+import com.example.engapp.manager.TravelManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,19 +81,8 @@ public class PlanetMapView extends View {
     public void loadPlanets(int galaxyId, GameDatabaseHelper.UserProgressData progress) {
         planetNodes.clear();
 
-        // Get planets for this galaxy
-        List<PlanetData> allPlanets = dbHelper.getAllPlanets();
-
-        // Filter planets by galaxy
-        int startPlanet = (galaxyId - 1) * 3 + 1;
-        int endPlanet = galaxyId * 3;
-
-        // Define planet positions in a path
-        float[][] positions = {
-            {0.2f, 0.3f},  // Planet 1
-            {0.5f, 0.2f},  // Planet 2
-            {0.8f, 0.4f},  // Planet 3
-        };
+        List<PlanetData> planets = dbHelper.getPlanetsForGalaxy(galaxyId);
+        float[][] positions = buildPlanetPositions(planets.size());
 
         int[] colors = {
             Color.parseColor("#FF6B6B"),
@@ -100,28 +90,37 @@ public class PlanetMapView extends View {
             Color.parseColor("#45B7D1"),
         };
 
+        ProgressionManager progressionManager = ProgressionManager.getInstance(getContext());
         int posIndex = 0;
-        for (PlanetData planet : allPlanets) {
-            if (planet.id >= startPlanet && planet.id <= endPlanet) {
-                if (posIndex < positions.length) {
-                    planetNodes.add(new PlanetNode(
-                        planet,
-                        positions[posIndex][0],
-                        positions[posIndex][1],
-                        colors[posIndex]
-                    ));
-                    posIndex++;
-                }
+        for (PlanetData planet : planets) {
+            if (posIndex < positions.length) {
+                planet.isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+                planetNodes.add(new PlanetNode(
+                    planet,
+                    positions[posIndex][0],
+                    positions[posIndex][1],
+                    colors[posIndex % colors.length]
+                ));
+                posIndex++;
             }
         }
 
         // Initialize ship position at first unlocked planet
         if (!planetNodes.isEmpty()) {
+            String currentPlanetKey = TravelManager.getInstance(getContext()).getCurrentPlanetId();
             for (int i = 0; i < planetNodes.size(); i++) {
-                if (planetNodes.get(i).planet.isUnlocked) {
+                PlanetNode node = planetNodes.get(i);
+                if (currentPlanetKey != null && currentPlanetKey.equals(node.planet.planetKey)
+                    && node.planet.isUnlocked) {
                     currentPlanetIndex = i;
-                    shipX = planetNodes.get(i).x;
-                    shipY = planetNodes.get(i).y;
+                    shipX = node.x;
+                    shipY = node.y;
+                    break;
+                }
+                if (isUnlocked) {
+                    currentPlanetIndex = i;
+                    shipX = node.x;
+                    shipY = node.y;
                     break;
                 }
             }
@@ -170,8 +169,11 @@ public class PlanetMapView extends View {
             float y = node.y * height;
             float radius = 90;
 
+            ProgressionManager progressionManager = ProgressionManager.getInstance(getContext());
+            boolean isUnlocked = progressionManager.isPlanetUnlocked(node.planet.planetKey);
+
             // Draw planet circle with gradient effect
-            if (node.planet.isUnlocked) {
+            if (isUnlocked) {
                 planetPaint.setColor(node.color);
             } else {
                 planetPaint.setColor(Color.parseColor("#2D3748"));
@@ -186,7 +188,7 @@ public class PlanetMapView extends View {
             canvas.drawCircle(x, y, radius, planetPaint);
 
             // Draw emoji
-            if (node.planet.isUnlocked) {
+            if (isUnlocked) {
                 textPaint.setAlpha(255);
             } else {
                 textPaint.setAlpha(100);
@@ -194,9 +196,6 @@ public class PlanetMapView extends View {
             canvas.drawText(node.planet.emoji, x, y + 25, textPaint);
 
             // Draw lock overlay
-            ProgressionManager progressionManager = ProgressionManager.getInstance(getContext());
-            boolean isUnlocked = progressionManager.isPlanetUnlocked(node.planet.planetKey);
-            
             if (!isUnlocked) {
                 canvas.drawCircle(x, y, radius, lockPaint);
                 textPaint.setTextSize(45);
@@ -223,7 +222,7 @@ public class PlanetMapView extends View {
             textPaint.setTextSize(70);
 
             // Draw progress indicator
-            if (node.planet.isUnlocked) {
+            if (isUnlocked) {
                 List<GameDatabaseHelper.SceneData> scenes = dbHelper.getScenesForPlanet(node.planet.id);
                 int completed = 0;
                 for (GameDatabaseHelper.SceneData scene : scenes) {
@@ -326,6 +325,30 @@ public class PlanetMapView extends View {
             this.y = y;
             this.color = color;
         }
+    }
+
+    private float[][] buildPlanetPositions(int count) {
+        if (count <= 0) {
+            return new float[0][0];
+        }
+        float[][] positions = new float[count][2];
+        if (count == 1) {
+            positions[0][0] = 0.5f;
+            positions[0][1] = 0.35f;
+            return positions;
+        }
+
+        float startY = 0.2f;
+        float endY = 0.75f;
+        float stepY = (endY - startY) / (count - 1);
+        for (int i = 0; i < count; i++) {
+            float y = startY + stepY * i;
+            float wave = (float) Math.sin(i * Math.PI / 2f);
+            float x = 0.5f + 0.3f * wave;
+            positions[i][0] = Math.max(0.15f, Math.min(0.85f, x));
+            positions[i][1] = y;
+        }
+        return positions;
     }
 }
 

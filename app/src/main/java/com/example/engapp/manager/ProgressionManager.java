@@ -8,11 +8,20 @@ import com.example.engapp.model.Planet;
 import com.example.engapp.model.UserProgress;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 /**
@@ -30,6 +39,9 @@ public class ProgressionManager {
     private Map<String, Integer> planetUnlockRequirements;
     private List<ProgressionEventListener> listeners;
     private LessonUnlockManager lessonUnlockManager;
+
+    private boolean cloudSyncReady;
+    private boolean cloudSyncRequested;
 
     private static final String PREFS_NAME = "progression_prefs";
     private static final String KEY_USER_PROGRESS = "user_progress";
@@ -58,6 +70,7 @@ public class ProgressionManager {
 
         initPlanetRequirements();
         loadData();
+        initCloudSync();
     }
 
     public static synchronized ProgressionManager getInstance(Context context) {
@@ -140,11 +153,112 @@ public class ProgressionManager {
     public void saveUserProgress() {
         String json = gson.toJson(userProgress);
         prefs.edit().putString(KEY_USER_PROGRESS, json).apply();
+        scheduleCloudSync();
     }
 
     private void saveCollectibles() {
         String json = gson.toJson(collectibles);
         prefs.edit().putString(KEY_COLLECTIBLES, json).apply();
+    }
+
+    private void initCloudSync() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            cloudSyncReady = true;
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(user.getUid())
+            .get()
+            .addOnSuccessListener(this::mergeCloudProgress)
+            .addOnFailureListener(e -> cloudSyncReady = true);
+    }
+
+    private void mergeCloudProgress(DocumentSnapshot doc) {
+        int localStars = userProgress.getTotalStars();
+        int localPlanetsUnlocked = userProgress.getPlanetsUnlocked();
+
+        Long cloudStars = doc.getLong("totalStars");
+        int remoteStars = cloudStars != null ? cloudStars.intValue() : 0;
+
+        Set<String> localPlanets = lessonUnlockManager.getUnlockedPlanetsCopy();
+        Set<String> mergedPlanets = new HashSet<>(localPlanets);
+        Object remotePlanets = doc.get("unlockedPlanets");
+        if (remotePlanets instanceof List) {
+            for (Object item : (List<?>) remotePlanets) {
+                if (item instanceof String) {
+                    mergedPlanets.add((String) item);
+                }
+            }
+        }
+
+        int mergedStars = Math.max(localStars, remoteStars);
+        if (mergedStars != localStars) {
+            userProgress.setTotalStars(mergedStars);
+        }
+
+        int mergedPlanetsUnlocked = Math.max(localPlanetsUnlocked, mergedPlanets.size());
+        if (mergedPlanetsUnlocked != localPlanetsUnlocked) {
+            userProgress.setPlanetsUnlocked(mergedPlanetsUnlocked);
+        }
+
+        boolean planetsChanged = !mergedPlanets.equals(localPlanets);
+        if (planetsChanged) {
+            lessonUnlockManager.mergeUnlockedPlanets(mergedPlanets);
+        }
+
+        boolean progressChanged = mergedStars != localStars || mergedPlanetsUnlocked != localPlanetsUnlocked;
+        if (progressChanged) {
+            saveUserProgress();
+        }
+
+        checkForNewUnlocks();
+        cloudSyncReady = true;
+
+        if (mergedStars != localStars) {
+            int added = mergedStars - localStars;
+            for (ProgressionEventListener listener : listeners) {
+                listener.onStarsChanged(mergedStars, added);
+            }
+        }
+
+        if (cloudSyncRequested || progressChanged || planetsChanged) {
+            cloudSyncRequested = false;
+            syncToCloudIfPossible();
+        }
+    }
+
+    private void scheduleCloudSync() {
+        if (!cloudSyncReady) {
+            cloudSyncRequested = true;
+            return;
+        }
+        syncToCloudIfPossible();
+    }
+
+    private void syncToCloudIfPossible() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalStars", userProgress.getTotalStars());
+        data.put("unlockedPlanets", new ArrayList<>(lessonUnlockManager.getUnlockedPlanetsCopy()));
+        data.put("updatedAt", FieldValue.serverTimestamp());
+
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(user.getUid())
+            .set(data, SetOptions.merge());
+    }
+
+    public void refreshCloudSync() {
+        cloudSyncReady = false;
+        cloudSyncRequested = false;
+        initCloudSync();
     }
 
     // Getters
@@ -375,6 +489,7 @@ public class ProgressionManager {
     // Planet unlock checking - INTEGRATED WITH LessonUnlockManager
     public void checkForNewUnlocks() {
         int totalStars = userProgress.getTotalStars();
+        boolean unlockedAny = false;
 
         for (Map.Entry<String, Integer> entry : planetUnlockRequirements.entrySet()) {
             String planetKey = entry.getKey();
@@ -388,12 +503,17 @@ public class ProgressionManager {
                 
                 // If unlocked, notify listeners
                 if (lessonUnlockManager.isPlanetUnlocked(planetKey)) {
+                    unlockedAny = true;
                     String planetName = getPlanetDisplayName(planetKey);
                     for (ProgressionEventListener listener : listeners) {
                         listener.onPlanetUnlocked(planetKey, planetName);
                     }
                 }
             }
+        }
+
+        if (unlockedAny) {
+            scheduleCloudSync();
         }
     }
 

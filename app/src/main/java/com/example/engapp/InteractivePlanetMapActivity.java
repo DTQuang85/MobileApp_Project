@@ -6,6 +6,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.engapp.database.GameDatabaseHelper;
+import com.example.engapp.manager.ProgressionManager;
+import com.example.engapp.manager.TravelManager;
 import com.example.engapp.view.PlanetMapView;
 
 /**
@@ -17,6 +19,8 @@ public class InteractivePlanetMapActivity extends AppCompatActivity {
     private TextView tvGalaxyName, tvStarCount, tvFuelCount;
     private ImageButton btnBack;
     private GameDatabaseHelper dbHelper;
+    private ProgressionManager progressionManager;
+    private TravelManager travelManager;
 
     private int galaxyId;
     private String galaxyName, galaxyEmoji;
@@ -27,6 +31,8 @@ public class InteractivePlanetMapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_interactive_planet_map);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = ProgressionManager.getInstance(this);
+        travelManager = TravelManager.getInstance(this);
 
         getIntentData();
         initViews();
@@ -54,7 +60,8 @@ public class InteractivePlanetMapActivity extends AppCompatActivity {
 
         // Set planet click listener
         planetMapView.setOnPlanetClickListener(planet -> {
-            if (!planet.isUnlocked) {
+            boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+            if (!isUnlocked) {
                 // Show unlock dialog or toast
                 return;
             }
@@ -73,14 +80,13 @@ public class InteractivePlanetMapActivity extends AppCompatActivity {
 
     private void loadPlanetData() {
         // Get user progress
-        GameDatabaseHelper.UserProgressData progress = dbHelper.getUserProgress();
-        if (progress != null) {
-            tvStarCount.setText(String.valueOf(progress.totalStars));
-            tvFuelCount.setText(String.valueOf(progress.totalFuelCells));
-        }
+        int totalStars = progressionManager.getTotalStars();
+        int fuelCells = travelManager.getFuelCells();
+        tvStarCount.setText(String.valueOf(totalStars));
+        tvFuelCount.setText(String.valueOf(fuelCells));
 
         // Load planets for this galaxy
-        planetMapView.loadPlanets(galaxyId, progress);
+        planetMapView.loadPlanets(galaxyId, dbHelper.getUserProgress());
     }
 
     @Override
