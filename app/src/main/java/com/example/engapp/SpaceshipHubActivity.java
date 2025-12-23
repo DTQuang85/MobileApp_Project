@@ -139,7 +139,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         CardView cardBattle = findViewById(R.id.cardBattle);
         if (cardBattle != null) {
             cardBattle.setOnClickListener(v -> {
-                Intent intent = new Intent(this, BattleActivity.class);
+                Intent intent = new Intent(this, WordBattleActivity.class);
                 intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -226,7 +226,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
 
         btnNavAdventure.setOnClickListener(v -> {
             v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_press));
-            Intent intent = new Intent(this, BattleActivity.class);
+            Intent intent = new Intent(this, WordBattleActivity.class);
             intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -393,4 +393,5 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         }
     }
 }
+
 

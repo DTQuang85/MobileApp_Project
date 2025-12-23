@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_space_universe">
+    android:background="@drawable/bg_race_sky">
 
-    <!-- Top Bar -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -25,9 +24,10 @@
             app:tint="@color/text_white"/>
 
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⚔️ Word Battle"
+            android:text="Word Race"
             android:textColor="@color/text_white"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -39,293 +39,429 @@
             android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/tvLevel"
+            android:id="@+id/tvLearned"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lv.1"
+            android:text="Learned: 0"
+            android:textColor="@color/text_white"
+            android:textSize="12sp"
+            android:layout_marginEnd="10dp"/>
+
+        <TextView
+            android:id="@+id/tvDifficulty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Easy"
             android:textColor="@color/star_gold"
-            android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginEnd="12dp"/>
+            android:textSize="12sp"
+            android:layout_marginEnd="10dp"/>
 
         <TextView
             android:id="@+id/tvScore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="💰 0"
+            android:text="Score: 0"
             android:textColor="@color/text_white"
-            android:textSize="14sp"/>
+            android:textSize="12sp"/>
     </LinearLayout>
 
-    <!-- Battle Arena -->
     <LinearLayout
-        android:id="@+id/battleArena"
+        android:id="@+id/raceArea"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/topBar"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical">
+        android:layout_above="@id/cardWordPanel"
+        android:orientation="vertical"
+        android:padding="12dp">
 
-
-        <!-- Player Side -->
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvRaceStatus"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:text="Build words to boost your horse!"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/tvBuddyEmoji"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:gravity="center"
-                android:text="🤖"
-                android:textSize="36sp"
-                android:background="@drawable/bg_buddy_avatar"/>
-
-            <TextView
-                android:id="@+id/tvBuddyName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Robo-Buddy"
-                android:textColor="@color/text_white"
-                android:textSize="12sp"
-                android:layout_marginTop="4dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvPlayerName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Phi Hành Gia"
-                android:textColor="@color/star_gold"
-                android:textSize="10sp"/>
+                android:text="You"
+                android:textColor="@color/text_primary"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/tvPlayerHealth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="❤️ 100/100"
-                android:textColor="@color/correct_green"
-                android:textSize="11sp"
-                android:layout_marginTop="4dp"/>
+            <FrameLayout
+                android:id="@+id/lanePlayer"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/bg_race_lane">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:text="FINISH"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/horsePlayer"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:text="P1"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_avatar_selected"
+                    android:layout_marginStart="8dp"/>
+            </FrameLayout>
 
             <ProgressBar
-                android:id="@+id/progressPlayerHealth"
+                android:id="@+id/progressPlayer"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="80dp"
-                android:layout_height="8dp"
-                android:progressDrawable="@drawable/progress_health_player"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
                 android:max="100"
-                android:progress="100"/>
+                android:progress="0"
+                android:progressTint="@color/fun_green"
+                android:progressBackgroundTint="@color/divider"/>
+
         </LinearLayout>
 
-        <!-- VS -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚔️"
-            android:textSize="32sp"/>
-
-        <!-- Enemy Side -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center">
+            android:layout_marginTop="8dp">
 
-            <!-- Damage Popup -->
             <TextView
-                android:id="@+id/tvDamagePopup"
+                android:id="@+id/tvAiName1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/fun_yellow"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:visibility="invisible"/>
-
-            <TextView
-                android:id="@+id/tvEnemyEmoji"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:gravity="center"
-                android:text="👾"
-                android:textSize="36sp"
-                android:background="@drawable/bg_enemy_avatar"/>
-
-            <TextView
-                android:id="@+id/tvEnemyName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Slime Lv.1"
-                android:textColor="@color/text_white"
+                android:text="Comet"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
-                android:layout_marginTop="4dp"/>
+                android:textStyle="bold"/>
 
-            <TextView
-                android:id="@+id/tvEnemyHealth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="💀 50/50"
-                android:textColor="@color/wrong_red"
-                android:textSize="11sp"
-                android:layout_marginTop="4dp"/>
+            <FrameLayout
+                android:id="@+id/laneAi1"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/bg_race_lane">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:text="FINISH"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/horseAi1"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:text="AI"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_avatar_normal"
+                    android:layout_marginStart="8dp"/>
+            </FrameLayout>
 
             <ProgressBar
-                android:id="@+id/progressEnemyHealth"
+                android:id="@+id/progressAi1"
                 style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="80dp"
-                android:layout_height="8dp"
-                android:progressDrawable="@drawable/progress_health_enemy"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
                 android:max="100"
-                android:progress="100"/>
+                android:progress="0"
+                android:progressTint="@color/fun_blue"
+                android:progressBackgroundTint="@color/divider"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvAiName2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bolt"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <FrameLayout
+                android:id="@+id/laneAi2"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/bg_race_lane">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:text="FINISH"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/horseAi2"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:text="AI"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_avatar_normal"
+                    android:layout_marginStart="8dp"/>
+            </FrameLayout>
+
+            <ProgressBar
+                android:id="@+id/progressAi2"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="@color/fun_purple"
+                android:progressBackgroundTint="@color/divider"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/tvAiName3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rocket"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+            <FrameLayout
+                android:id="@+id/laneAi3"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/bg_race_lane">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:text="FINISH"
+                    android:textSize="10sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/horseAi3"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:text="AI"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_white"
+                    android:gravity="center"
+                    android:background="@drawable/bg_avatar_normal"
+                    android:layout_marginStart="8dp"/>
+            </FrameLayout>
+
+            <ProgressBar
+                android:id="@+id/progressAi3"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="@color/fun_orange"
+                android:progressBackgroundTint="@color/divider"/>
+
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Buddy Message -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardBuddyMessage"
+        android:id="@+id/cardWordPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/battleArena"
-        android:layout_marginHorizontal="12dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="#4ECDC4">
+        android:layout_alignParentBottom="true"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="6dp"
+        app:cardBackgroundColor="@color/background_white">
 
-        <TextView
-            android:id="@+id/tvBuddyMessage"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sẵn sàng chiến đấu! Ghép chữ thành từ để tấn công! 💪"
-            android:textColor="@color/text_white"
-            android:textSize="13sp"
-            android:padding="12dp"
-            android:gravity="center"/>
-    </androidx.cardview.widget.CardView>
-
-    <!-- Word Building Area -->
-    <LinearLayout
-        android:id="@+id/wordArea"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/cardBuddyMessage"
-        android:orientation="vertical"
-        android:padding="12dp"
-        android:gravity="center">
-
-        <!-- Combo indicator -->
-        <TextView
-            android:id="@+id/tvCombo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="@color/fun_yellow"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
-
-        <!-- Current Word Display -->
-        <LinearLayout
-            android:id="@+id/wordDisplay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="8dp">
+            android:orientation="vertical"
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/tvCurrentWord"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="..."
-                android:textColor="@color/text_white"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1"/>
+                android:text="Word: ..."
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <GridLayout
+                android:id="@+id/gridLetters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:columnCount="4"
+                android:alignmentMode="alignMargins"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/btnBoost"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="Boost"
+                    android:textColor="@color/text_white"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_button_primary"/>
+
+                <Button
+                    android:id="@+id/btnClear"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Clear"
+                    android:textColor="@color/text_white"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_button_secondary"/>
+
+                <Button
+                    android:id="@+id/btnShuffle"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Shuffle"
+                    android:textColor="@color/text_white"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_button_secondary"/>
+            </LinearLayout>
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-        <!-- Word Meaning -->
-        <TextView
-            android:id="@+id/tvWordMeaning"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="@color/fun_green"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            android:visibility="gone"/>
-
-        <!-- Damage Preview -->
-        <TextView
-            android:id="@+id/tvDamagePreview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ghép ít nhất 2 chữ cái"
-            android:textColor="@color/text_hint"
-            android:textSize="14sp"
-            android:layout_marginTop="8dp"/>
-    </LinearLayout>
-
-    <!-- Letter Grid -->
-    <GridLayout
-        android:id="@+id/letterGrid"
+    <FrameLayout
+        android:id="@+id/resultOverlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/wordArea"
-        android:layout_above="@id/buttonArea"
-        android:columnCount="4"
-        android:rowCount="4"
-        android:padding="12dp"
-        android:useDefaultMargins="true"/>
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:visibility="gone">
 
-    <!-- Action Buttons -->
-    <LinearLayout
-        android:id="@+id/buttonArea"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center"
-        android:background="@drawable/bg_glass_dark">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="24dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/background_white">
 
-        <Button
-            android:id="@+id/btnHint"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="💡 Gợi ý"
-            android:textColor="@color/text_white"
-            android:textSize="12sp"
-            android:background="@drawable/bg_button_rest"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:gravity="center">
 
-        <Button
-            android:id="@+id/btnClear"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="🔄 Xóa"
-            android:textColor="@color/text_white"
-            android:textSize="12sp"
-            android:background="@drawable/bg_button_rest"/>
+                <TextView
+                    android:id="@+id/tvResultTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="You win!"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
 
-        <Button
-            android:id="@+id/btnAttack"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="2"
-            android:text="⚔️ TẤN CÔNG!"
-            android:textColor="@color/text_white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_attack"
-            android:enabled="false"
-            android:alpha="0.5"/>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/tvResultDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Great job!"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
+
+                    <Button
+                        android:id="@+id/btnRetry"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_weight="1"
+                        android:text="Retry"
+                        android:textColor="@color/text_white"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_button_primary"/>
+
+                    <Button
+                        android:id="@+id/btnExit"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Exit"
+                        android:textColor="@color/text_white"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_button_secondary"/>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
 </RelativeLayout>
-

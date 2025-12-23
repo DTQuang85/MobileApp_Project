@@ -197,7 +197,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
                 intent = new Intent(this, SentenceActivity.class);
                 break;
             case "battle":
-                intent = new Intent(this, BattleActivity.class);
+                intent = new Intent(this, WordBattleActivity.class);
                 break;
                 
             // Database scene_key types
@@ -214,7 +214,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
                 intent = new Intent(this, PuzzleGameActivity.class);
                 break;
             case "boss_gate":
-                intent = new Intent(this, BattleActivity.class);
+                intent = new Intent(this, WordBattleActivity.class);
                 break;
                 
             default:
@@ -273,3 +273,4 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
         // #endregion
     }
 }
+

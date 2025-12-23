@@ -121,7 +121,7 @@ public class PlanetNode implements Serializable {
             case "puzzle":
                 return "PuzzleGameActivity";
             case "battle":
-                return "BattleActivity";
+                return "WordBattleActivity";
             default:
                 return "LearnWordsActivity";
         }
