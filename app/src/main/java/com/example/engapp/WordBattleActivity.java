@@ -1,6 +1,7 @@
 package com.example.engapp;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -313,9 +314,11 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private void addLetterButton(int index, char letter) {
         CardView card = new CardView(this);
-        card.setCardBackgroundColor(getColor(R.color.card_bg));
-        card.setRadius(16);
-        card.setCardElevation(6);
+        card.setRadius(24);
+        card.setCardElevation(0);
+        card.setUseCompatPadding(false);
+        card.setPreventCornerOverlap(false);
+        card.setCardBackgroundColor(Color.TRANSPARENT);
 
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = 0;
@@ -335,6 +338,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
         card.addView(tv);
         card.setTag(index);
+        applyLetterDefaultStyle(card);
 
         card.setOnClickListener(v -> selectLetter(index, card));
 
@@ -345,14 +349,14 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         if (selectedIndices.contains(index)) {
             // Deselect
             selectedIndices.remove(Integer.valueOf(index));
-            card.setCardBackgroundColor(getColor(R.color.card_bg));
+            applyLetterDefaultStyle(card);
 
             // Rebuild word
             rebuildWord();
         } else {
             // Select
             selectedIndices.add(index);
-            card.setCardBackgroundColor(getColor(R.color.fun_purple));
+            applyLetterSelectedStyle(card);
             currentWord.append(currentLetters[index]);
         }
 
@@ -584,11 +588,29 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         for (int i = 0; i < letterGrid.getChildCount(); i++) {
             View child = letterGrid.getChildAt(i);
             if (child instanceof CardView) {
-                ((CardView) child).setCardBackgroundColor(getColor(R.color.card_bg));
+                applyLetterDefaultStyle((CardView) child);
             }
         }
 
         updateWordDisplay();
+    }
+
+    private void applyLetterDefaultStyle(CardView card) {
+        card.setCardBackgroundColor(Color.TRANSPARENT);
+        card.setBackgroundResource(R.drawable.bg_letter_tile);
+        View child = card.getChildAt(0);
+        if (child instanceof TextView) {
+            ((TextView) child).setTextColor(getColor(R.color.text_white));
+        }
+    }
+
+    private void applyLetterSelectedStyle(CardView card) {
+        card.setCardBackgroundColor(Color.TRANSPARENT);
+        card.setBackgroundResource(R.drawable.bg_letter_tile_selected);
+        View child = card.getChildAt(0);
+        if (child instanceof TextView) {
+            ((TextView) child).setTextColor(getColor(R.color.space_purple));
+        }
     }
 
     private void showHint() {
