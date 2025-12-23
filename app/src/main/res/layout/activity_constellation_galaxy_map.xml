@@ -47,7 +47,7 @@
                     android:background="@drawable/circle_background"
                     android:src="@drawable/ic_back"
                     android:contentDescription="Back"
-                    android:tint="#FFFFFF"/>
+                    app:tint="#FFFFFF"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -299,4 +299,5 @@
     </LinearLayout>
 
 </FrameLayout>
+
 

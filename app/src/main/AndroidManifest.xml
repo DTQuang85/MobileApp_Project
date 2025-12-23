@@ -189,11 +189,6 @@
             android:name=".WordBattleActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <!-- Parent Dashboard Activity (Phase 8) -->
-        <activity
-            android:name=".ParentDashboardActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
         <!-- Main Activity (Legacy - redirect to SpaceMap) -->
         <activity android:name=".MainActivity"/>
         

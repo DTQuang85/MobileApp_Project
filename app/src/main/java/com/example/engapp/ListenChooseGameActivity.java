@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -301,6 +302,7 @@ public class ListenChooseGameActivity extends AppCompatActivity implements TextT
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         showExitConfirmation();
     }

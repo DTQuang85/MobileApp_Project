@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -353,6 +354,7 @@ public class MatchGameActivity extends AppCompatActivity implements TextToSpeech
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         showExitConfirmation();
     }

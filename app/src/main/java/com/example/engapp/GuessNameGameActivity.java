@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -431,6 +432,7 @@ public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSp
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         showExitConfirmation();
     }

@@ -20,7 +20,7 @@
             android:padding="8dp"
             android:layout_alignParentStart="true"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:tint="@android:color/white"/>
+            app:tint="@android:color/white"/>
 
         <TextView
             android:id="@+id/tvTitle"
@@ -264,3 +264,4 @@
     </ScrollView>
 
 </LinearLayout>
+

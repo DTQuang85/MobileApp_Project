@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -127,6 +128,7 @@ public class RewardActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         // Prevent back during reward screen
         finish();

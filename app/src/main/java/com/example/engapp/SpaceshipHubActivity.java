@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -282,6 +283,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         finishAffinity();
     }

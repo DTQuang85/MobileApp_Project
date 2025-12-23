@@ -10,7 +10,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.media.AudioManager;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
@@ -20,6 +22,7 @@ import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.ui.PlayerView;
 
+@OptIn(markerClass = UnstableApi.class)
 public class VideoPlayerActivity extends AppCompatActivity {
     private static final String TAG = "VideoPlayerActivity";
     private PlayerView playerView;

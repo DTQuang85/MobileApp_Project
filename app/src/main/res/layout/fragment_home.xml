@@ -73,7 +73,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:src="@drawable/ic_practice"
-                        android:tint="@color/accent_orange"
+                        app:tint="@color/accent_orange"
                         android:layout_marginEnd="16dp"/>
 
                     <LinearLayout
@@ -103,7 +103,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_send"
-                        android:tint="@color/primary_blue"/>
+                        app:tint="@color/primary_blue"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -130,7 +130,7 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:src="@drawable/ic_behavioral"
-                        android:tint="@color/primary_purple"
+                        app:tint="@color/primary_purple"
                         android:layout_marginEnd="16dp"/>
 
                     <LinearLayout
@@ -160,7 +160,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_menu_send"
-                        android:tint="@color/primary_blue"/>
+                        app:tint="@color/primary_blue"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -186,3 +186,4 @@
     </ScrollView>
 
 </LinearLayout>
+

@@ -48,7 +48,7 @@
                     android:layout_height="64dp"
                     android:layout_gravity="center"
                     android:src="@android:drawable/ic_media_play"
-                    android:tint="@android:color/white"
+                    app:tint="@android:color/white"
                     android:background="@drawable/bg_button_primary"
                     android:padding="16dp"/>
 
@@ -90,3 +90,4 @@
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
+

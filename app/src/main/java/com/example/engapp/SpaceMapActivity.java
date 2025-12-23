@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -223,6 +224,7 @@ public class SpaceMapActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressLint("MissingSuperCall")
     public void onBackPressed() {
         // Show exit confirmation
         new AlertDialog.Builder(this)
