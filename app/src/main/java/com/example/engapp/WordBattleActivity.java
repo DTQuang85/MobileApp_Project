@@ -22,6 +22,10 @@ import androidx.core.content.ContextCompat;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.WordData;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -87,6 +91,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private final List<Integer> selectedIndices = new ArrayList<>();
     private final StringBuilder currentWord = new StringBuilder();
     private final Set<String> validWords = new HashSet<>();
+    private final Set<String> learnedWordsSet = new HashSet<>();
+    private final Set<String> dictionaryWordsSet = new HashSet<>();
     private final Set<String> usedWords = new HashSet<>();
 
     private long lastTickMs;
@@ -270,7 +276,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
 
         rackSize = 6 + tier;
-        maxWordLength = 3 + tier;
+        maxWordLength = rackSize;
 
         playerBaseSpeed = 40f + (tier * 3.5f);
         for (int i = 0; i < AI_COUNT; i++) {
@@ -285,6 +291,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private void loadWordPool() {
         validWords.clear();
+        learnedWordsSet.clear();
+        dictionaryWordsSet.clear();
 
         List<WordData> learnedWords = dbHelper.getLearnedWords();
         if (learnedWords.isEmpty()) {
@@ -298,15 +306,20 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
                 continue;
             }
             String cleaned = word.english.toLowerCase(Locale.US).replaceAll("[^a-z]", "");
-            if (cleaned.length() >= 2 && cleaned.length() <= Math.max(rackSize, maxWordLength)) {
+            if (cleaned.length() >= 1) {
+                learnedWordsSet.add(cleaned);
                 validWords.add(cleaned);
             }
         }
 
-        if (validWords.isEmpty()) {
+        loadDictionaryWords();
+        validWords.addAll(dictionaryWordsSet);
+
+        if (validWords.size() < 10) {
             Collections.addAll(validWords,
-                "cat", "dog", "sun", "star", "moon", "ball", "fish", "car", "book", "tree",
-                "rain", "bird", "frog", "cake", "milk", "shoe", "blue", "pink", "jump", "play"
+                "a", "i", "am", "an", "at", "be", "cat", "dog", "sun", "star",
+                "moon", "ball", "fish", "car", "book", "tree", "rain", "bird",
+                "frog", "cake", "milk", "shoe", "blue", "pink", "jump", "play"
             );
         }
     }
@@ -467,16 +480,12 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private void submitWord() {
         recordInput();
         String word = currentWord.toString().toLowerCase(Locale.US);
-        if (word.length() < 2) {
-            registerWrong("Thu tu dai hon nhe!");
-            return;
-        }
         if (word.length() > rackSize) {
             registerWrong("Tu dai qua roi!");
             return;
         }
         if (!validWords.contains(word)) {
-            registerWrong(randomMessage(wrongMessages));
+            registerWrong("Tu nay khong dung hoac chua co trong tu dien");
             return;
         }
         if (usedWords.contains(word)) {
@@ -654,6 +663,21 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             sb.append(letters.charAt(random.nextInt(letters.length())));
         }
         return sb.toString();
+    }
+
+    private void loadDictionaryWords() {
+        InputStream inputStream = getResources().openRawResource(R.raw.wordlist_en);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String cleaned = line.trim().toLowerCase(Locale.US).replaceAll("[^a-z]", "");
+                if (cleaned.length() >= 1) {
+                    dictionaryWordsSet.add(cleaned);
+                }
+            }
+        } catch (IOException e) {
+            // Ignore dictionary load issues; fallback list will be used.
+        }
     }
 
     private boolean checkRaceFinish() {
