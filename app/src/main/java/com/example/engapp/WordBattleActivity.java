@@ -69,7 +69,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     // UI - Word panel
     private TextView tvCurrentWord;
     private GridLayout gridLetters;
-    private Button btnBoost;
     private Button btnClear;
     private Button btnShuffle;
 
@@ -224,7 +223,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
         tvCurrentWord = findViewById(R.id.tvCurrentWord);
         gridLetters = findViewById(R.id.gridLetters);
-        btnBoost = findViewById(R.id.btnBoost);
         btnClear = findViewById(R.id.btnClear);
         btnShuffle = findViewById(R.id.btnShuffle);
 
@@ -235,7 +233,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         btnExit = findViewById(R.id.btnExit);
 
         btnBack.setOnClickListener(v -> finish());
-        btnBoost.setOnClickListener(v -> submitWord());
         btnClear.setOnClickListener(v -> clearSelection());
         btnShuffle.setOnClickListener(v -> shuffleRack());
         btnRetry.setOnClickListener(v -> restartGame());
@@ -275,7 +272,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             tier = 4;
         }
 
-        rackSize = 6 + tier;
+        rackSize = 8 + tier;
         maxWordLength = rackSize;
 
         playerBaseSpeed = 40f + (tier * 3.5f);
@@ -403,7 +400,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         currentWord.setLength(0);
         updateCurrentWord();
 
-        gridLetters.setColumnCount(rackLetters.size() <= 6 ? 3 : 4);
+        gridLetters.setColumnCount(rackLetters.size() <= 8 ? 4 : 5);
 
         int tileSize = (int) TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
