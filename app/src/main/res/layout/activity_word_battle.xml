@@ -311,13 +311,14 @@
         android:layout_margin="12dp"
         app:cardCornerRadius="18dp"
         app:cardElevation="6dp"
-        app:cardBackgroundColor="@drawable/bg_glass_dark">
+        app:cardBackgroundColor="@color/card_bg_dark">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:background="@drawable/bg_glass_dark">
 
             <TextView
                 android:id="@+id/tvCurrentWord"
