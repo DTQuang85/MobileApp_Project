@@ -272,7 +272,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             tier = 4;
         }
 
-        rackSize = 12;
+        rackSize = 10;
         maxWordLength = rackSize;
 
         playerBaseSpeed = 40f + (tier * 3.5f);
