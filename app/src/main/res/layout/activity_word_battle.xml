@@ -192,6 +192,15 @@
                 android:progressTint="@color/fun_blue"
                 android:progressBackgroundTint="#2BFFFFFF"/>
 
+            <TextView
+                android:id="@+id/tvAiStatus1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Comet: ..."
+                android:textColor="#B3FFFFFF"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -246,6 +255,15 @@
                 android:progressTint="@color/fun_purple"
                 android:progressBackgroundTint="#2BFFFFFF"/>
 
+            <TextView
+                android:id="@+id/tvAiStatus2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bolt: ..."
+                android:textColor="#B3FFFFFF"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -299,6 +317,15 @@
                 android:progress="0"
                 android:progressTint="@color/fun_orange"
                 android:progressBackgroundTint="#2BFFFFFF"/>
+
+            <TextView
+                android:id="@+id/tvAiStatus3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rocket: ..."
+                android:textColor="#B3FFFFFF"
+                android:textSize="11sp"
+                android:layout_marginTop="4dp"/>
 
         </LinearLayout>
     </LinearLayout>
