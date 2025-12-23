@@ -29,7 +29,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private RecyclerView recyclerPlanets;
     private TextView tvPlayerName, tvLevel, tvStars, tvFuelCells, tvCrystals;
     private TextView tvBuddyMessage, tvDailyProgress;
-    private TextView tvCurrentPlanetName, tvCurrentPlanetEmoji, tvCurrentPlanetProgress;
     private ProgressBar progressLevel, progressDailyMission;
     private CardView cardAvatar;
 
@@ -38,6 +37,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private GameDatabaseHelper dbHelper;
     private List<PlanetData> planets;
     private UserProgressData userProgress;
+    private com.example.engapp.manager.ProgressionManager progressionManager;
 
     private String[] buddyMessages = {
         "Xin chào! Hôm nay chúng ta học gì nhỉ? 🚀",
@@ -55,10 +55,12 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         setContentView(R.layout.activity_spaceship_hub);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = com.example.engapp.manager.ProgressionManager.getInstance(this);
 
         initViews();
         loadData();
-        setupRecyclerView();
+        setupRecyclerView(); // Setup adapter SAU khi load data
+        updateUI(); // Update UI với data đã load
         setupBottomNav();
         setRandomBuddyMessage();
         loadBuddyAndAnimate();
@@ -81,6 +83,16 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadData();
+        
+        // Đảm bảo adapter được refresh với data mới
+        RecyclerView.Adapter adapter = recyclerPlanets.getAdapter();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        } else {
+            // Nếu adapter chưa có, setup lại
+            setupRecyclerView();
+        }
+        
         updateUI();
     }
 
@@ -93,9 +105,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         tvCrystals = findViewById(R.id.tvCrystals);
         tvBuddyMessage = findViewById(R.id.tvBuddyMessage);
         tvDailyProgress = findViewById(R.id.tvDailyProgress);
-        tvCurrentPlanetName = findViewById(R.id.tvCurrentPlanetName);
-        tvCurrentPlanetEmoji = findViewById(R.id.tvCurrentPlanetEmoji);
-        tvCurrentPlanetProgress = findViewById(R.id.tvCurrentPlanetProgress);
         progressLevel = findViewById(R.id.progressLevel);
         progressDailyMission = findViewById(R.id.progressDailyMission);
         cardAvatar = findViewById(R.id.cardAvatar);
@@ -116,26 +125,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             });
         }
 
-        // Current Planet card click
-        CardView cardCurrentPlanet = findViewById(R.id.cardCurrentPlanet);
-        if (cardCurrentPlanet != null) {
-            cardCurrentPlanet.setOnClickListener(v -> {
-                if (userProgress != null) {
-                    PlanetData currentPlanet = dbHelper.getPlanetById(userProgress.currentPlanetId);
-                    if (currentPlanet != null) {
-                        Intent intent = new Intent(this, PlanetMapActivity.class);
-                        intent.putExtra("planet_id", currentPlanet.id);
-                        intent.putExtra("planet_name", currentPlanet.name);
-                        intent.putExtra("planet_name_vi", currentPlanet.nameVi);
-                        intent.putExtra("planet_emoji", currentPlanet.emoji);
-                        intent.putExtra("planet_color", currentPlanet.themeColor);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.warp_in, R.anim.warp_out);
-                    }
-                }
-            });
-        }
-
         // Quick Actions - Galaxy Map
         CardView cardGalaxyMap = findViewById(R.id.cardGalaxyMap);
         if (cardGalaxyMap != null) {
@@ -145,11 +134,11 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             });
         }
 
-        // Quick Actions - Word Battle (new Bookworm-style system)
+        // Quick Actions - Battle (Old system with ABCD and images)
         CardView cardBattle = findViewById(R.id.cardBattle);
         if (cardBattle != null) {
             cardBattle.setOnClickListener(v -> {
-                Intent intent = new Intent(this, WordBattleActivity.class);
+                Intent intent = new Intent(this, BattleActivity.class);
                 intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -160,6 +149,12 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private void loadData() {
         planets = dbHelper.getAllPlanets();
         userProgress = dbHelper.getUserProgress();
+        
+        // Debug log để kiểm tra
+        android.util.Log.d("SpaceshipHub", "Loaded " + (planets != null ? planets.size() : 0) + " planets");
+        if (planets != null && planets.size() > 0) {
+            android.util.Log.d("SpaceshipHub", "First planet: " + planets.get(0).name);
+        }
     }
 
     private void updateUI() {
@@ -176,7 +171,6 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             progressDailyMission.setProgress(dailyProgress);
             tvDailyProgress.setText(dailyProgress + "/10 từ");
 
-            updateCurrentPlanetInfo();
         }
 
         if (recyclerPlanets.getAdapter() != null) {
@@ -184,31 +178,20 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         }
     }
 
-    private void updateCurrentPlanetInfo() {
-        if (userProgress != null) {
-            PlanetData currentPlanet = dbHelper.getPlanetById(userProgress.currentPlanetId);
-            if (currentPlanet != null) {
-                tvCurrentPlanetName.setText(currentPlanet.nameVi);
-                tvCurrentPlanetEmoji.setText(currentPlanet.emoji);
-
-                List<SceneData> scenes = dbHelper.getScenesForPlanet(currentPlanet.id);
-                int completed = 0;
-                for (SceneData scene : scenes) {
-                    if (scene.isCompleted) completed++;
-                }
-                tvCurrentPlanetProgress.setText("Hoàn thành: " + completed + "/" + scenes.size() + " nhiệm vụ");
-            } else {
-                tvCurrentPlanetName.setText("Coloria");
-                tvCurrentPlanetEmoji.setText("🎨");
-                tvCurrentPlanetProgress.setText("Bắt đầu nhiệm vụ đầu tiên!");
-            }
-        }
-    }
 
     private void setupRecyclerView() {
         recyclerPlanets.setLayoutManager(new LinearLayoutManager(this));
-        recyclerPlanets.setAdapter(new PlanetAdapter());
         recyclerPlanets.setNestedScrollingEnabled(false);
+        
+        // Tạo adapter với danh sách planets đã load
+        PlanetAdapter adapter = new PlanetAdapter();
+        recyclerPlanets.setAdapter(adapter);
+        
+        // Đảm bảo adapter được notify
+        if (planets != null) {
+            adapter.notifyDataSetChanged();
+            android.util.Log.d("SpaceshipHub", "Adapter setup with " + planets.size() + " planets");
+        }
     }
 
     private void setupBottomNav() {
@@ -242,7 +225,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
 
         btnNavAdventure.setOnClickListener(v -> {
             v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_press));
-            Intent intent = new Intent(this, WordBattleActivity.class);
+            Intent intent = new Intent(this, BattleActivity.class);
             intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -261,18 +244,23 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     }
 
     private void openPlanet(PlanetData planet) {
-        if (!planet.isUnlocked) {
-            int fuelNeeded = planet.requiredFuelCells;
-            int currentFuel = userProgress != null ? userProgress.totalFuelCells : 0;
+        // Kiểm tra unlock status từ ProgressionManager (dùng Stars, không dùng Fuel Cells)
+        boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+        
+        if (!isUnlocked) {
+            int starsRequired = progressionManager.getStarsRequiredForPlanet(planet.planetKey);
+            int currentStars = userProgress != null ? userProgress.totalStars : 0;
+            int needed = Math.max(0, starsRequired - currentStars);
 
-            if (currentFuel >= fuelNeeded) {
-                dbHelper.unlockPlanet(planet.id);
+            if (starsRequired == 0 || currentStars >= starsRequired) {
+                // Đủ sao, tự động mở khóa
+                progressionManager.checkForNewUnlocks();
                 planet.isUnlocked = true;
                 Toast.makeText(this, "🔓 Mở khóa " + planet.nameVi + "!", Toast.LENGTH_SHORT).show();
                 loadData();
                 updateUI();
             } else {
-                Toast.makeText(this, "Cần " + fuelNeeded + " 🔋 Fuel Cells để mở khóa!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "⭐ Cần thêm " + needed + " sao nữa để mở khóa!", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -335,13 +323,24 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             int colorIndex = position % gradientColors.length;
             holder.planetContainer.setBackgroundColor(gradientColors[colorIndex]);
 
-            if (planet.isUnlocked) {
+            // Check unlock status từ ProgressionManager (dùng Stars)
+            boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+            
+            if (isUnlocked) {
                 holder.lockOverlay.setVisibility(View.GONE);
                 holder.btnPlay.setVisibility(View.VISIBLE);
             } else {
                 holder.lockOverlay.setVisibility(View.VISIBLE);
                 holder.btnPlay.setVisibility(View.GONE);
-                holder.tvRequiredFuel.setText(String.valueOf(planet.requiredFuelCells));
+                // Hiển thị stars required thay vì fuel cells
+                int starsRequired = progressionManager.getStarsRequiredForPlanet(planet.planetKey);
+                int currentStars = userProgress != null ? userProgress.totalStars : 0;
+                int needed = Math.max(0, starsRequired - currentStars);
+                if (starsRequired == 0) {
+                    holder.tvRequiredFuel.setText("⭐ Sẵn sàng!");
+                } else {
+                    holder.tvRequiredFuel.setText("⭐ " + needed);
+                }
             }
 
             List<SceneData> scenes = dbHelper.getScenesForPlanet(planet.id);
@@ -392,3 +391,4 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         }
     }
 }
+

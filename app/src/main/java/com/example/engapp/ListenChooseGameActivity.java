@@ -14,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.data.GameDataProvider;
+import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.model.Planet;
 import com.example.engapp.model.Word;
 import com.example.engapp.model.Zone;
@@ -32,6 +33,7 @@ public class ListenChooseGameActivity extends AppCompatActivity implements TextT
     private ImageView btnBack;
 
     private TextToSpeech tts;
+    private ProgressionManager progressionManager;
     private List<Word> words;
     private List<Word> questions;
     private Word currentWord;
@@ -42,6 +44,8 @@ public class ListenChooseGameActivity extends AppCompatActivity implements TextT
     private int totalQuestions = 10;
     private boolean isAnswering = false;
     private boolean ttsReady = false;
+    private int planetIdInt = -1;
+    private int sceneId = -1;
 
     private Handler handler = new Handler();
 
@@ -50,7 +54,10 @@ public class ListenChooseGameActivity extends AppCompatActivity implements TextT
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listen_choose_game);
 
-        String planetId = getIntent().getStringExtra("planet_id");
+        // Get planet_id as Integer (consistent with PlanetMapActivity)
+        planetIdInt = getIntent().getIntExtra("planet_id", -1);
+        sceneId = getIntent().getIntExtra("scene_id", -1);
+        String planetId = planetIdInt > 0 ? String.valueOf(planetIdInt) : getIntent().getStringExtra("planet_id");
         int zoneIndex = getIntent().getIntExtra("zone_index", 0);
 
         if (planetId == null) {
@@ -58,6 +65,7 @@ public class ListenChooseGameActivity extends AppCompatActivity implements TextT
             return;
         }
 
+        progressionManager = ProgressionManager.getInstance(this);
         initViews();
         initTTS();
         loadWords(planetId, zoneIndex);
@@ -215,6 +223,11 @@ public class ListenChooseGameActivity extends AppCompatActivity implements TextT
         int stars = percentage >= 90 ? 3 : percentage >= 70 ? 2 : percentage >= 50 ? 1 : 0;
 
         saveProgress(stars);
+        
+        // IMPORTANT: Record lesson completion to unlock next lesson
+        if (planetIdInt > 0 && sceneId > 0 && stars > 0) {
+            progressionManager.recordLessonCompleted(planetIdInt, sceneId, stars);
+        }
 
         String message = "Điểm: " + score + "/" + (totalQuestions * 10) + "\n";
         for (int i = 0; i < 3; i++) {

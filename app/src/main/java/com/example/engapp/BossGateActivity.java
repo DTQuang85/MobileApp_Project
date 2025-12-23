@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
+import com.example.engapp.manager.ProgressionManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,7 @@ public class BossGateActivity extends AppCompatActivity implements TextToSpeech.
 
     private TextToSpeech tts;
     private GameDatabaseHelper dbHelper;
+    private ProgressionManager progressionManager;
     private int planetId, sceneId;
     private List<WordData> words;
     private int currentIndex = 0;
@@ -48,6 +50,7 @@ public class BossGateActivity extends AppCompatActivity implements TextToSpeech.
         sceneId = getIntent().getIntExtra("scene_id", 1);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = ProgressionManager.getInstance(this);
         tts = new TextToSpeech(this, this);
 
         initViews();
@@ -215,6 +218,11 @@ public class BossGateActivity extends AppCompatActivity implements TextToSpeech.
         // Save progress
         dbHelper.updateSceneProgress(sceneId, stars);
         dbHelper.addStars(stars);
+        
+        // IMPORTANT: Record lesson completion to unlock next lesson
+        if (planetId > 0 && sceneId > 0) {
+            progressionManager.recordLessonCompleted(planetId, sceneId, stars);
+        }
 
         // Award fuel cell for completing boss
         if (victory) {

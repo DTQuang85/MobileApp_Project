@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.data.GameDataProvider;
+import com.example.engapp.database.GameDatabaseHelper;
+import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.model.Planet;
 import com.example.engapp.model.Word;
 import com.example.engapp.model.Zone;
@@ -34,6 +36,8 @@ public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSp
     private TextView tvResultEmoji, tvResultText, tvCorrectAnswer, tvLives;
 
     private TextToSpeech tts;
+    private ProgressionManager progressionManager;
+    private GameDatabaseHelper dbHelper;
     private List<Word> words;
     private List<Word> questions;
     private int currentQuestionIndex = 0;
@@ -42,6 +46,8 @@ public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSp
     private int correctAnswerIndex = 0;
     private int totalQuestions = 10;
     private boolean isAnswering = false;
+    private int planetIdInt = -1;
+    private int sceneId = -1;
 
     private Handler handler = new Handler();
 
@@ -50,18 +56,36 @@ public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSp
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_name_game);
 
-        String planetId = getIntent().getStringExtra("planet_id");
+        // Get planet_id as Integer (consistent with PlanetMapActivity)
+        planetIdInt = getIntent().getIntExtra("planet_id", -1);
+        sceneId = getIntent().getIntExtra("scene_id", -1);
+        String planetId = planetIdInt > 0 ? String.valueOf(planetIdInt) : null;
         int zoneIndex = getIntent().getIntExtra("zone_index", 0);
 
-        if (planetId == null) {
-            finish();
-            return;
+        if (planetId == null || planetIdInt <= 0) {
+            // Fallback: try to get as String (for backward compatibility)
+            planetId = getIntent().getStringExtra("planet_id");
+            if (planetId == null) {
+                finish();
+                return;
+            }
         }
+
+        progressionManager = ProgressionManager.getInstance(this);
+        dbHelper = GameDatabaseHelper.getInstance(this);
 
         initViews();
         initTTS();
         loadWords(planetId, zoneIndex);
         setupClickListeners();
+        
+        // Check if words loaded successfully
+        if (words == null || words.isEmpty()) {
+            Toast.makeText(this, "Không thể tải dữ liệu từ vựng. Vui lòng thử lại.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        
         startGame();
     }
 
@@ -91,15 +115,41 @@ public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSp
     }
 
     private void loadWords(String planetId, int zoneIndex) {
-        Planet planet = GameDataProvider.getPlanetById(planetId);
-        if (planet != null && planet.getZones() != null && zoneIndex < planet.getZones().size()) {
-            Zone zone = planet.getZones().get(zoneIndex);
-            words = new ArrayList<>(zone.getWords());
+        words = new ArrayList<>();
+        
+        // Try to load from database first (preferred method)
+        if (planetIdInt > 0) {
+            List<GameDatabaseHelper.WordData> wordDataList = dbHelper.getWordsForPlanet(planetIdInt);
+            if (wordDataList != null && !wordDataList.isEmpty()) {
+                // Convert WordData to Word model
+                for (GameDatabaseHelper.WordData wordData : wordDataList) {
+                    Word word = new Word(wordData.english, wordData.vietnamese, wordData.emoji);
+                    if (wordData.exampleSentence != null) {
+                        word.setExampleSentence(wordData.exampleSentence);
+                    }
+                    if (wordData.exampleTranslation != null) {
+                        word.setExampleTranslation(wordData.exampleTranslation);
+                    }
+                    words.add(word);
+                }
+            }
+        }
+        
+        // Fallback: Try GameDataProvider if database doesn't have words
+        if (words.isEmpty()) {
+            Planet planet = GameDataProvider.getPlanetById(planetId);
+            if (planet != null && planet.getZones() != null && zoneIndex < planet.getZones().size()) {
+                Zone zone = planet.getZones().get(zoneIndex);
+                if (zone.getWords() != null) {
+                    words = new ArrayList<>(zone.getWords());
+                }
+            }
         }
 
+        // Final check
         if (words == null || words.size() < 4) {
-            Toast.makeText(this, "Không đủ từ vựng để chơi", Toast.LENGTH_SHORT).show();
-            finish();
+            // Don't finish here, let onCreate handle it
+            words = new ArrayList<>(); // Ensure it's not null
         }
     }
 
@@ -244,15 +294,59 @@ public class GuessNameGameActivity extends BaseBuddyActivity implements TextToSp
     }
 
     private void endGame() {
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"A\",\"location\":\"GuessNameGameActivity.endGame:296\",\"message\":\"endGame entry\",\"data\":{\"score\":" + score + ",\"totalQuestions\":" + totalQuestions + ",\"planetIdInt\":" + planetIdInt + ",\"sceneId\":" + sceneId + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
         // Calculate stars
         int percentage = (score * 100) / (totalQuestions * 10);
         int stars = percentage >= 90 ? 3 : percentage >= 70 ? 2 : percentage >= 50 ? 1 : 0;
+        
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"A\",\"location\":\"GuessNameGameActivity.endGame:300\",\"message\":\"Stars calculated\",\"data\":{\"percentage\":" + percentage + ",\"stars\":" + stars + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
 
         // Save progress using both old and new systems
         saveProgress(stars);
 
+        int starsEarned = stars * 10;
+        
         // Record in new progression system
-        recordGameCompleted("guess_name", stars * 10);
+        recordGameCompleted("guess_name", starsEarned);
+        
+        // Record lesson completion to unlock next lesson
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"B\",\"location\":\"GuessNameGameActivity.endGame:312\",\"message\":\"Checking recordLessonCompleted condition\",\"data\":{\"planetIdInt\":" + planetIdInt + ",\"sceneId\":" + sceneId + ",\"stars\":" + stars + ",\"willRecord\":" + (planetIdInt > 0 && sceneId > 0 && stars > 0) + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
+        if (planetIdInt > 0 && sceneId > 0 && stars > 0) {
+            // #region agent log
+            try {
+                java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+                fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"B\",\"location\":\"GuessNameGameActivity.endGame:315\",\"message\":\"Calling recordLessonCompleted\",\"data\":{\"planetIdInt\":" + planetIdInt + ",\"sceneId\":" + sceneId + ",\"stars\":" + stars + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+                fw.close();
+            } catch (Exception e) {}
+            // #endregion
+            progressionManager.recordLessonCompleted(planetIdInt, sceneId, stars);
+        } else {
+            // #region agent log
+            try {
+                java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+                fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"B\",\"location\":\"GuessNameGameActivity.endGame:322\",\"message\":\"NOT calling recordLessonCompleted\",\"data\":{\"reason\":\"condition not met\"},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+                fw.close();
+            } catch (Exception e) {}
+            // #endregion
+        }
 
         // Trigger Buddy celebration if good performance
         if (stars >= 2) {

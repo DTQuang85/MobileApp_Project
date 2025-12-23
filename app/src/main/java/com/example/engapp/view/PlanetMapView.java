@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.PlanetData;
+import com.example.engapp.manager.ProgressionManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,15 +189,25 @@ public class PlanetMapView extends View {
             canvas.drawText(node.planet.emoji, x, y + 25, textPaint);
 
             // Draw lock overlay
-            if (!node.planet.isUnlocked) {
+            ProgressionManager progressionManager = ProgressionManager.getInstance(getContext());
+            boolean isUnlocked = progressionManager.isPlanetUnlocked(node.planet.planetKey);
+            
+            if (!isUnlocked) {
                 canvas.drawCircle(x, y, radius, lockPaint);
                 textPaint.setTextSize(45);
                 canvas.drawText("🔒", x, y + 15, textPaint);
                 textPaint.setTextSize(70);
 
-                // Draw fuel requirement
+                // Draw stars requirement thay vì fuel cells
+                int starsRequired = progressionManager.getStarsRequiredForPlanet(node.planet.planetKey);
+                int currentStars = progressionManager.getTotalStars();
+                int needed = Math.max(0, starsRequired - currentStars);
                 textPaint.setTextSize(30);
-                canvas.drawText(node.planet.requiredFuelCells + "🔋", x, y + radius + 40, textPaint);
+                if (starsRequired == 0) {
+                    canvas.drawText("⭐ Sẵn sàng!", x, y + radius + 40, textPaint);
+                } else {
+                    canvas.drawText("⭐ " + needed, x, y + radius + 40, textPaint);
+                }
                 textPaint.setTextSize(70);
             }
 

@@ -112,17 +112,23 @@ public class GalaxyPlanetsActivity extends AppCompatActivity {
     }
 
     private void openPlanet(PlanetData planet) {
-        if (!planet.isUnlocked) {
-            int fuelNeeded = planet.requiredFuelCells;
-            int currentFuel = userProgress != null ? userProgress.totalFuelCells : 0;
+        // Kiểm tra unlock status từ ProgressionManager (dùng Stars, không dùng Fuel Cells)
+        com.example.engapp.manager.ProgressionManager progressionManager = 
+            com.example.engapp.manager.ProgressionManager.getInstance(this);
+        boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+        
+        if (!isUnlocked) {
+            int starsRequired = progressionManager.getStarsRequiredForPlanet(planet.planetKey);
+            int currentStars = userProgress != null ? userProgress.totalStars : 0;
+            int needed = Math.max(0, starsRequired - currentStars);
 
-            if (currentFuel >= fuelNeeded) {
-                // Unlock the planet
-                dbHelper.unlockPlanet(planet.id);
+            if (starsRequired == 0 || currentStars >= starsRequired) {
+                // Đủ sao, tự động mở khóa
+                progressionManager.checkForNewUnlocks();
                 planet.isUnlocked = true;
                 Toast.makeText(this, "🔓 Mở khóa " + planet.nameVi + "!", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Cần " + fuelNeeded + " 🔋 Fuel Cells để mở khóa!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "⭐ Cần thêm " + needed + " sao nữa để mở khóa!", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -189,14 +195,27 @@ public class GalaxyPlanetsActivity extends AppCompatActivity {
             int colorIndex = (planet.id - 1) % gradientColors.length;
             holder.planetContainer.setBackgroundColor(gradientColors[colorIndex]);
 
-            // Handle lock state
-            if (planet.isUnlocked) {
+            // Handle lock state - Check unlock status từ ProgressionManager (dùng Stars)
+            com.example.engapp.manager.ProgressionManager progressionManager = 
+                com.example.engapp.manager.ProgressionManager.getInstance(GalaxyPlanetsActivity.this);
+            boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+            
+            if (isUnlocked) {
                 holder.lockOverlay.setVisibility(View.GONE);
                 holder.btnPlay.setVisibility(View.VISIBLE);
             } else {
                 holder.lockOverlay.setVisibility(View.VISIBLE);
                 holder.btnPlay.setVisibility(View.GONE);
-                holder.tvRequiredFuel.setText(String.valueOf(planet.requiredFuelCells));
+                // Hiển thị stars required thay vì fuel cells
+                int starsRequired = progressionManager.getStarsRequiredForPlanet(planet.planetKey);
+                GameDatabaseHelper.UserProgressData progress = dbHelper.getUserProgress();
+                int currentStars = progress != null ? progress.totalStars : 0;
+                int needed = Math.max(0, starsRequired - currentStars);
+                if (starsRequired == 0) {
+                    holder.tvRequiredFuel.setText("⭐ Sẵn sàng!");
+                } else {
+                    holder.tvRequiredFuel.setText("⭐ " + needed);
+                }
             }
 
             // Calculate progress from scenes

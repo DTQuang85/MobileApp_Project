@@ -15,9 +15,21 @@ public class SpaceDialog {
         void onClick();
     }
 
-    public static void showResult(Context context, String icon, String title,
+    public static Dialog showResult(Context context, String icon, String title,
                                   String message, int stars, String buttonText,
                                   OnDialogClickListener listener) {
+        // Kiểm tra xem context có phải Activity và đang bị destroy không
+        if (context instanceof android.app.Activity) {
+            android.app.Activity activity = (android.app.Activity) context;
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                // Activity đang bị destroy, không show dialog
+                if (listener != null) {
+                    listener.onClick();
+                }
+                return null;
+            }
+        }
+        
         Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -59,10 +71,11 @@ public class SpaceDialog {
         });
 
         dialog.show();
+        return dialog;
     }
 
-    public static void showSuccess(Context context, String message, int stars, OnDialogClickListener listener) {
-        showResult(context, "🎉", "Tuyệt vời!", message, stars, "Tiếp tục", listener);
+    public static Dialog showSuccess(Context context, String message, int stars, OnDialogClickListener listener) {
+        return showResult(context, "🎉", "Tuyệt vời!", message, stars, "Tiếp tục", listener);
     }
 
     public static void showVictory(Context context, String message, int stars, OnDialogClickListener listener) {
@@ -73,7 +86,19 @@ public class SpaceDialog {
         showResult(context, "💪", "Cố gắng thêm!", message, stars, "Thử lại", listener);
     }
 
-    public static void showInfo(Context context, String icon, String title, String message, OnDialogClickListener listener) {
+    public static Dialog showInfo(Context context, String icon, String title, String message, OnDialogClickListener listener) {
+        // Kiểm tra xem context có phải Activity và đang bị destroy không
+        if (context instanceof android.app.Activity) {
+            android.app.Activity activity = (android.app.Activity) context;
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                // Activity đang bị destroy, không show dialog
+                if (listener != null) {
+                    listener.onClick();
+                }
+                return null;
+            }
+        }
+        
         Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
@@ -105,14 +130,27 @@ public class SpaceDialog {
         });
 
         dialog.show();
+        return dialog;
     }
 
     /**
      * Show dialog with two buttons (confirm/cancel style)
      */
-    public static void show(Context context, String title, String message,
+    public static Dialog show(Context context, String title, String message,
                            String positiveText, View.OnClickListener positiveListener,
                            String negativeText, View.OnClickListener negativeListener) {
+        // Kiểm tra xem context có phải Activity và đang bị destroy không
+        if (context instanceof android.app.Activity) {
+            android.app.Activity activity = (android.app.Activity) context;
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                // Activity đang bị destroy, không show dialog
+                if (positiveListener != null) {
+                positiveListener.onClick(null);
+            }
+            return null;
+        }
+        }
+        
         Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
@@ -172,14 +210,15 @@ public class SpaceDialog {
         }
 
         dialog.show();
+        return dialog;
     }
 
     /**
      * Show simple dialog with one button
      */
-    public static void show(Context context, String title, String message,
+    public static Dialog show(Context context, String title, String message,
                            String buttonText, View.OnClickListener listener) {
-        show(context, title, message, buttonText, listener, null, null);
+        return show(context, title, message, buttonText, listener, null, null);
     }
 }
 

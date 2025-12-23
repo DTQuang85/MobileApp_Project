@@ -57,120 +57,217 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/progressBar"
-        android:text="Ghép: 0/4"
+        android:text="Ghép: 0/8"
         android:textColor="@color/text_white"
         android:textSize="16sp"
         android:textAlignment="center"
         android:padding="12dp"/>
 
-    <GridLayout
-        android:id="@+id/gridCards"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvMatches"
-        android:layout_centerInParent="true"
-        android:layout_margin="16dp"
-        android:columnCount="4"
-        android:rowCount="2">
+        android:layout_above="@+id/instructionText"
+        android:fillViewport="true">
+        
+        <GridLayout
+            android:id="@+id/gridCards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:columnCount="4"
+            android:rowCount="4"
+            android:alignmentMode="alignBounds">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card1"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card1"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card2"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card2"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card3"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card3"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card4"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card4"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card5"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card5"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card6"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card6"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card7"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText7" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card7"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText7" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card8"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_columnWeight="1"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="#3B82F6">
-            <TextView android:id="@+id/cardText8" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="32sp"/>
-        </androidx.cardview.widget.CardView>
-    </GridLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card8"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText8" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card9"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText9" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card10"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText10" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card11"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText11" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card12"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText12" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card13"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText13" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card14"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText14" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card15"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText15" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card16"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="3dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#3B82F6">
+                <TextView android:id="@+id/cardText16" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="❓" android:textSize="24sp"/>
+            </androidx.cardview.widget.CardView>
+        </GridLayout>
+    </ScrollView>
 
     <TextView
+        android:id="@+id/instructionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/gridCards"
-        android:text="Nhấn vào 2 thẻ để ghép\nEmoji với từ tiếng Anh"
+        android:layout_alignParentBottom="true"
+        android:text="Nhấn vào 2 thẻ để ghép\nHình với nghĩa"
         android:textColor="@color/text_white"
         android:textSize="14sp"
         android:textAlignment="center"
         android:alpha="0.8"
         android:padding="16dp"/>
+
 </RelativeLayout>
 

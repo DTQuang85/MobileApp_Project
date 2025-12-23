@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.engapp.manager.LessonUnlockManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SplashActivity extends AppCompatActivity {
@@ -80,6 +81,10 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         new Handler().postDelayed(() -> {
+            // TEMPORARY: Unlock tất cả cho testing
+            LessonUnlockManager unlockManager = LessonUnlockManager.getInstance(this);
+            unlockManager.unlockAllForTesting();
+            
             SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
             boolean hasSeenCutscene = prefs.getBoolean("cutscene_seen", false);
             boolean hasSeenIntro = prefs.getBoolean("has_seen_intro", false);

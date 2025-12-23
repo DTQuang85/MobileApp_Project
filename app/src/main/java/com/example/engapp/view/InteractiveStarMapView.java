@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -55,6 +56,7 @@ public class InteractiveStarMapView extends View {
     private Paint progressPaint;
 
     // Data
+    private Context context;
     private List<PlanetNode> planetNodes;
     private List<Star> backgroundStars;
     private String currentPlanetId;
@@ -134,6 +136,7 @@ public class InteractiveStarMapView extends View {
     }
 
     private void init(Context context) {
+        this.context = context;
         planetNodes = new ArrayList<>();
         backgroundStars = new ArrayList<>();
 
@@ -327,26 +330,49 @@ public class InteractiveStarMapView extends View {
     }
 
     private void drawPlanetPaths(Canvas canvas) {
-        // Draw connections between unlocked planets
+        // Draw enhanced constellation paths between planets
         for (int i = 0; i < planetNodes.size() - 1; i++) {
             PlanetNode current = planetNodes.get(i);
             PlanetNode next = planetNodes.get(i + 1);
 
-            if (current.isUnlocked) {
+            if (current.isUnlocked || next.isUnlocked) {
                 Path path = new Path();
                 path.moveTo(current.x, current.y);
 
-                // Create curved path
+                // Create smooth curved path (bezier)
                 float midX = (current.x + next.x) / 2;
-                float midY = (current.y + next.y) / 2 - 50;
+                float midY = (current.y + next.y) / 2 - 80;
                 path.quadTo(midX, midY, next.x, next.y);
 
-                if (next.isUnlocked) {
-                    pathPaint.setColor(Color.parseColor("#60FFFFFF"));
+                // Enhanced path styling
+                if (next.isUnlocked && current.isUnlocked) {
+                    // Fully unlocked path - bright and animated
+                    pathPaint.setColor(Color.parseColor("#80FFFFFF"));
+                    pathPaint.setStrokeWidth(4f);
+                    pathPaint.setPathEffect(new DashPathEffect(new float[]{20f, 10f}, 
+                        starTwinklePhase * 50f)); // Animated dashes
+                } else if (current.isUnlocked) {
+                    // Partially unlocked - dimmer
+                    pathPaint.setColor(Color.parseColor("#40FFFFFF"));
+                    pathPaint.setStrokeWidth(3f);
+                    pathPaint.setPathEffect(new DashPathEffect(new float[]{15f, 10f}, 0f));
                 } else {
-                    pathPaint.setColor(Color.parseColor("#30FFFFFF"));
+                    // Both locked - very dim
+                    pathPaint.setColor(Color.parseColor("#20FFFFFF"));
+                    pathPaint.setStrokeWidth(2f);
+                    pathPaint.setPathEffect(new DashPathEffect(new float[]{10f, 10f}, 0f));
                 }
+                
                 canvas.drawPath(path, pathPaint);
+                
+                // Draw glow effect for unlocked paths
+                if (next.isUnlocked && current.isUnlocked) {
+                    Paint glowPathPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    glowPathPaint.setStyle(Paint.Style.STROKE);
+                    glowPathPaint.setColor(Color.parseColor("#20FFFFFF"));
+                    glowPathPaint.setStrokeWidth(8f);
+                    canvas.drawPath(path, glowPathPaint);
+                }
             }
         }
     }
@@ -361,79 +387,176 @@ public class InteractiveStarMapView extends View {
         float x = node.x;
         float y = node.y;
         float radius = node.radius;
-
-        // Draw glow for unlocked planets
+        boolean isCurrent = node.planet.getId().equals(currentPlanetId);
+        boolean isSelected = selectedPlanet == node;
+        
+        // Enhanced glow for unlocked planets
         if (node.isUnlocked) {
-            RadialGradient glowGradient = new RadialGradient(
-                x, y, radius * 2,
-                node.glowColor, Color.TRANSPARENT,
-                Shader.TileMode.CLAMP
-            );
-            planetGlowPaint.setShader(glowGradient);
-            canvas.drawCircle(x, y, radius * 2, planetGlowPaint);
+            // Multi-layer glow effect
+            float[] glowRadii = {radius * 2.5f, radius * 2f, radius * 1.5f};
+            int[] glowAlphas = {30, 60, 100};
+            
+            for (int i = 0; i < glowRadii.length; i++) {
+                RadialGradient glowGradient = new RadialGradient(
+                    x, y, glowRadii[i],
+                    adjustAlpha(node.glowColor, glowAlphas[i]), Color.TRANSPARENT,
+                    Shader.TileMode.CLAMP
+                );
+                planetGlowPaint.setShader(glowGradient);
+                canvas.drawCircle(x, y, glowRadii[i], planetGlowPaint);
+            }
             planetGlowPaint.setShader(null);
+            
+            // Pulse effect for current planet
+            if (isCurrent) {
+                float pulseScale = 1.0f + (float)(Math.sin(starTwinklePhase * 2) * 0.1f);
+                radius *= pulseScale;
+            }
+        }
+
+        // Draw progress ring for locked planets (outside planet)
+        if (!node.isUnlocked && node.unlockProgress > 0) {
+            float ringRadius = radius + 12f;
+            RectF progressRect = new RectF(
+                x - ringRadius, y - ringRadius,
+                x + ringRadius, y + ringRadius
+            );
+            
+            // Background ring (grey)
+            progressPaint.setColor(Color.parseColor("#404040"));
+            progressPaint.setStrokeWidth(6f);
+            progressPaint.setStyle(Paint.Style.STROKE);
+            canvas.drawArc(progressRect, -90, 360, false, progressPaint);
+            
+            // Progress ring (colored)
+            progressPaint.setColor(node.baseColor);
+            progressPaint.setAlpha(200);
+            float sweepAngle = 360 * node.unlockProgress;
+            canvas.drawArc(progressRect, -90, sweepAngle, false, progressPaint);
+            
+            // "Almost there!" pulse effect
+            if (node.unlockProgress >= 0.8f) {
+                float pulseAlpha = 100 + (float)(Math.sin(starTwinklePhase * 3) * 100);
+                progressPaint.setAlpha((int)pulseAlpha);
+                canvas.drawArc(progressRect, -90, sweepAngle, false, progressPaint);
+            }
         }
 
         // Draw planet base
         if (node.isUnlocked) {
-            // Draw gradient for 3D effect
+            // Enhanced gradient for 3D effect
             RadialGradient planetGradient = new RadialGradient(
                 x - radius * 0.3f, y - radius * 0.3f, radius * 1.5f,
                 lightenColor(node.baseColor), darkenColor(node.baseColor),
                 Shader.TileMode.CLAMP
             );
             planetPaint.setShader(planetGradient);
+            planetPaint.setColor(node.baseColor);
             canvas.drawCircle(x, y, radius, planetPaint);
             planetPaint.setShader(null);
 
-            // Draw selection ring if selected
-            if (selectedPlanet == node) {
+            // Draw selection ring if selected (enhanced)
+            if (isSelected) {
                 Paint selectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 selectPaint.setColor(Color.WHITE);
                 selectPaint.setStyle(Paint.Style.STROKE);
-                selectPaint.setStrokeWidth(4f);
-                canvas.drawCircle(x, y, radius + 10, selectPaint);
+                selectPaint.setStrokeWidth(5f);
+                selectPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+                canvas.drawCircle(x, y, radius + 12, selectPaint);
             }
 
-            // Draw current location indicator
-            if (node.planet.getId().equals(currentPlanetId)) {
+            // Draw current location indicator (enhanced)
+            if (isCurrent) {
+                // Gold ring with pulse
                 Paint locationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 locationPaint.setColor(Color.parseColor("#FFD700"));
                 locationPaint.setStyle(Paint.Style.STROKE);
-                locationPaint.setStrokeWidth(3f);
-                canvas.drawCircle(x, y, radius + 15, locationPaint);
+                locationPaint.setStrokeWidth(4f);
+                float pulseRadius = radius + 18 + (float)(Math.sin(starTwinklePhase * 2) * 3);
+                canvas.drawCircle(x, y, pulseRadius, locationPaint);
+                
+                // Outer glow ring
+                locationPaint.setAlpha(100);
+                locationPaint.setStrokeWidth(2f);
+                canvas.drawCircle(x, y, pulseRadius + 5, locationPaint);
 
-                // Draw spaceship icon above
-                textPaint.setTextSize(24f * scaleFactor);
-                canvas.drawText("🚀", x, y - radius - 25, textPaint);
+                // Draw spaceship icon above (animated)
+                textPaint.setTextSize(32f);
+                textPaint.setColor(Color.WHITE);
+                float shipY = y - radius - 35;
+                canvas.drawText("🚀", x, shipY, textPaint);
             }
         } else {
-            // Draw locked planet (greyed out)
+            // Draw locked planet (enhanced greyed out)
+            lockedPaint.setColor(Color.parseColor("#2D3748"));
+            lockedPaint.setAlpha(180);
             canvas.drawCircle(x, y, radius, lockedPaint);
+            
+            // Dark overlay
+            Paint overlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            overlayPaint.setColor(Color.parseColor("#80000000"));
+            canvas.drawCircle(x, y, radius, overlayPaint);
 
-            // Draw lock icon
-            textPaint.setTextSize(28f);
-            canvas.drawText("🔒", x, y + 10, textPaint);
+            // Draw lock icon (larger, more visible)
+            textPaint.setTextSize(radius * 0.4f);
+            textPaint.setColor(Color.WHITE);
+            textPaint.setAlpha(200);
+            canvas.drawText("🔒", x, y + radius * 0.15f, textPaint);
+        }
 
-            // Draw progress ring
-            if (node.unlockProgress > 0) {
-                progressPaint.setColor(node.baseColor);
-                RectF progressRect = new RectF(x - radius - 5, y - radius - 5,
-                                               x + radius + 5, y + radius + 5);
-                canvas.drawArc(progressRect, -90, 360 * node.unlockProgress, false, progressPaint);
+        // Draw planet emoji (enhanced)
+        if (node.isUnlocked) {
+            textPaint.setTextSize(radius * 0.9f);
+            textPaint.setColor(Color.WHITE);
+            textPaint.setAlpha(255);
+            canvas.drawText(node.planet.getEmoji(), x, y + radius * 0.25f, textPaint);
+        }
+
+        // Draw planet name with better styling
+        textPaint.setTextSize(22f);
+        textPaint.setFakeBoldText(true);
+        textPaint.setColor(node.isUnlocked ? Color.WHITE : Color.parseColor("#888888"));
+        textPaint.setAlpha(node.isUnlocked ? 255 : 150);
+        
+        // Name with shadow for readability
+        Paint shadowPaint = new Paint();
+        shadowPaint.setTextSize(22f);
+        shadowPaint.setColor(Color.BLACK);
+        shadowPaint.setAlpha(100);
+        shadowPaint.setStyle(Paint.Style.STROKE);
+        shadowPaint.setStrokeWidth(3f);
+        shadowPaint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(node.planet.getName(), x, y + radius + 35, shadowPaint);
+        canvas.drawText(node.planet.getName(), x, y + radius + 35, textPaint);
+        
+        // Draw unlock requirement for locked planets
+        if (!node.isUnlocked) {
+            textPaint.setTextSize(18f);
+            textPaint.setColor(Color.parseColor("#FFD700"));
+            textPaint.setAlpha(255);
+            textPaint.setFakeBoldText(false);
+            
+            // Get stars needed
+            int starsNeeded = getStarsNeededForPlanet(node.planet);
+            if (starsNeeded > 0) {
+                String requirement = "⭐ " + starsNeeded;
+                canvas.drawText(requirement, x, y + radius + 60, textPaint);
             }
         }
-
-        // Draw planet name
-        textPaint.setTextSize(24f);
-        textPaint.setColor(node.isUnlocked ? Color.WHITE : Color.GRAY);
-        canvas.drawText(node.planet.getName(), x, y + radius + 30, textPaint);
-
-        // Draw emoji
-        if (node.isUnlocked) {
-            textPaint.setTextSize(radius);
-            canvas.drawText(node.planet.getEmoji(), x, y + radius * 0.3f, textPaint);
+    }
+    
+    private int adjustAlpha(int color, int alpha) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
+    }
+    
+    
+    private int getStarsNeededForPlanet(Planet planet) {
+        // Use ProgressionManager to get the actual stars required
+        if (context != null && planet != null) {
+            ProgressionManager progressionManager = ProgressionManager.getInstance(context);
+            return progressionManager.getStarsRequiredForPlanet(planet.getId());
         }
+        return 15; // Default stars needed (updated from 20 to 15)
     }
 
     private void handleTap(float screenX, float screenY) {

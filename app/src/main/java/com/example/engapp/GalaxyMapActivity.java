@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +20,9 @@ import java.util.List;
 public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapter.OnGalaxyClickListener {
 
     private RecyclerView rvGalaxies;
-    private TextView tvStarCount, tvFuelCount, tvBuddyText;
+    private TextView tvStarCount, tvBuddyText;
+    private TextView tvNextUnlockRequirement, tvNextUnlockTarget, tvProgressText;
+    private ProgressBar progressNextUnlock;
     private CardView buddySpeech;
     private FrameLayout loadingOverlay;
     private ImageButton btnBack;
@@ -43,8 +46,11 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
     private void initViews() {
         rvGalaxies = findViewById(R.id.rvGalaxies);
         tvStarCount = findViewById(R.id.tvStarCount);
-        tvFuelCount = findViewById(R.id.tvFuelCount);
         tvBuddyText = findViewById(R.id.tvBuddyText);
+        tvNextUnlockRequirement = findViewById(R.id.tvNextUnlockRequirement);
+        tvNextUnlockTarget = findViewById(R.id.tvNextUnlockTarget);
+        tvProgressText = findViewById(R.id.tvProgressText);
+        progressNextUnlock = findViewById(R.id.progressNextUnlock);
         buddySpeech = findViewById(R.id.buddySpeech);
         loadingOverlay = findViewById(R.id.loadingOverlay);
         btnBack = findViewById(R.id.btnBack);
@@ -74,25 +80,94 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
     private void setupUI() {
         // Get user progress
         GameDatabaseHelper.UserProgressData progress = dbHelper.getUserProgress();
+        int totalStars = 0;
         if (progress != null) {
-            tvStarCount.setText(String.valueOf(progress.totalStars));
-            tvFuelCount.setText(String.valueOf(progress.totalFuelCells));
+            totalStars = progress.totalStars;
+            tvStarCount.setText(String.valueOf(totalStars));
 
             // Unlock galaxies based on stars
             for (GalaxyData galaxy : galaxies) {
-                if (progress.totalStars >= galaxy.starsRequired) {
+                if (totalStars >= galaxy.starsRequired) {
                     galaxy.isUnlocked = true;
                 }
             }
         }
 
-        adapter = new GalaxyAdapter(galaxies, this);
+        // Setup next unlock preview
+        setupNextUnlockPreview(totalStars);
+
+        adapter = new GalaxyAdapter(galaxies, this, totalStars);
         rvGalaxies.setAdapter(adapter);
 
-        // Buddy speech
-        tvBuddyText.setText("Chọn một thiên hà để khám phá! Mỗi thiên hà có các hành tinh với từ vựng mới! 🚀");
+        // Smart buddy speech based on progress
+        updateBuddyMessage(totalStars);
 
         setupBottomNavigation();
+    }
+
+    private void updateBuddyMessage(int totalStars) {
+        String message;
+        // Find next locked galaxy
+        GalaxyData nextUnlock = null;
+        for (GalaxyData galaxy : galaxies) {
+            if (!galaxy.isUnlocked) {
+                nextUnlock = galaxy;
+                break;
+            }
+        }
+
+        if (nextUnlock != null) {
+            int remaining = nextUnlock.starsRequired - totalStars;
+            if (remaining <= 0) {
+                message = "Tuyệt vời! Bạn đã sẵn sàng mở khóa " + nextUnlock.nameVi + "! 🎉";
+            } else if (remaining <= 5) {
+                message = "Sắp mở khóa " + nextUnlock.nameVi + " rồi! Còn " + remaining + " ⭐ nữa! 💪";
+            } else if (remaining <= 10) {
+                message = "Tiếp tục phấn đấu! Còn " + remaining + " ⭐ nữa để mở " + nextUnlock.nameVi + "! ⭐";
+            } else {
+                message = "Chọn một thiên hà để khám phá! Mỗi thiên hà có các hành tinh với từ vựng mới! 🚀";
+            }
+        } else {
+            message = "Tuyệt vời! Bạn đã mở khóa tất cả thiên hà! 🌟 Hãy tiếp tục khám phá!";
+        }
+        tvBuddyText.setText(message);
+    }
+
+    private void setupNextUnlockPreview(int currentStars) {
+        // Find next locked galaxy
+        GalaxyData nextUnlock = null;
+        for (GalaxyData galaxy : galaxies) {
+            if (!galaxy.isUnlocked) {
+                nextUnlock = galaxy;
+                break;
+            }
+        }
+
+        if (nextUnlock != null) {
+            int required = nextUnlock.starsRequired;
+            int remaining = Math.max(0, required - currentStars);
+            int progressPercent = required > 0 ? (int) ((float) currentStars / required * 100) : 0;
+            progressPercent = Math.min(100, progressPercent);
+
+            tvNextUnlockRequirement.setText("/ " + required);
+            tvNextUnlockTarget.setText("→ Mở khóa " + nextUnlock.nameVi);
+            progressNextUnlock.setProgress(progressPercent);
+
+            if (remaining > 0) {
+                tvProgressText.setText("Cần thêm " + remaining + " ⭐ nữa!");
+                tvProgressText.setTextColor(0xFFFFD700); // Gold
+            } else {
+                tvProgressText.setText("Sẵn sàng mở khóa! 🎉");
+                tvProgressText.setTextColor(0xFF4CAF50); // Green
+            }
+        } else {
+            // All galaxies unlocked
+            tvNextUnlockRequirement.setText("");
+            tvNextUnlockTarget.setText("→ Tất cả thiên hà đã mở khóa! 🌟");
+            progressNextUnlock.setProgress(100);
+            tvProgressText.setText("Hoàn thành tất cả! 🎊");
+            tvProgressText.setTextColor(0xFF4CAF50);
+        }
     }
 
     private void setupBottomNavigation() {
@@ -112,7 +187,7 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
             // Navigate to battle with current planet
-            Intent intent = new Intent(this, WordBattleActivity.class);
+            Intent intent = new Intent(this, BattleActivity.class);
             intent.putExtra("planet_id", 1); // Default to first planet
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -168,3 +243,4 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
         }
     }
 }
+

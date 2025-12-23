@@ -43,69 +43,96 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <!-- Global Progress HUD -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:gravity="center">
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#1A1A2E">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/button_skip_background"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp">
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <!-- Stars Counter with Next Unlock -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐"
+                        android:textSize="20sp"/>
+
+                    <TextView
+                        android:id="@+id/tvStarCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#FFD700"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginStart="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvNextUnlockRequirement"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="/ 30"
+                        android:textColor="#888888"
+                        android:textSize="14sp"
+                        android:layout_marginStart="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tvNextUnlockTarget"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="→ Unlock Explorer Galaxy"
+                        android:textColor="#4ECDC4"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:ellipsize="end"/>
+
+                </LinearLayout>
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/progressNextUnlock"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="8dp"
+                    android:progress="0"
+                    android:max="100"
+                    android:progressTint="#FFD700"
+                    android:progressBackgroundTint="#333333"/>
+
+                <!-- Progress Text -->
                 <TextView
+                    android:id="@+id/tvProgressText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="⭐"
-                    android:textSize="16sp"/>
-
-                <TextView
-                    android:id="@+id/tvStarCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp"
+                    android:text="Cần thêm 30 ⭐ nữa!"
                     android:textColor="#FFD700"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="4dp"/>
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/button_skip_background"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:layout_marginStart="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔋"
-                    android:textSize="16sp"/>
-
-                <TextView
-                    android:id="@+id/tvFuelCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textColor="#4ECDC4"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="4dp"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/buddySpeech"

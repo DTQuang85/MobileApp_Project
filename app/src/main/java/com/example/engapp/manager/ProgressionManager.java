@@ -29,6 +29,7 @@ public class ProgressionManager {
     private List<Collectible> collectibles;
     private Map<String, Integer> planetUnlockRequirements;
     private List<ProgressionEventListener> listeners;
+    private LessonUnlockManager lessonUnlockManager;
 
     private static final String PREFS_NAME = "progression_prefs";
     private static final String KEY_USER_PROGRESS = "user_progress";
@@ -53,6 +54,7 @@ public class ProgressionManager {
         this.prefs = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         this.gson = new Gson();
         this.listeners = new ArrayList<>();
+        this.lessonUnlockManager = LessonUnlockManager.getInstance(this.context);
 
         initPlanetRequirements();
         loadData();
@@ -68,30 +70,51 @@ public class ProgressionManager {
     private void initPlanetRequirements() {
         planetUnlockRequirements = new HashMap<>();
 
-        // Prehistoric Era - Easy start
-        planetUnlockRequirements.put("animal", 0);      // Always unlocked
-        planetUnlockRequirements.put("color", 20);      // 20 stars
-        planetUnlockRequirements.put("number", 50);     // 50 stars
+        // Galaxy 1: Milky Way (Beginner)
+        planetUnlockRequirements.put("coloria_prime", 0);      // Always unlocked
+        planetUnlockRequirements.put("toytopia_orbit", 15);   // 15 stars (0 + 15)
+        planetUnlockRequirements.put("animania_wild", 30);     // 30 stars (15 + 15)
+        planetUnlockRequirements.put("numberia_station", 45); // 45 stars (30 + 15)
 
-        // Medieval Era - Medium
-        planetUnlockRequirements.put("food", 100);      // 100 stars
-        planetUnlockRequirements.put("family", 150);    // 150 stars
-        planetUnlockRequirements.put("body", 200);      // 200 stars
+        // Galaxy 2: Andromeda (Explorer)
+        planetUnlockRequirements.put("citytron_nova", 60);   // 60 stars (45 + 15)
+        planetUnlockRequirements.put("foodora_station", 75); // 75 stars (60 + 15)
+        planetUnlockRequirements.put("weatheron_sky", 90);    // 90 stars (75 + 15)
+        planetUnlockRequirements.put("familia_home", 105);    // 105 stars (90 + 15)
 
-        // Modern Era - Medium-Hard
-        planetUnlockRequirements.put("school", 280);    // 280 stars
-        planetUnlockRequirements.put("nature", 360);    // 360 stars
-        planetUnlockRequirements.put("home", 450);      // 450 stars
+        // Galaxy 3: Nebula Prime (Advanced)
+        planetUnlockRequirements.put("robolab", 120);          // 120 stars (105 + 15)
+        planetUnlockRequirements.put("timelapse", 135);      // 135 stars (120 + 15)
+        planetUnlockRequirements.put("storyverse_galaxy", 150); // 150 stars (135 + 15)
+        planetUnlockRequirements.put("natura", 165);          // 165 stars (150 + 15)
 
-        // Future Era - Hard
-        planetUnlockRequirements.put("action", 550);    // 550 stars
-        planetUnlockRequirements.put("emotion", 660);   // 660 stars
-        planetUnlockRequirements.put("travel", 780);    // 780 stars
+        // NEW PLANETS from NEW_PLANETS_IDEA.md
+        planetUnlockRequirements.put("artopia_planet", 180);    // 180 stars (165 + 15)
+        planetUnlockRequirements.put("playground_park", 195);   // 195 stars (180 + 15)
+        planetUnlockRequirements.put("school_academy", 210);    // 210 stars (195 + 15)
+        planetUnlockRequirements.put("body_parts_planet", 225); // 225 stars (210 + 15)
+        planetUnlockRequirements.put("sports_arena", 240);      // 240 stars (225 + 15)
+        planetUnlockRequirements.put("birthday_party", 255);    // 255 stars (240 + 15)
+        planetUnlockRequirements.put("ocean_deep", 270);        // 270 stars (255 + 15)
+
+        // Legacy planet keys (for backward compatibility)
+        planetUnlockRequirements.put("animal", 0);            // Always unlocked
+        planetUnlockRequirements.put("color", 0);             // Same as coloria_prime
+        planetUnlockRequirements.put("number", 45);          // Same as numberia_station
+        planetUnlockRequirements.put("food", 75);           // Same as foodora_station
+        planetUnlockRequirements.put("family", 105);         // Same as familia_home
+        planetUnlockRequirements.put("body", 75);            // Same as foodora_station
+        planetUnlockRequirements.put("school", 90);          // Same as weatheron_sky
+        planetUnlockRequirements.put("nature", 165);          // Same as natura
+        planetUnlockRequirements.put("home", 105);           // Same as familia_home
+        planetUnlockRequirements.put("action", 135);         // Same as timelapse
+        planetUnlockRequirements.put("emotion", 150);        // Same as storyverse_galaxy
+        planetUnlockRequirements.put("travel", 165);         // Same as natura
 
         // Bonus fictional planets
-        planetUnlockRequirements.put("crystal_world", 900);
-        planetUnlockRequirements.put("rainbow_planet", 1000);
-        planetUnlockRequirements.put("robot_station", 1100);
+        planetUnlockRequirements.put("crystal_world", 285);  // 285 stars (270 + 15)
+        planetUnlockRequirements.put("rainbow_planet", 300); // 300 stars (285 + 15)
+        planetUnlockRequirements.put("robot_station", 315);  // 315 stars (300 + 15)
     }
 
     private void loadData() {
@@ -226,76 +249,291 @@ public class ProgressionManager {
         if (gamesCompleted % GAMES_FOR_BADGE == 0) {
             awardGameBadge(gamesCompleted);
         }
+        
+        // Check for new unlocks after earning stars
+        checkForNewUnlocks();
     }
 
-    // Zone/Planet completion
-    public void recordZoneCompleted(String planetId, String zoneId, int starsEarned) {
-        Map<String, Integer> planetStars = userProgress.getPlanetStars();
-        int currentPlanetStars = planetStars.getOrDefault(planetId, 0);
-        planetStars.put(planetId, currentPlanetStars + starsEarned);
-        userProgress.setPlanetStars(planetStars);
-        saveUserProgress();
-
-        if (starsEarned > 0) {
-            addStars(starsEarned, "zone_" + zoneId);
+    // Zone/Planet completion - INTEGRATED WITH LessonUnlockManager
+    public void recordZoneCompleted(String planetKey, String zoneId, int starsEarned) {
+        // Get planet ID from key
+        com.example.engapp.database.GameDatabaseHelper dbHelper = 
+            com.example.engapp.database.GameDatabaseHelper.getInstance(context);
+        com.example.engapp.database.GameDatabaseHelper.PlanetData planet = 
+            dbHelper.getPlanetByKey(planetKey);
+        
+        if (planet != null) {
+            // Find scene by zoneId or order
+            List<com.example.engapp.database.GameDatabaseHelper.SceneData> scenes = 
+                dbHelper.getScenesForPlanet(planet.id);
+            
+            // Try to find scene by key or use first incomplete scene
+            int sceneId = -1;
+            for (com.example.engapp.database.GameDatabaseHelper.SceneData scene : scenes) {
+                if (scene.sceneKey.equals(zoneId) || scene.sceneType.equals(zoneId)) {
+                    sceneId = scene.id;
+                    break;
+                }
+            }
+            
+            if (sceneId > 0) {
+                // Complete lesson using LessonUnlockManager
+                boolean newLessonUnlocked = lessonUnlockManager.completeLesson(
+                    planet.id, sceneId, starsEarned);
+                
+                // Update planet stars
+                Map<String, Integer> planetStars = userProgress.getPlanetStars();
+                int currentPlanetStars = planetStars.getOrDefault(planetKey, 0);
+                planetStars.put(planetKey, currentPlanetStars + starsEarned);
+                userProgress.setPlanetStars(planetStars);
+                saveUserProgress();
+                
+                if (starsEarned > 0) {
+                    addStars(starsEarned, "zone_" + zoneId);
+                }
+                
+                // Check if planet is now completed
+                if (lessonUnlockManager.isPlanetCompleted(planet.id)) {
+                    recordPlanetCompleted(planetKey);
+                }
+            }
         }
     }
+    
+    /**
+     * Record lesson completion (new unified method)
+     * @param planetId Database planet ID
+     * @param sceneId Database scene ID
+     * @param starsEarned Stars earned from this lesson
+     */
+    public void recordLessonCompleted(int planetId, int sceneId, int starsEarned) {
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"F\",\"location\":\"ProgressionManager.recordLessonCompleted:300\",\"message\":\"recordLessonCompleted entry\",\"data\":{\"planetId\":" + planetId + ",\"sceneId\":" + sceneId + ",\"starsEarned\":" + starsEarned + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
+        // Complete lesson using LessonUnlockManager
+        boolean newLessonUnlocked = lessonUnlockManager.completeLesson(
+            planetId, sceneId, starsEarned);
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"F\",\"location\":\"ProgressionManager.recordLessonCompleted:303\",\"message\":\"completeLesson result\",\"data\":{\"planetId\":" + planetId + ",\"sceneId\":" + sceneId + ",\"newLessonUnlocked\":" + newLessonUnlocked + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
+        
+        // Get planet key for tracking
+        com.example.engapp.database.GameDatabaseHelper dbHelper = 
+            com.example.engapp.database.GameDatabaseHelper.getInstance(context);
+        com.example.engapp.database.GameDatabaseHelper.PlanetData planet = 
+            dbHelper.getPlanetById(planetId);
+        
+        if (planet != null) {
+            // Update planet stars
+            Map<String, Integer> planetStars = userProgress.getPlanetStars();
+            int currentPlanetStars = planetStars.getOrDefault(planet.planetKey, 0);
+            planetStars.put(planet.planetKey, currentPlanetStars + starsEarned);
+            userProgress.setPlanetStars(planetStars);
+            saveUserProgress();
+            
+            if (starsEarned > 0) {
+                addStars(starsEarned, "lesson_" + sceneId);
+            }
+            
+            // Check if planet is now completed
+            if (lessonUnlockManager.isPlanetCompleted(planetId)) {
+                recordPlanetCompleted(planet.planetKey);
+            }
+        }
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"F\",\"location\":\"ProgressionManager.recordLessonCompleted:328\",\"message\":\"recordLessonCompleted exit\",\"data\":{\"planetId\":" + planetId + ",\"sceneId\":" + sceneId + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
+    }
 
-    public void recordPlanetCompleted(String planetId) {
+    public void recordPlanetCompleted(String planetKey) {
         int previousPlanets = userProgress.getPlanetsUnlocked();
         userProgress.setPlanetsUnlocked(previousPlanets + 1);
         saveUserProgress();
 
         // Award planet completion badge
-        awardPlanetBadge(planetId);
+        awardPlanetBadge(planetKey);
 
         // Check for buddy unlocks based on planets completed
         checkBuddyUnlocks();
+        
+        // Check for next planet unlock
+        checkForNewUnlocks();
     }
 
-    // Planet unlock checking
+    // Planet unlock checking - INTEGRATED WITH LessonUnlockManager
     public void checkForNewUnlocks() {
         int totalStars = userProgress.getTotalStars();
 
         for (Map.Entry<String, Integer> entry : planetUnlockRequirements.entrySet()) {
-            String planetId = entry.getKey();
+            String planetKey = entry.getKey();
             int required = entry.getValue();
 
-            if (totalStars >= required && !isPlanetUnlocked(planetId)) {
-                unlockPlanet(planetId);
+            // Check if has enough stars AND not already unlocked
+            // Planets with required = 0 are always unlocked
+            if ((required == 0 || totalStars >= required) && !isPlanetUnlocked(planetKey)) {
+                // Use LessonUnlockManager to check and unlock
+                lessonUnlockManager.checkAndUnlockPlanet(planetKey, required, totalStars);
+                
+                // If unlocked, notify listeners
+                if (lessonUnlockManager.isPlanetUnlocked(planetKey)) {
+                    String planetName = getPlanetDisplayName(planetKey);
+                    for (ProgressionEventListener listener : listeners) {
+                        listener.onPlanetUnlocked(planetKey, planetName);
+                    }
+                }
             }
         }
     }
 
-    public boolean isPlanetUnlocked(String planetId) {
-        // Check if planet is in unlocked list (stored in SharedPreferences)
-        String unlockedPlanets = prefs.getString("unlocked_planets", "animal");
-        return unlockedPlanets.contains(planetId);
+    /**
+     * Map GameDataProvider planet ID to database planet key
+     * GameDataProvider uses simple IDs like "animal", "color", "number"
+     * Database uses keys like "coloria_prime", "toytopia_orbit", "numberia_station"
+     * Mapping dựa trên ý nghĩa/chủ đề, không phải thứ tự
+     */
+    private String mapPlanetIdToKey(String planetId) {
+        // Mapping từ GameDataProvider IDs sang database keys dựa trên chủ đề
+        switch (planetId) {
+            // Galaxy 1: Milky Way
+            case "animal": return "animania_wild";      // Animals -> Animania Wild (50 stars)
+            case "color": return "coloria_prime";        // Colors -> Coloria Prime (0 stars - first planet)
+            case "number": return "numberia_station";   // Numbers -> Numberia Station (100 stars)
+            case "food": return "foodora_station";      // Food -> Foodora Station (75 stars)
+            
+            // Galaxy 2: Andromeda
+            case "family": return "familia_home";       // Family -> Familia Home (360 stars)
+            case "body": return "animania_wild";        // Body parts -> Animania Wild (50 stars) - fallback
+            case "school": return "robolab";            // School -> RoboLab (450 stars)
+            case "nature": return "natura";             // Nature -> Natura (780 stars)
+            case "home": return "familia_home";         // Home -> Familia Home (360 stars)
+            
+            // Galaxy 3: Nebula Prime
+            case "action": return "timelapse";          // Actions -> TimeLapse (550 stars)
+            case "emotion": return "storyverse_galaxy"; // Emotions -> Storyverse (660 stars)
+            case "travel": return "natura";             // Travel -> Natura (780 stars)
+            
+            default: return planetId; // Nếu không có mapping, giữ nguyên (có thể là database key rồi)
+        }
     }
 
-    private void unlockPlanet(String planetId) {
-        String unlockedPlanets = prefs.getString("unlocked_planets", "animal");
-        if (!unlockedPlanets.contains(planetId)) {
-            unlockedPlanets += "," + planetId;
-            prefs.edit().putString("unlocked_planets", unlockedPlanets).apply();
+    public boolean isPlanetUnlocked(String planetKey) {
+        // Map GameDataProvider ID to database key if needed
+        String mappedKey = mapPlanetIdToKey(planetKey);
+        // Use LessonUnlockManager for unified unlock checking
+        return lessonUnlockManager.isPlanetUnlocked(mappedKey);
+    }
 
-            String planetName = getPlanetDisplayName(planetId);
-            for (ProgressionEventListener listener : listeners) {
-                listener.onPlanetUnlocked(planetId, planetName);
-            }
+    private void unlockPlanet(String planetKey) {
+        // Use LessonUnlockManager to unlock
+        lessonUnlockManager.unlockPlanet(planetKey);
+        
+        String planetName = getPlanetDisplayName(planetKey);
+        for (ProgressionEventListener listener : listeners) {
+            listener.onPlanetUnlocked(planetKey, planetName);
         }
     }
 
     public int getStarsRequiredForPlanet(String planetId) {
-        return planetUnlockRequirements.getOrDefault(planetId, 0);
+        // Map GameDataProvider ID to database key if needed
+        String mappedKey = mapPlanetIdToKey(planetId);
+        return planetUnlockRequirements.getOrDefault(mappedKey, 
+               planetUnlockRequirements.getOrDefault(planetId, 0));
     }
 
     public float getPlanetUnlockProgress(String planetId) {
-        int required = getStarsRequiredForPlanet(planetId);
+        // Map GameDataProvider ID to database key if needed
+        String mappedKey = mapPlanetIdToKey(planetId);
+        int required = planetUnlockRequirements.getOrDefault(mappedKey, 
+                     planetUnlockRequirements.getOrDefault(planetId, 0));
         if (required == 0) return 1.0f;
 
         int current = userProgress.getTotalStars();
         return Math.min(1.0f, (float) current / required);
+    }
+    
+    /**
+     * Get next unlock target (planet or galaxy)
+     * Returns the next item that can be unlocked with current stars
+     */
+    public UnlockTarget getNextUnlockTarget() {
+        int totalStars = userProgress.getTotalStars();
+        
+        // Check planets first
+        for (Map.Entry<String, Integer> entry : planetUnlockRequirements.entrySet()) {
+            String planetId = entry.getKey();
+            int required = entry.getValue();
+            
+            if (totalStars < required && !isPlanetUnlocked(planetId)) {
+                return new UnlockTarget(planetId, getPlanetDisplayName(planetId), required, "planet");
+            }
+        }
+        
+        // All planets unlocked
+        return null;
+    }
+    
+    /**
+     * Get unlock progress info for display
+     */
+    public UnlockProgressInfo getUnlockProgressInfo() {
+        UnlockTarget next = getNextUnlockTarget();
+        if (next == null) {
+            return new UnlockProgressInfo(0, 0, "All unlocked! 🎉", null);
+        }
+        
+        int current = userProgress.getTotalStars();
+        int remaining = next.requiredStars - current;
+        String message = remaining > 0 
+            ? "Cần thêm " + remaining + " ⭐ để mở khóa " + next.displayName
+            : "Sẵn sàng mở khóa " + next.displayName + "! 🚀";
+        
+        return new UnlockProgressInfo(current, next.requiredStars, message, next);
+    }
+    
+    /**
+     * Helper class for unlock target
+     */
+    public static class UnlockTarget {
+        public String id;
+        public String displayName;
+        public int requiredStars;
+        public String type; // "planet" or "galaxy"
+        
+        public UnlockTarget(String id, String displayName, int requiredStars, String type) {
+            this.id = id;
+            this.displayName = displayName;
+            this.requiredStars = requiredStars;
+            this.type = type;
+        }
+    }
+    
+    /**
+     * Helper class for unlock progress info
+     */
+    public static class UnlockProgressInfo {
+        public int currentStars;
+        public int requiredStars;
+        public String message;
+        public UnlockTarget target;
+        
+        public UnlockProgressInfo(int currentStars, int requiredStars, String message, UnlockTarget target) {
+            this.currentStars = currentStars;
+            this.requiredStars = requiredStars;
+            this.message = message;
+            this.target = target;
+        }
     }
 
     // Badge awarding

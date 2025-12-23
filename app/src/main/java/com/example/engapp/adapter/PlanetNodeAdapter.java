@@ -25,6 +25,10 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
         this.nodes = nodes;
         this.listener = listener;
     }
+    
+    public void updateNodes(List<SceneData> newNodes) {
+        this.nodes = newNodes;
+    }
 
     @NonNull
     @Override
@@ -71,7 +75,10 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
             tvNodeName.setText(node.name);
             tvNodeNameVi.setText(node.nameVi != null ? node.nameVi : "");
 
-            String emoji = getEmojiForType(node.sceneType);
+            // Use emoji from database if available, otherwise use type-based emoji
+            String emoji = (node.emoji != null && !node.emoji.isEmpty()) 
+                ? node.emoji 
+                : getEmojiForType(node.sceneType);
             tvNodeEmoji.setText(emoji);
 
             String typeLabel = getTypeLabelForType(node.sceneType);
@@ -92,8 +99,14 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
                 btnPlay.setText("PLAY");
             }
 
-            boolean isLocked = position > 0 && !nodes.get(position - 1).isCompleted;
+            // Use LessonUnlockManager to check unlock status
+            android.content.Context context = itemView.getContext();
+            com.example.engapp.manager.LessonUnlockManager unlockManager = 
+                com.example.engapp.manager.LessonUnlockManager.getInstance(context);
+            
+            boolean isLocked = !unlockManager.isLessonUnlocked(node.planetId, node.id);
             lockOverlay.setVisibility(isLocked ? View.VISIBLE : View.GONE);
+            itemView.setAlpha(isLocked ? 0.7f : 1.0f);
 
             if (position < nodes.size() - 1) {
                 connectionLine.setVisibility(View.VISIBLE);
@@ -102,13 +115,13 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
             }
 
             itemView.setOnClickListener(v -> {
-                if (listener != null) {
+                if (listener != null && !isLocked) {
                     listener.onNodeClick(node, position);
                 }
             });
 
             btnPlay.setOnClickListener(v -> {
-                if (listener != null) {
+                if (listener != null && !isLocked) {
                     listener.onNodeClick(node, position);
                 }
             });
@@ -116,26 +129,50 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
 
         private String getEmojiForType(String type) {
             if (type == null) return "📚";
+            
+            // Map database scene types to emojis
             switch (type) {
+                // Standard types
                 case "learn": return "📚";
                 case "guess_name": return "🎯";
                 case "listen_choose": return "🎧";
                 case "match": return "🔗";
                 case "sentence": return "✍️";
                 case "boss": return "👾";
+                case "battle": return "⚔️";
+                
+                // Database scene_key types (mapped to standard types)
+                case "landing_zone": return "📚"; // Learn/Introduction
+                case "explore_area": return "🎯"; // Quiz/Explore
+                case "dialogue_dock": return "💬"; // Dialogue/Conversation
+                case "puzzle_zone": return "🧩"; // Puzzle
+                case "boss_gate": return "👾"; // Boss/Battle
+                
                 default: return "📚";
             }
         }
 
         private String getTypeLabelForType(String type) {
             if (type == null) return "LEARN";
+            
+            // Map database scene types to labels
             switch (type) {
+                // Standard types
                 case "learn": return "📖 LEARN";
                 case "guess_name": return "🎯 QUIZ";
                 case "listen_choose": return "🎧 LISTEN";
                 case "match": return "🔗 MATCH";
                 case "sentence": return "✍️ SENTENCE";
                 case "boss": return "👾 BOSS";
+                case "battle": return "⚔️ BATTLE";
+                
+                // Database scene_key types
+                case "landing_zone": return "📖 LEARN";
+                case "explore_area": return "🎯 EXPLORE";
+                case "dialogue_dock": return "💬 DIALOGUE";
+                case "puzzle_zone": return "🧩 PUZZLE";
+                case "boss_gate": return "👾 BOSS";
+                
                 default: return "📖 LEARN";
             }
         }

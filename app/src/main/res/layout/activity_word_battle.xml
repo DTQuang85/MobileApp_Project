@@ -193,8 +193,8 @@
         android:layout_below="@id/battleArena"
         android:layout_marginHorizontal="12dp"
         app:cardCornerRadius="16dp"
-        app:cardElevation="6dp"
-        app:cardBackgroundColor="@color/card_bg_dark">
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#4ECDC4">
 
         <TextView
             android:id="@+id/tvBuddyMessage"
@@ -214,12 +214,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/cardBuddyMessage"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_glass_dark"
-        android:elevation="4dp">
+        android:padding="12dp"
+        android:gravity="center">
 
         <!-- Combo indicator -->
         <TextView
@@ -274,28 +270,16 @@
     </LinearLayout>
 
     <!-- Letter Grid -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardLetterGrid"
+    <GridLayout
+        android:id="@+id/letterGrid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/wordArea"
         android:layout_above="@id/buttonArea"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/space_blue">
-
-        <GridLayout
-            android:id="@+id/letterGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:columnCount="4"
-            android:rowCount="4"
-            android:useDefaultMargins="true"/>
-    </androidx.cardview.widget.CardView>
+        android:columnCount="4"
+        android:rowCount="4"
+        android:padding="12dp"
+        android:useDefaultMargins="true"/>
 
     <!-- Action Buttons -->
     <LinearLayout
@@ -344,3 +328,4 @@
             android:alpha="0.5"/>
     </LinearLayout>
 </RelativeLayout>
+

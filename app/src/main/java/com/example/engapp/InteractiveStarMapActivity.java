@@ -17,6 +17,7 @@ import androidx.cardview.widget.CardView;
 
 import com.bumptech.glide.Glide;
 import com.example.engapp.data.GameDataProvider;
+import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.manager.BuddyManager;
 import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.manager.TravelManager;
@@ -166,8 +167,9 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         });
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
+            // Use old Battle system (ABCD + images) instead of WordBattle
             String currentPlanetId = travelManager.getCurrentPlanetId();
-            Intent intent = new Intent(this, WordBattleActivity.class);
+            Intent intent = new Intent(this, BattleActivity.class);
             if (currentPlanetId != null) {
                 // Try to convert planet ID to int (assuming format like "planet_1" -> 1)
                 try {
@@ -219,6 +221,9 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     }
 
     private void loadPlanets() {
+        // Kiểm tra và mở khóa các hành tinh đủ điều kiện trước
+        progressionManager.checkForNewUnlocks();
+        
         // Get all planets
         List<Planet> allPlanets = GameDataProvider.getAllPlanets();
 
@@ -234,7 +239,7 @@ public class InteractiveStarMapActivity extends AppCompatActivity
             planets.add(allPlanets.get(i));
         }
 
-        // Update unlock status
+        // Update unlock status sau khi đã kiểm tra
         for (Planet planet : planets) {
             planet.setUnlocked(progressionManager.isPlanetUnlocked(planet.getId()));
         }
@@ -305,9 +310,16 @@ public class InteractiveStarMapActivity extends AppCompatActivity
 
             int required = progressionManager.getStarsRequiredForPlanet(planet.getId());
             int current = progressionManager.getTotalStars();
-            int needed = required - current;
+            int needed = Math.max(0, required - current); // Không hiển thị số âm
 
-            tvStarsNeeded.setText("⭐ " + needed + " sao nữa");
+            if (required == 0) {
+                // Planet luôn mở khóa (như animal planet)
+                tvStarsNeeded.setText("⭐ Sẵn sàng mở khóa!");
+            } else if (needed == 0) {
+                tvStarsNeeded.setText("⭐ Đã đủ sao! Sẵn sàng mở khóa!");
+            } else {
+                tvStarsNeeded.setText("⭐ Cần thêm " + needed + " sao nữa");
+            }
 
             btnTravel.setText("🔒 Chưa mở khóa");
             btnTravel.setEnabled(false);
@@ -377,15 +389,23 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         // Update stats
         updateStatsDisplay();
 
-        // Find the planet and navigate to it
-        for (Planet p : planets) {
-            if (p.getId().equals(planetId)) {
-                // Navigate to planet activity
-                Intent intent = new Intent(this, PlanetActivity.class);
-                intent.putExtra("planet", p);
-                startActivity(intent);
-                break;
-            }
+        // Get planet_id from database using planet key
+        GameDatabaseHelper dbHelper = GameDatabaseHelper.getInstance(this);
+        GameDatabaseHelper.PlanetData planetData = dbHelper.getPlanetByKey(planetId);
+        
+        if (planetData != null) {
+            // Navigate to PlanetMapActivity with correct planet_id
+            // Sử dụng FLAG_ACTIVITY_CLEAR_TOP và FLAG_ACTIVITY_NEW_TASK để đảm bảo activity mới
+            Intent intent = new Intent(this, PlanetMapActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("planet_id", planetData.id);
+            intent.putExtra("planet_name", planetData.name);
+            intent.putExtra("planet_name_vi", planetData.nameVi);
+            intent.putExtra("planet_emoji", planetData.emoji);
+            intent.putExtra("planet_color", String.format("#%06X", planetData.themeColor));
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Không tìm thấy hành tinh: " + planetId, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -395,6 +415,10 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     public void onStarsChanged(int totalStars, int addedStars) {
         runOnUiThread(() -> {
             tvStars.setText(String.valueOf(totalStars));
+            // Kiểm tra và mở khóa các hành tinh mới khi có sao mới
+            progressionManager.checkForNewUnlocks();
+            // Reload planets để cập nhật unlock status
+            loadPlanets();
             starMapView.refreshUnlockStatus(this);
         });
     }
@@ -413,14 +437,19 @@ public class InteractiveStarMapActivity extends AppCompatActivity
             Toast.makeText(this, "🌟 Mở khóa hành tinh mới: " + planetName + "!",
                 Toast.LENGTH_LONG).show();
 
-            // Update planet in list
-            for (Planet p : planets) {
-                if (p.getId().equals(planetId)) {
-                    p.setUnlocked(true);
-                    break;
+            // Update planet in list - kiểm tra null trước
+            if (planets != null) {
+                for (Planet p : planets) {
+                    if (p.getId().equals(planetId)) {
+                        p.setUnlocked(true);
+                        break;
+                    }
                 }
             }
 
+            // Reload planets để đảm bảo sync
+            loadPlanets();
+            
             starMapView.refreshUnlockStatus(this);
             starMapView.focusOnPlanet(planetId);
 
@@ -489,6 +518,10 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        // Kiểm tra và mở khóa các hành tinh đủ điều kiện
+        progressionManager.checkForNewUnlocks();
+        // Reload planets để cập nhật unlock status
+        loadPlanets();
         updateStatsDisplay();
         starMapView.refreshUnlockStatus(this);
     }
@@ -503,3 +536,4 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         }
     }
 }
+

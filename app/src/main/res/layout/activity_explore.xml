@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🔮 Thu thập Crystals"
+            android:text="⭐ Chòm Sao Từ Vựng"
             android:textColor="@color/text_white"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -38,7 +38,7 @@
             android:id="@+id/tvCrystals"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="💎 0"
+            android:text="⭐ 0"
             android:textColor="@color/star_gold"
             android:textSize="16sp"
             android:textStyle="bold"/>
@@ -86,25 +86,14 @@
         android:padding="16dp"
         android:background="@drawable/bg_instruction"/>
 
-    <!-- Crystal Grid -->
-    <ScrollView
+    <!-- Constellation View -->
+    <com.example.engapp.view.ConstellationView
+        android:id="@+id/constellationView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/tvInstruction"
         android:layout_above="@+id/bottomSpace"
-        android:fillViewport="true">
-
-        <GridLayout
-            android:id="@+id/crystalGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="4"
-            android:rowCount="2"
-            android:padding="24dp"
-            android:useDefaultMargins="true"
-            android:alignmentMode="alignBounds"
-            android:layout_gravity="center"/>
-    </ScrollView>
+        android:padding="24dp"/>
 
     <View
         android:id="@+id/bottomSpace"

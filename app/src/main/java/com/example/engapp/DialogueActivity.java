@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
+import com.example.engapp.manager.ProgressionManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
 
     private TextToSpeech tts;
     private GameDatabaseHelper dbHelper;
+    private ProgressionManager progressionManager;
     private int planetId, sceneId;
     private List<SentenceData> sentences;
     private int currentIndex = 0;
@@ -43,6 +45,7 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
         sceneId = getIntent().getIntExtra("scene_id", 1);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = ProgressionManager.getInstance(this);
         tts = new TextToSpeech(this, this);
 
         initViews();
@@ -73,16 +76,67 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
     }
 
     private void loadSentences() {
-        sentences = dbHelper.getSentencesForPlanet(planetId);
+        // Try to get sentences for scene first, then planet
+        sentences = dbHelper.getSentencesForScene(sceneId);
         if (sentences == null || sentences.isEmpty()) {
-            Toast.makeText(this, "Không có hội thoại", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+            sentences = dbHelper.getSentencesForPlanet(planetId);
         }
+        
+        if (sentences == null || sentences.isEmpty()) {
+            // Create fallback sentences if none exist
+            sentences = createFallbackSentences();
+        }
+        
         Collections.shuffle(sentences);
         if (sentences.size() > 5) {
             sentences = sentences.subList(0, 5);
         }
+    }
+    
+    private List<SentenceData> createFallbackSentences() {
+        List<SentenceData> fallback = new ArrayList<>();
+        
+        // Get words for the planet to create simple sentences
+        List<WordData> words = dbHelper.getWordsForPlanet(planetId);
+        if (words != null && !words.isEmpty()) {
+            // Create simple sentences from words
+            String[] templates = {
+                "Choose the %s.",
+                "I like %s.",
+                "This is a %s.",
+                "Show me the %s.",
+                "Where is the %s?"
+            };
+            
+            for (int i = 0; i < Math.min(5, templates.length); i++) {
+                if (i < words.size()) {
+                    SentenceData s = new SentenceData();
+                    s.english = String.format(templates[i], words.get(i).english);
+                    s.vietnamese = "Chọn " + words.get(i).vietnamese + ".";
+                    fallback.add(s);
+                }
+            }
+        }
+        
+        // If still empty, add basic sentences
+        if (fallback.isEmpty()) {
+            SentenceData s1 = new SentenceData();
+            s1.english = "Hello";
+            s1.vietnamese = "Xin chào";
+            fallback.add(s1);
+            
+            SentenceData s2 = new SentenceData();
+            s2.english = "Thank you";
+            s2.vietnamese = "Cảm ơn";
+            fallback.add(s2);
+            
+            SentenceData s3 = new SentenceData();
+            s3.english = "Goodbye";
+            s3.vietnamese = "Tạm biệt";
+            fallback.add(s3);
+        }
+        
+        return fallback;
     }
 
     private void showCurrentDialogue() {
@@ -102,14 +156,18 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
         List<String> options = new ArrayList<>();
         options.add(sentence.english); // Correct answer
 
-        // Add wrong options
-        for (SentenceData s : sentences) {
+        // Add wrong options from other sentences
+        List<SentenceData> otherSentences = new ArrayList<>(sentences);
+        otherSentences.remove(sentence);
+        Collections.shuffle(otherSentences);
+        
+        for (SentenceData s : otherSentences) {
             if (!s.english.equals(sentence.english) && options.size() < 3) {
                 options.add(s.english);
             }
         }
 
-        // Fill remaining with dummy options
+        // Fill remaining with dummy options if needed
         while (options.size() < 3) {
             options.add("I don't know.");
         }
@@ -117,14 +175,19 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
         Collections.shuffle(options);
         correctAnswer = options.indexOf(sentence.english);
 
-        tvOption1.setText(options.get(0));
-        tvOption2.setText(options.get(1));
-        tvOption3.setText(options.get(2));
+        // Set text with proper handling
+        tvOption1.setText(options.get(0) != null ? options.get(0) : "");
+        tvOption2.setText(options.get(1) != null ? options.get(1) : "");
+        tvOption3.setText(options.get(2) != null ? options.get(2) : "");
 
-        // Reset colors
-        cardOption1.setCardBackgroundColor(getColor(R.color.card_bg));
-        cardOption2.setCardBackgroundColor(getColor(R.color.card_bg));
-        cardOption3.setCardBackgroundColor(getColor(R.color.card_bg));
+        // Reset colors and enable clicks
+        cardOption1.setCardBackgroundColor(getColor(R.color.card_bg_dark));
+        cardOption2.setCardBackgroundColor(getColor(R.color.card_bg_dark));
+        cardOption3.setCardBackgroundColor(getColor(R.color.card_bg_dark));
+        
+        cardOption1.setClickable(true);
+        cardOption2.setClickable(true);
+        cardOption3.setClickable(true);
 
         updateProgress();
 
@@ -136,6 +199,11 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
     }
 
     private void checkAnswer(int selected) {
+        // Disable all cards to prevent multiple clicks
+        cardOption1.setClickable(false);
+        cardOption2.setClickable(false);
+        cardOption3.setClickable(false);
+        
         CardView[] cards = {cardOption1, cardOption2, cardOption3};
 
         if (selected == correctAnswer) {
@@ -153,7 +221,13 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
             // Wrong
             cards[selected].setCardBackgroundColor(getColor(R.color.wrong_red));
             cards[correctAnswer].setCardBackgroundColor(getColor(R.color.correct_green));
-            Toast.makeText(this, "❌ Sai rồi!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "❌ Sai rồi! Đáp án đúng: " + sentences.get(currentIndex).english, Toast.LENGTH_LONG).show();
+            
+            // Speak the correct answer
+            if (tts != null) {
+                tts.setLanguage(Locale.US);
+                tts.speak(sentences.get(currentIndex).english, TextToSpeech.QUEUE_FLUSH, null, "answer");
+            }
         }
 
         tvScore.setText("⭐ " + score);
@@ -162,7 +236,7 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
         cards[0].postDelayed(() -> {
             currentIndex++;
             showCurrentDialogue();
-        }, 1500);
+        }, 2000);
     }
 
     private void updateProgress() {
@@ -176,6 +250,11 @@ public class DialogueActivity extends AppCompatActivity implements TextToSpeech.
 
         dbHelper.updateSceneProgress(sceneId, stars);
         dbHelper.addStars(stars);
+        
+        // IMPORTANT: Record lesson completion to unlock next lesson
+        if (planetId > 0 && sceneId > 0) {
+            progressionManager.recordLessonCompleted(planetId, sceneId, stars);
+        }
 
         String message = "Điểm số: " + score;
         SpaceDialog.showSuccess(this, message, stars, () -> finish());

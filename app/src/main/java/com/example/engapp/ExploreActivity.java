@@ -2,32 +2,31 @@ package com.example.engapp;
 
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.view.Gravity;
 import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
+import com.example.engapp.manager.ProgressionManager;
+import com.example.engapp.view.ConstellationView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class ExploreActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class ExploreActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, ConstellationView.OnConstellationCompleteListener {
 
     private TextView tvProgress, tvCrystals, tvInstruction;
     private ProgressBar progressBar;
-    private GridLayout crystalGrid;
+    private ConstellationView constellationView;
     private ImageView btnBack;
 
     private TextToSpeech tts;
     private GameDatabaseHelper dbHelper;
+    private ProgressionManager progressionManager;
     private int planetId, sceneId;
     private List<WordData> words;
     private List<WordData> collectedWords = new ArrayList<>();
@@ -43,6 +42,7 @@ public class ExploreActivity extends AppCompatActivity implements TextToSpeech.O
         sceneId = getIntent().getIntExtra("scene_id", 1);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = ProgressionManager.getInstance(this);
         tts = new TextToSpeech(this, this);
 
         initViews();
@@ -55,12 +55,16 @@ public class ExploreActivity extends AppCompatActivity implements TextToSpeech.O
         tvCrystals = findViewById(R.id.tvCrystals);
         tvInstruction = findViewById(R.id.tvInstruction);
         progressBar = findViewById(R.id.progressBar);
-        crystalGrid = findViewById(R.id.crystalGrid);
+        constellationView = findViewById(R.id.constellationView);
         btnBack = findViewById(R.id.btnBack);
 
         btnBack.setOnClickListener(v -> finish());
 
-        tvInstruction.setText("🔮 Chạm vào các Word Crystal để thu thập từ vựng!");
+        tvInstruction.setText("⭐ Nối các điểm sao theo thứ tự để tạo thành chòm sao và học từ vựng!");
+        
+        if (constellationView != null) {
+            constellationView.setOnConstellationCompleteListener(this);
+        }
     }
 
     private void loadWords() {
@@ -71,62 +75,21 @@ public class ExploreActivity extends AppCompatActivity implements TextToSpeech.O
             return;
         }
         Collections.shuffle(words);
-        // Take max 8 words
-        if (words.size() > 8) {
-            words = words.subList(0, 8);
+        // Take max 6 words for constellation (đơn giản hơn)
+        if (words.size() > 6) {
+            words = words.subList(0, 6);
         }
     }
 
     private void setupCrystals() {
-        crystalGrid.removeAllViews();
-
-        // Set column count based on word count
-        int columnCount = 4;
-        crystalGrid.setColumnCount(columnCount);
-
-        for (int i = 0; i < words.size(); i++) {
-            WordData word = words.get(i);
-
-            // Create a card for each crystal
-            CardView card = new CardView(this);
-            card.setCardBackgroundColor(getColor(R.color.card_bg));
-            card.setRadius(24);
-            card.setCardElevation(8);
-
-            GridLayout.LayoutParams cardParams = new GridLayout.LayoutParams();
-            cardParams.width = 0;
-            cardParams.height = GridLayout.LayoutParams.WRAP_CONTENT;
-            cardParams.columnSpec = GridLayout.spec(i % columnCount, 1f);
-            cardParams.rowSpec = GridLayout.spec(i / columnCount);
-            cardParams.setMargins(12, 12, 12, 12);
-            card.setLayoutParams(cardParams);
-
-            TextView crystal = new TextView(this);
-            crystal.setText("💎");
-            crystal.setTextSize(40);
-            crystal.setPadding(20, 30, 20, 30);
-            crystal.setGravity(Gravity.CENTER);
-
-            card.addView(crystal);
-
-            final int index = i;
-            card.setOnClickListener(v -> collectCrystal(card, crystal, word, index));
-
-            // Add appear animation with delay
-            card.setAlpha(0f);
-            card.animate()
-                .alpha(1f)
-                .setStartDelay(i * 100)
-                .setDuration(300)
-                .start();
-
-            crystalGrid.addView(card);
+        if (constellationView != null && words != null) {
+            constellationView.setWords(words);
         }
-
         updateProgress();
     }
 
-    private void collectCrystal(CardView card, TextView crystal, WordData word, int index) {
+    @Override
+    public void onStarConnected(WordData word, int order) {
         if (collectedWords.contains(word)) return;
 
         // Play sound
@@ -141,18 +104,14 @@ public class ExploreActivity extends AppCompatActivity implements TextToSpeech.O
         collectedWords.add(word);
         totalCrystals++;
 
-        // Change crystal appearance
-        crystal.setText(word.emoji);
-        card.setCardBackgroundColor(getColor(R.color.correct_green));
-        card.setAlpha(0.8f);
-
         // Update progress
         updateProgress();
+    }
 
-        // Check completion
-        if (collectedWords.size() >= words.size()) {
-            completeScene();
-        }
+    @Override
+    public void onConstellationComplete() {
+        // Tất cả các từ đã được thu thập trong quá trình nối
+        completeScene();
     }
 
     private void showWordDialog(WordData word) {
@@ -165,19 +124,49 @@ public class ExploreActivity extends AppCompatActivity implements TextToSpeech.O
     }
 
     private void updateProgress() {
-        int progress = words.isEmpty() ? 0 : (collectedWords.size() * 100) / words.size();
+        if (words == null || words.isEmpty()) {
+            progressBar.setProgress(0);
+            tvProgress.setText("0/0");
+            return;
+        }
+        
+        int totalStars = constellationView != null ? constellationView.getTotalCount() : words.size();
+        int connectedStars = constellationView != null ? constellationView.getConnectedCount() : collectedWords.size();
+        
+        int progress = (connectedStars * 100) / totalStars;
         progressBar.setProgress(progress);
-        tvProgress.setText(collectedWords.size() + "/" + words.size());
-        tvCrystals.setText("💎 " + totalCrystals);
+        tvProgress.setText(connectedStars + "/" + totalStars);
+        tvCrystals.setText("⭐ " + totalCrystals);
     }
 
     private void completeScene() {
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"E\",\"location\":\"ExploreActivity.completeScene:174\",\"message\":\"completeScene entry\",\"data\":{\"planetId\":" + planetId + ",\"sceneId\":" + sceneId + ",\"totalCrystals\":" + totalCrystals + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
+        int starsEarned = 3;
+        
         // Save progress
-        dbHelper.updateSceneProgress(sceneId, 3);
-        dbHelper.addStars(3);
+        dbHelper.updateSceneProgress(sceneId, starsEarned);
+        dbHelper.addStars(starsEarned);
+        
+        // IMPORTANT: Record lesson completion to unlock next lesson
+        // #region agent log
+        try {
+            java.io.FileWriter fw = new java.io.FileWriter("c:\\Users\\ADMIN\\Downloads\\MobileApp_Project-main (2)\\MobileApp_Project-main\\.cursor\\debug.log", true);
+            fw.write("{\"sessionId\":\"debug-session\",\"runId\":\"run1\",\"hypothesisId\":\"E\",\"location\":\"ExploreActivity.completeScene:182\",\"message\":\"Calling recordLessonCompleted\",\"data\":{\"planetId\":" + planetId + ",\"sceneId\":" + sceneId + ",\"starsEarned\":" + starsEarned + "},\"timestamp\":" + System.currentTimeMillis() + "}\n");
+            fw.close();
+        } catch (Exception e) {}
+        // #endregion
+        if (planetId > 0 && sceneId > 0) {
+            progressionManager.recordLessonCompleted(planetId, sceneId, starsEarned);
+        }
 
-        String message = "Bạn đã thu thập tất cả Word Crystals!\n\n" +
-                        "💎 +" + totalCrystals + " Crystals";
+        String message = "Bạn đã hoàn thành chòm sao từ vựng!\n\n" +
+                        "⭐ +" + totalCrystals + " Stars";
         SpaceDialog.showSuccess(this, message, 3, () -> finish());
     }
 

@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
+import com.example.engapp.manager.ProgressionManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,12 +29,14 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
 
     private TextToSpeech tts;
     private GameDatabaseHelper dbHelper;
+    private ProgressionManager progressionManager;
     private int planetId, sceneId;
     private List<SentenceData> sentences;
     private int currentIndex = 0;
     private int score = 0;
     private List<String> currentWords = new ArrayList<>();
     private List<String> selectedWords = new ArrayList<>();
+    private List<Integer> selectedIndices = new ArrayList<>(); // Track which button indices are selected
     private String correctSentence = "";
 
     @Override
@@ -46,6 +49,7 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
         sceneId = getIntent().getIntExtra("scene_id", 1);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = ProgressionManager.getInstance(this);
         tts = new TextToSpeech(this, this);
 
         initViews();
@@ -94,6 +98,7 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
         Collections.shuffle(currentWords);
 
         selectedWords.clear();
+        selectedIndices.clear();
 
         setupWordButtons();
         updateAnswerDisplay();
@@ -122,8 +127,10 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
             wordBtn.setLayoutParams(params);
 
             wordBtn.setOnClickListener(v -> {
-                if (!selectedWords.contains(word)) {
+                // Check if this specific button (by index) is already selected
+                if (!selectedIndices.contains(index)) {
                     selectedWords.add(word);
+                    selectedIndices.add(index);
                     wordBtn.setAlpha(0.3f);
                     wordBtn.setClickable(false);
                     updateAnswerDisplay();
@@ -138,7 +145,10 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
     private void updateAnswerDisplay() {
         answerContainer.removeAllViews();
 
-        for (String word : selectedWords) {
+        for (int i = 0; i < selectedWords.size(); i++) {
+            final String word = selectedWords.get(i);
+            final int selectedIndex = selectedIndices.get(i);
+            
             TextView wordView = new TextView(this);
             wordView.setText(word);
             wordView.setTextColor(getColor(R.color.text_white));
@@ -153,19 +163,21 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
             params.setMargins(4, 4, 4, 4);
             wordView.setLayoutParams(params);
 
-            // Click to remove
+            // Click to remove - remove by position to maintain correct mapping
+            final int position = i;
             wordView.setOnClickListener(v -> {
-                selectedWords.remove(word);
-                updateAnswerDisplay();
-                // Re-enable the word button
-                for (int i = 0; i < wordContainer.getChildCount(); i++) {
-                    TextView btn = (TextView) wordContainer.getChildAt(i);
-                    if (btn.getText().toString().equals(word)) {
-                        btn.setAlpha(1f);
-                        btn.setClickable(true);
-                        break;
-                    }
+                // Remove from both lists at the same position
+                selectedWords.remove(position);
+                int removedIndex = selectedIndices.remove(position);
+                
+                // Re-enable the specific button that was disabled
+                if (removedIndex >= 0 && removedIndex < wordContainer.getChildCount()) {
+                    TextView btn = (TextView) wordContainer.getChildAt(removedIndex);
+                    btn.setAlpha(1f);
+                    btn.setClickable(true);
                 }
+                
+                updateAnswerDisplay();
             });
 
             answerContainer.addView(wordView);
@@ -208,6 +220,11 @@ public class PuzzleGameActivity extends AppCompatActivity implements TextToSpeec
 
         dbHelper.updateSceneProgress(sceneId, stars);
         dbHelper.addStars(stars);
+        
+        // IMPORTANT: Record lesson completion to unlock next lesson
+        if (planetId > 0 && sceneId > 0) {
+            progressionManager.recordLessonCompleted(planetId, sceneId, stars);
+        }
 
         String message = "Điểm số: " + score;
         SpaceDialog.showResult(this, "🧩", "Hoàn thành Puzzle!", message, stars, "Tiếp tục", () -> finish());

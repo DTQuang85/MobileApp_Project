@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0E27">
+
+    <!-- Animated Starfield Background -->
+    <View
+        android:id="@+id/starfieldBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_space_universe"/>
+
+    <!-- Main Content Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <!-- ============================================
+             BREADCRUMB - Navigation Path
+             ============================================ -->
+        <com.example.engapp.view.BreadcrumbView
+            android:id="@+id/breadcrumbView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- ============================================
+             TOP BAR - Premium Design with Gradient
+             ============================================ -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/topBarCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="#1A1F3A"
+            app:layout_constraintTop_toBottomOf="@id/breadcrumbView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:background="@drawable/bg_gradient_primary">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/circle_background"
+                    android:src="@drawable/ic_back"
+                    android:contentDescription="Back"
+                    android:padding="11dp"
+                    android:layout_marginEnd="14dp"/>
+
+                <TextView
+                    android:id="@+id/tvBattleTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="⚔️ Word Battle"
+                    android:textColor="#FFD93D"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:letterSpacing="0.03"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="4"/>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/progressContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#2A3F5F">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvQuestionCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5/10"
+                            android:textColor="#FFFFFF"
+                            android:textSize="17sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" ⭐"
+                            android:textSize="20sp"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ============================================
+             ENEMY CARD - Battle-Ready Design
+             ============================================ -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardEnemy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="16dp"
+            app:cardBackgroundColor="#1E2749"
+            app:layout_constraintTop_toBottomOf="@id/topBarCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_space_gradient">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:gravity="center">
+
+                    <!-- Enemy Emoji with Glow Effect -->
+                    <TextView
+                        android:id="@+id/tvEnemyEmoji"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🤖"
+                        android:textSize="80sp"
+                        android:layout_marginBottom="14dp"
+                        android:shadowColor="#FF6B6B"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="20"/>
+
+                    <TextView
+                        android:id="@+id/tvEnemyName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nebula Bot"
+                        android:textColor="#FFFFFF"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp"
+                        android:letterSpacing="0.03"
+                        android:shadowColor="#000000"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="3"/>
+
+                    <TextView
+                        android:id="@+id/tvEnemyLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Level 3"
+                        android:textColor="#94A3B8"
+                        android:textSize="15sp"
+                        android:layout_marginBottom="18dp"/>
+
+                    <!-- Health Bar with Better Styling -->
+                    <com.example.engapp.view.HealthBarView
+                        android:id="@+id/healthBarEnemy"
+                        android:layout_width="260dp"
+                        android:layout_height="22dp"
+                        android:contentDescription="Enemy Health Bar"/>
+                </LinearLayout>
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ============================================
+             ARENA ZONE - Battle Field with Depth
+             ============================================ -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/arenaZoneCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="10dp"
+            app:cardBackgroundColor="#151A35"
+            app:layout_constraintTop_toBottomOf="@id/cardEnemy"
+            app:layout_constraintBottom_toTopOf="@id/commandPanel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.30">
+
+            <FrameLayout
+                android:id="@+id/arenaZone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- Player và Buddy Container - Ẩn -->
+                <LinearLayout
+                    android:id="@+id/playerContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="start|center_vertical"
+                    android:padding="22dp"
+                    android:visibility="gone">
+
+                    <!-- Player Avatar Card with Gradient -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="6dp"
+                        app:cardBackgroundColor="#1A2F4F">
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_gradient_primary">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:id="@+id/tvPlayerEmoji"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="🧑‍🚀"
+                                    android:textSize="60sp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="You"
+                                    android:textColor="#4ECDC4"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginTop="8dp"
+                                    android:shadowColor="#000000"
+                                    android:shadowDx="1"
+                                    android:shadowDy="1"
+                                    android:shadowRadius="2"/>
+
+                                <com.example.engapp.view.HealthBarView
+                                    android:id="@+id/healthBarPlayer"
+                                    android:layout_width="110dp"
+                                    android:layout_height="16dp"
+                                    android:layout_marginTop="12dp"
+                                    android:contentDescription="Player Health Bar"/>
+                            </LinearLayout>
+                        </FrameLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Buddy - Ẩn -->
+                    <com.example.engapp.view.BuddyOverlayView
+                        android:id="@+id/buddyOverlay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:elevation="24dp"
+                        android:visibility="gone"/>
+                </LinearLayout>
+
+                <!-- Lightning Bolt Effect - Đã bỏ -->
+                <com.example.engapp.view.LightningBoltView
+                    android:id="@+id/lightningBolt"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"/>
+
+                <!-- Hit FX Overlays -->
+                <View
+                    android:id="@+id/hitFXOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"/>
+
+                <!-- Floating Damage Numbers -->
+                <TextView
+                    android:id="@+id/tvDamagePopup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-10"
+                    android:textColor="#FFD93D"
+                    android:textSize="40sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible"
+                    android:layout_gravity="center"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="6"/>
+
+                <!-- Combo Indicator -->
+                <TextView
+                    android:id="@+id/tvCombo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✨ Combo x3"
+                    android:textColor="#FFD93D"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="18dp"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="4"/>
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ============================================
+             COMMAND PANEL - Premium Question & Answers
+             ============================================ -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/commandPanel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="20dp"
+            app:cardBackgroundColor="#1A1F3A"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_command_panel">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="32dp"
+                    android:gravity="center">
+
+                    <!-- Question Header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:layout_marginBottom="24dp">
+
+                        <TextView
+                            android:id="@+id/tvQuestionType"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Chọn nghĩa đúng nhé!"
+                            android:textColor="#B8C5D1"
+                            android:textSize="17sp"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:layout_marginEnd="14dp"/>
+
+                        <ImageButton
+                            android:id="@+id/btnSpeaker"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_speaker"
+                            android:background="@drawable/circle_background"
+                            android:contentDescription="Listen"
+                            android:padding="11dp"/>
+                    </LinearLayout>
+
+                    <!-- Word Display - Prominent with Glow -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="32dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="8dp"
+                        app:cardBackgroundColor="#252B4A">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_gradient_primary">
+
+                            <TextView
+                                android:id="@+id/tvQuestion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="TRIANGLE"
+                                android:textColor="#FFFFFF"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:letterSpacing="0.1"
+                                android:padding="24dp"
+                                android:shadowColor="#4ECDC4"
+                                android:shadowDx="0"
+                                android:shadowDy="0"
+                                android:shadowRadius="12"/>
+                        </FrameLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Answer Buttons Container - Professional Grid 2x2 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="4dp"
+                        app:cardBackgroundColor="#1A2332">
+
+                        <LinearLayout
+                            android:id="@+id/layoutWrongAnswers"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <!-- Row 1: 2 buttons -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:layout_marginBottom="12dp">
+
+                                <Button
+                                    android:id="@+id/btnAnswer1"
+                                    android:layout_width="0dp"
+                                    android:layout_height="80dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="6dp"
+                                    android:layout_marginEnd="6dp"
+                                    android:text="MÀU VÀNG"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:background="@drawable/button_action_secondary"
+                                    android:stateListAnimator="@null"
+                                    android:letterSpacing="0.025"
+                                    android:elevation="8dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:minHeight="80dp"/>
+
+                                <Button
+                                    android:id="@+id/btnAnswer2"
+                                    android:layout_width="0dp"
+                                    android:layout_height="80dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="6dp"
+                                    android:layout_marginEnd="6dp"
+                                    android:text="MÀU ĐỎ"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:background="@drawable/button_action_secondary"
+                                    android:stateListAnimator="@null"
+                                    android:letterSpacing="0.025"
+                                    android:elevation="8dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:minHeight="80dp"/>
+                            </LinearLayout>
+
+                            <!-- Row 2: 2 buttons -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center">
+
+                                <Button
+                                    android:id="@+id/btnAnswer3"
+                                    android:layout_width="0dp"
+                                    android:layout_height="80dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="6dp"
+                                    android:layout_marginEnd="6dp"
+                                    android:text="MÀU XANH DƯƠNG"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:background="@drawable/button_action_secondary"
+                                    android:stateListAnimator="@null"
+                                    android:letterSpacing="0.025"
+                                    android:elevation="8dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:minHeight="80dp"/>
+
+                                <Button
+                                    android:id="@+id/btnAnswer4"
+                                    android:layout_width="0dp"
+                                    android:layout_height="80dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="6dp"
+                                    android:layout_marginEnd="6dp"
+                                    android:text="Answer 4"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:background="@drawable/button_action_secondary"
+                                    android:stateListAnimator="@null"
+                                    android:letterSpacing="0.025"
+                                    android:elevation="8dp"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:minHeight="80dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                    
+                    <!-- Hidden button for compatibility -->
+                    <Button
+                        android:id="@+id/btnAnswerCorrect"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone"/>
+                </LinearLayout>
+            </FrameLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Feedback Message -->
+        <TextView
+            android:id="@+id/tvFeedback"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#22C55E"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/bg_gradient_primary"
+            android:padding="16dp"
+            android:elevation="12dp"
+            android:shadowColor="#000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            app:layout_constraintBottom_toTopOf="@id/commandPanel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ============================================
+         RESULT CARD - Victory/Defeat Screen
+         ============================================ -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/resultCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="36dp"
+        android:visibility="gone"
+        app:cardCornerRadius="36dp"
+        app:cardElevation="28dp"
+        app:cardBackgroundColor="#1E2749">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_space_gradient">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="44dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/tvResultEmoji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏆"
+                    android:textSize="108sp"
+                    android:shadowColor="#FFD93D"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="20"/>
+
+                <TextView
+                    android:id="@+id/tvResultTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="You Win! 🌟"
+                    android:textColor="#FFD93D"
+                    android:textSize="40sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="24dp"
+                    android:letterSpacing="0.03"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="6"/>
+
+                <com.example.engapp.view.StarRatingView
+                    android:id="@+id/starRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"/>
+
+                <TextView
+                    android:id="@+id/tvResultScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Score: 100"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="24dp"/>
+
+                <TextView
+                    android:id="@+id/tvResultDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10/10 correct answers"
+                    android:textColor="#94A3B8"
+                    android:textSize="17sp"
+                    android:layout_marginTop="14dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="36dp">
+
+                    <Button
+                        android:id="@+id/btnRetry"
+                        android:layout_width="0dp"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="14dp"
+                        android:text="Try Again 🚀"
+                        android:textColor="#FFFFFF"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/button_skip_background"
+                        android:letterSpacing="0.02"
+                        android:elevation="8dp"/>
+
+                    <Button
+                        android:id="@+id/btnContinue"
+                        android:layout_width="0dp"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="14dp"
+                        android:text="Continue ✨"
+                        android:textColor="#000000"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/button_gold_background"
+                        android:letterSpacing="0.02"
+                        android:elevation="12dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Confetti Overlay -->
+    <com.example.engapp.view.ConfettiView
+        android:id="@+id/confettiView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+</FrameLayout>

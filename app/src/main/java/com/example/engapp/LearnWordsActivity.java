@@ -1,5 +1,6 @@
 package com.example.engapp;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.*;
+import com.example.engapp.manager.ProgressionManager;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +29,7 @@ public class LearnWordsActivity extends BaseBuddyActivity implements TextToSpeec
 
     private TextToSpeech tts;
     private GameDatabaseHelper dbHelper;
+    private ProgressionManager progressionManager;
     private List<WordData> words;
     private int currentIndex = 0;
     private int planetId;
@@ -42,6 +45,7 @@ public class LearnWordsActivity extends BaseBuddyActivity implements TextToSpeec
         sceneId = getIntent().getIntExtra("scene_id", 1);
 
         dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = ProgressionManager.getInstance(this);
 
         initViews();
         initTTS();
@@ -161,18 +165,27 @@ public class LearnWordsActivity extends BaseBuddyActivity implements TextToSpeec
             recordWordLearned(word.english, word.vietnamese, String.valueOf(planetId));
         }
 
-        // Update scene progress
-        dbHelper.updateSceneProgress(sceneId, 3);
-        dbHelper.addStars(3);
+        int starsEarned = 3;
+        
+        // Update scene progress in database
+        dbHelper.updateSceneProgress(sceneId, starsEarned);
+        dbHelper.addStars(starsEarned);
 
         // Add stars through new progression system
-        addStars(3, "learn_words_" + sceneId);
+        addStars(starsEarned, "learn_words_" + sceneId);
+        
+        // IMPORTANT: Record lesson completion to unlock next lesson
+        progressionManager.recordLessonCompleted(planetId, sceneId, starsEarned);
 
         // Trigger Buddy celebration
         onZoneCompleted();
 
         String message = "Bạn đã học " + words.size() + " từ mới!";
-        SpaceDialog.showSuccess(this, message, 3, () -> finish());
+        currentDialog = SpaceDialog.showSuccess(this, message, 3, () -> {
+            if (!isFinishing() && !isDestroyed()) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -189,8 +202,16 @@ public class LearnWordsActivity extends BaseBuddyActivity implements TextToSpeec
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
+    private Dialog currentDialog;
+    
     @Override
     protected void onDestroy() {
+        // Dismiss dialog nếu đang hiển thị để tránh WindowLeaked
+        if (currentDialog != null && currentDialog.isShowing()) {
+            currentDialog.dismiss();
+            currentDialog = null;
+        }
+        
         if (tts != null) {
             tts.stop();
             tts.shutdown();

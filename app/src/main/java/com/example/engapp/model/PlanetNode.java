@@ -121,7 +121,7 @@ public class PlanetNode implements Serializable {
             case "puzzle":
                 return "PuzzleGameActivity";
             case "battle":
-                return "WordBattleActivity";
+                return "BattleActivity";
             default:
                 return "LearnWordsActivity";
         }
@@ -155,3 +155,4 @@ public class PlanetNode implements Serializable {
         return (starsEarned * 100) / maxStars;
     }
 }
+
