@@ -22,6 +22,10 @@ import androidx.core.content.ContextCompat;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.WordData;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,10 +42,10 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private static final int AI_COUNT = 3;
     private static final long TICK_MS = 50L;
-    private static final long IDLE_WARN_1_MS = 6000L;
-    private static final long IDLE_WARN_2_MS = 9000L;
-    private static final long IDLE_LOSE_MS = 12000L;
-    private static final long NO_PROGRESS_LOSE_MS = 20000L;
+    private static final long IDLE_WARN_1_MS = 12000L;
+    private static final long IDLE_WARN_2_MS = 18000L;
+    private static final long IDLE_LOSE_MS = 25000L;
+    private static final long NO_PROGRESS_LOSE_MS = 45000L;
 
     // UI - Top
     private ImageView btnBack;
@@ -54,17 +58,17 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private TextView tvRaceStatus;
     private FrameLayout lanePlayer;
     private FrameLayout[] laneAi = new FrameLayout[AI_COUNT];
-    private ImageView horsePlayer;
-    private ImageView[] horseAi = new ImageView[AI_COUNT];
+    private TextView horsePlayer;
+    private TextView[] horseAi = new TextView[AI_COUNT];
     private TextView tvPlayerName;
     private TextView[] tvAiName = new TextView[AI_COUNT];
+    private TextView[] tvAiStatus = new TextView[AI_COUNT];
     private ProgressBar progressPlayer;
     private ProgressBar[] progressAi = new ProgressBar[AI_COUNT];
 
     // UI - Word panel
     private TextView tvCurrentWord;
     private GridLayout gridLetters;
-    private Button btnBoost;
     private Button btnClear;
     private Button btnShuffle;
 
@@ -86,6 +90,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private final List<Integer> selectedIndices = new ArrayList<>();
     private final StringBuilder currentWord = new StringBuilder();
     private final Set<String> validWords = new HashSet<>();
+    private final Set<String> learnedWordsSet = new HashSet<>();
+    private final Set<String> dictionaryWordsSet = new HashSet<>();
     private final Set<String> usedWords = new HashSet<>();
 
     private long lastTickMs;
@@ -104,6 +110,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private long playerBoostEndMs;
 
     private float[] aiBoostSpeed = new float[AI_COUNT];
+    private float[] aiBoostBase = new float[AI_COUNT];
     private long[] aiBoostEndMs = new long[AI_COUNT];
     private long[] aiNextBoostMs = new long[AI_COUNT];
     private long[] aiBoostIntervalMs = new long[AI_COUNT];
@@ -114,7 +121,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private int score;
     private int wrongAttempts;
     private int correctWords;
-    private int maxWrongAttempts = 4;
+    private int maxWrongAttempts = 5;
 
     private final String[] idleMessages = new String[] {
         "Nhanh len! Chon chu nao!",
@@ -152,14 +159,13 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             playerDistance += (playerBaseSpeed + boost) * deltaSec;
 
             for (int i = 0; i < AI_COUNT; i++) {
-                if (now >= aiNextBoostMs[i]) {
-                    aiBoostEndMs[i] = now + 900L + (i * 140L);
-                    aiNextBoostMs[i] = now + aiBoostIntervalMs[i] + random.nextInt(600);
-                }
-                float aiBoost = (now < aiBoostEndMs[i]) ? aiBoostSpeed[i] : 0f;
-                float jitter = (random.nextFloat() - 0.45f) * 6f;
-                aiDistance[i] += (aiBaseSpeed[i] + aiBoost + jitter) * deltaSec;
+            if (now >= aiNextBoostMs[i]) {
+                applyAiWordBoost(i, now);
             }
+            float aiBoost = (now < aiBoostEndMs[i]) ? aiBoostSpeed[i] : 0f;
+            float jitter = (random.nextFloat() - 0.45f) * 6f;
+            aiDistance[i] += (aiBaseSpeed[i] + aiBoost + jitter) * deltaSec;
+        }
 
             updateRaceUI();
 
@@ -207,6 +213,9 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         tvAiName[0] = findViewById(R.id.tvAiName1);
         tvAiName[1] = findViewById(R.id.tvAiName2);
         tvAiName[2] = findViewById(R.id.tvAiName3);
+        tvAiStatus[0] = findViewById(R.id.tvAiStatus1);
+        tvAiStatus[1] = findViewById(R.id.tvAiStatus2);
+        tvAiStatus[2] = findViewById(R.id.tvAiStatus3);
         progressPlayer = findViewById(R.id.progressPlayer);
         progressAi[0] = findViewById(R.id.progressAi1);
         progressAi[1] = findViewById(R.id.progressAi2);
@@ -214,7 +223,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
         tvCurrentWord = findViewById(R.id.tvCurrentWord);
         gridLetters = findViewById(R.id.gridLetters);
-        btnBoost = findViewById(R.id.btnBoost);
         btnClear = findViewById(R.id.btnClear);
         btnShuffle = findViewById(R.id.btnShuffle);
 
@@ -225,7 +233,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         btnExit = findViewById(R.id.btnExit);
 
         btnBack.setOnClickListener(v -> finish());
-        btnBoost.setOnClickListener(v -> submitWord());
         btnClear.setOnClickListener(v -> clearSelection());
         btnShuffle.setOnClickListener(v -> shuffleRack());
         btnRetry.setOnClickListener(v -> restartGame());
@@ -236,11 +243,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         tvAiName[0].setText("Comet");
         tvAiName[1].setText("Bolt");
         tvAiName[2].setText("Rocket");
-
-        horsePlayer.setColorFilter(ContextCompat.getColor(this, R.color.fun_green));
-        horseAi[0].setColorFilter(ContextCompat.getColor(this, R.color.fun_blue));
-        horseAi[1].setColorFilter(ContextCompat.getColor(this, R.color.fun_purple));
-        horseAi[2].setColorFilter(ContextCompat.getColor(this, R.color.fun_orange));
 
         Animation bob = AnimationUtils.loadAnimation(this, R.anim.horse_bob);
         horsePlayer.startAnimation(bob);
@@ -270,17 +272,15 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             tier = 4;
         }
 
-        rackSize = 5 + tier;
-        maxWordLength = 2 + tier;
+        rackSize = 10;
+        maxWordLength = rackSize;
 
-        playerBaseSpeed = 42f + (tier * 4f);
+        playerBaseSpeed = 40f + (tier * 3.5f);
         for (int i = 0; i < AI_COUNT; i++) {
-            aiBaseSpeed[i] = 40f + (tier * 4f) + (i * 2.2f);
-            aiBoostSpeed[i] = 8f + (i * 4f) + (tier * 1.2f);
-            aiBoostIntervalMs[i] = Math.max(2000L, 3400L - (tier * 250L) + (i * 400L));
+            configureAiProfile(i, tier);
         }
 
-        finishDistance = 900f + (tier * 120f);
+        finishDistance = 1500f + (tier * 180f);
 
         tvLearned.setText("Learned: " + learnedCount);
         tvDifficulty.setText(tier == 1 ? "Easy" : tier == 2 ? "Medium" : tier == 3 ? "Hard" : "Master");
@@ -288,6 +288,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private void loadWordPool() {
         validWords.clear();
+        learnedWordsSet.clear();
+        dictionaryWordsSet.clear();
 
         List<WordData> learnedWords = dbHelper.getLearnedWords();
         if (learnedWords.isEmpty()) {
@@ -301,15 +303,20 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
                 continue;
             }
             String cleaned = word.english.toLowerCase(Locale.US).replaceAll("[^a-z]", "");
-            if (cleaned.length() >= 2 && cleaned.length() <= Math.max(rackSize, maxWordLength)) {
+            if (cleaned.length() >= 1) {
+                learnedWordsSet.add(cleaned);
                 validWords.add(cleaned);
             }
         }
 
-        if (validWords.isEmpty()) {
+        loadDictionaryWords();
+        validWords.addAll(dictionaryWordsSet);
+
+        if (validWords.size() < 10) {
             Collections.addAll(validWords,
-                "cat", "dog", "sun", "star", "moon", "ball", "fish", "car", "book", "tree",
-                "rain", "bird", "frog", "cake", "milk", "shoe", "blue", "pink", "jump", "play"
+                "a", "i", "am", "an", "at", "be", "cat", "dog", "sun", "star",
+                "moon", "ball", "fish", "car", "book", "tree", "rain", "bird",
+                "frog", "cake", "milk", "shoe", "blue", "pink", "jump", "play"
             );
         }
     }
@@ -393,7 +400,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         currentWord.setLength(0);
         updateCurrentWord();
 
-        gridLetters.setColumnCount(rackLetters.size() <= 6 ? 3 : 4);
+        gridLetters.setColumnCount(rackLetters.size() <= 8 ? 4 : 5);
 
         int tileSize = (int) TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
@@ -405,8 +412,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             Button btn = new Button(this);
             btn.setAllCaps(true);
             btn.setText(String.valueOf(letter).toUpperCase(Locale.US));
-            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            btn.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        btn.setTextColor(ContextCompat.getColor(this, R.color.text_white));
             btn.setBackgroundResource(R.drawable.bg_letter_tile);
             btn.setPadding(0, 0, 0, 0);
 
@@ -435,8 +442,10 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         Button btn = letterButtons.get(index);
         btn.setEnabled(false);
         btn.setBackgroundResource(R.drawable.bg_letter_tile_selected);
+        btn.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
 
         updateCurrentWord();
+        autoSubmitIfReady();
     }
 
     private void clearSelection() {
@@ -447,6 +456,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         for (Button btn : letterButtons) {
             btn.setEnabled(true);
             btn.setBackgroundResource(R.drawable.bg_letter_tile);
+            btn.setTextColor(ContextCompat.getColor(this, R.color.text_white));
         }
     }
 
@@ -467,16 +477,12 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private void submitWord() {
         recordInput();
         String word = currentWord.toString().toLowerCase(Locale.US);
-        if (word.length() < 2) {
-            registerWrong("Thu tu dai hon nhe!");
-            return;
-        }
         if (word.length() > rackSize) {
             registerWrong("Tu dai qua roi!");
             return;
         }
         if (!validWords.contains(word)) {
-            registerWrong(randomMessage(wrongMessages));
+            registerWrong("Tu nay khong dung hoac chua co trong tu dien");
             return;
         }
         if (usedWords.contains(word)) {
@@ -503,6 +509,20 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         if (usedWords.size() % 3 == 0) {
             generateLetterRack();
         }
+    }
+
+    private void autoSubmitIfReady() {
+        String word = currentWord.toString().toLowerCase(Locale.US);
+        if (word.length() < 2) {
+            return;
+        }
+        if (!validWords.contains(word)) {
+            return;
+        }
+        if (usedWords.contains(word)) {
+            return;
+        }
+        submitWord();
     }
 
     private void registerWrong(String message) {
@@ -543,7 +563,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             loseRace("Chua co tu dung. " + randomMessage(loseMessages));
             return true;
         }
-        if (wrongAttempts >= 3 && correctWords == 0 && now - raceStartMs >= 15000L) {
+        if (wrongAttempts >= 3 && correctWords == 0 && now - raceStartMs >= 25000L) {
             loseRace("Hay thu lai nhe. " + randomMessage(loseMessages));
             return true;
         }
@@ -583,6 +603,78 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
         float maxX = laneWidth - horseWidth - dp(8);
         horse.setTranslationX(maxX * progress);
+    }
+
+    private void configureAiProfile(int index, int tier) {
+        int learnedFactor = Math.min(learnedCount, 120);
+        int baseInterval = Math.max(1400, 3600 - (learnedFactor * 16));
+
+        switch (index) {
+            case 0: // Comet - steady, slower
+                aiBaseSpeed[index] = 36f + (tier * 3.2f);
+                aiBoostBase[index] = 8f + (tier * 1.2f);
+                aiBoostIntervalMs[index] = baseInterval + 600L;
+                break;
+            case 1: // Bolt - balanced
+                aiBaseSpeed[index] = 38f + (tier * 3.4f);
+                aiBoostBase[index] = 10f + (tier * 1.4f);
+                aiBoostIntervalMs[index] = baseInterval + 200L;
+                break;
+            default: // Rocket - aggressive
+                aiBaseSpeed[index] = 40f + (tier * 3.6f);
+                aiBoostBase[index] = 12f + (tier * 1.6f);
+                aiBoostIntervalMs[index] = Math.max(1200L, baseInterval - 200L);
+                break;
+        }
+    }
+
+    private void applyAiWordBoost(int index, long now) {
+        int learnedFactor = Math.min(learnedCount, 120);
+        int baseLen = Math.min(maxWordLength, 2 + (learnedFactor / 20));
+        int length = Math.max(2, Math.min(maxWordLength, baseLen + index + random.nextInt(2)));
+        String word = pickAiWord(length);
+
+        aiBoostEndMs[index] = now + 700L + (length * 140L);
+        aiBoostSpeed[index] = aiBoostBase[index] + (length * 1.2f);
+        aiDistance[index] += length * 9f;
+        aiNextBoostMs[index] = now + aiBoostIntervalMs[index] + random.nextInt(500);
+
+        if (tvAiStatus[index] != null) {
+            tvAiStatus[index].setText(tvAiName[index].getText() + ": " + word.toUpperCase(Locale.US) + " +" + length);
+        }
+    }
+
+    private String pickAiWord(int length) {
+        List<String> pool = new ArrayList<>();
+        for (String word : validWords) {
+            if (word.length() == length) {
+                pool.add(word);
+            }
+        }
+        if (!pool.isEmpty()) {
+            return pool.get(random.nextInt(pool.size()));
+        }
+        String letters = "abcdefghijklmnopqrstuvwxyz";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(letters.charAt(random.nextInt(letters.length())));
+        }
+        return sb.toString();
+    }
+
+    private void loadDictionaryWords() {
+        InputStream inputStream = getResources().openRawResource(R.raw.wordlist_en);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String cleaned = line.trim().toLowerCase(Locale.US).replaceAll("[^a-z]", "");
+                if (cleaned.length() >= 1) {
+                    dictionaryWordsSet.add(cleaned);
+                }
+            }
+        } catch (IOException e) {
+            // Ignore dictionary load issues; fallback list will be used.
+        }
     }
 
     private boolean checkRaceFinish() {
