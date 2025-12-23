@@ -7,6 +7,8 @@ import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -15,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import com.example.engapp.database.GameDatabaseHelper;
@@ -37,6 +38,10 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private static final int AI_COUNT = 3;
     private static final long TICK_MS = 50L;
+    private static final long IDLE_WARN_1_MS = 6000L;
+    private static final long IDLE_WARN_2_MS = 9000L;
+    private static final long IDLE_LOSE_MS = 12000L;
+    private static final long NO_PROGRESS_LOSE_MS = 20000L;
 
     // UI - Top
     private ImageView btnBack;
@@ -49,8 +54,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private TextView tvRaceStatus;
     private FrameLayout lanePlayer;
     private FrameLayout[] laneAi = new FrameLayout[AI_COUNT];
-    private TextView horsePlayer;
-    private TextView[] horseAi = new TextView[AI_COUNT];
+    private ImageView horsePlayer;
+    private ImageView[] horseAi = new ImageView[AI_COUNT];
     private TextView tvPlayerName;
     private TextView[] tvAiName = new TextView[AI_COUNT];
     private ProgressBar progressPlayer;
@@ -84,6 +89,9 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private final Set<String> usedWords = new HashSet<>();
 
     private long lastTickMs;
+    private long raceStartMs;
+    private long lastInputMs;
+    private int idleWarnStage;
     private boolean raceRunning;
 
     private float finishDistance;
@@ -95,10 +103,36 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private float playerBoostSpeed;
     private long playerBoostEndMs;
 
+    private float[] aiBoostSpeed = new float[AI_COUNT];
+    private long[] aiBoostEndMs = new long[AI_COUNT];
+    private long[] aiNextBoostMs = new long[AI_COUNT];
+    private long[] aiBoostIntervalMs = new long[AI_COUNT];
+
     private int learnedCount;
     private int rackSize;
     private int maxWordLength;
     private int score;
+    private int wrongAttempts;
+    private int correctWords;
+    private int maxWrongAttempts = 4;
+
+    private final String[] idleMessages = new String[] {
+        "Nhanh len! Chon chu nao!",
+        "Ban oi, hay ghep tu de tang toc!",
+        "Co len! Con ngua dang cham day!"
+    };
+
+    private final String[] wrongMessages = new String[] {
+        "Gan dung roi! Thu lai nhe!",
+        "Khong sao! Chon tu khac!",
+        "Co len! Tu nay chua dung!"
+    };
+
+    private final String[] loseMessages = new String[] {
+        "Lan sau se tot hon!",
+        "Hay thu lai nhe!",
+        "Dung bo cuoc, ban lam duoc!"
+    };
 
     private final Runnable raceTick = new Runnable() {
         @Override
@@ -110,12 +144,21 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             float deltaSec = (now - lastTickMs) / 1000f;
             lastTickMs = now;
 
+            if (checkIdle(now) || checkPoorPlay(now)) {
+                return;
+            }
+
             float boost = (now < playerBoostEndMs) ? playerBoostSpeed : 0f;
             playerDistance += (playerBaseSpeed + boost) * deltaSec;
 
             for (int i = 0; i < AI_COUNT; i++) {
-                float jitter = (random.nextFloat() - 0.4f) * 6f;
-                aiDistance[i] += (aiBaseSpeed[i] + jitter) * deltaSec;
+                if (now >= aiNextBoostMs[i]) {
+                    aiBoostEndMs[i] = now + 900L + (i * 140L);
+                    aiNextBoostMs[i] = now + aiBoostIntervalMs[i] + random.nextInt(600);
+                }
+                float aiBoost = (now < aiBoostEndMs[i]) ? aiBoostSpeed[i] : 0f;
+                float jitter = (random.nextFloat() - 0.45f) * 6f;
+                aiDistance[i] += (aiBaseSpeed[i] + aiBoost + jitter) * deltaSec;
             }
 
             updateRaceUI();
@@ -193,6 +236,17 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         tvAiName[0].setText("Comet");
         tvAiName[1].setText("Bolt");
         tvAiName[2].setText("Rocket");
+
+        horsePlayer.setColorFilter(ContextCompat.getColor(this, R.color.fun_green));
+        horseAi[0].setColorFilter(ContextCompat.getColor(this, R.color.fun_blue));
+        horseAi[1].setColorFilter(ContextCompat.getColor(this, R.color.fun_purple));
+        horseAi[2].setColorFilter(ContextCompat.getColor(this, R.color.fun_orange));
+
+        Animation bob = AnimationUtils.loadAnimation(this, R.anim.horse_bob);
+        horsePlayer.startAnimation(bob);
+        horseAi[0].startAnimation(bob);
+        horseAi[1].startAnimation(bob);
+        horseAi[2].startAnimation(bob);
     }
 
     private void setupDifficulty() {
@@ -219,9 +273,11 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         rackSize = 5 + tier;
         maxWordLength = 2 + tier;
 
-        playerBaseSpeed = 46f + (tier * 4f);
+        playerBaseSpeed = 42f + (tier * 4f);
         for (int i = 0; i < AI_COUNT; i++) {
-            aiBaseSpeed[i] = 44f + (tier * 4f) + (i * 1.2f);
+            aiBaseSpeed[i] = 40f + (tier * 4f) + (i * 2.2f);
+            aiBoostSpeed[i] = 8f + (i * 4f) + (tier * 1.2f);
+            aiBoostIntervalMs[i] = Math.max(2000L, 3400L - (tier * 250L) + (i * 400L));
         }
 
         finishDistance = 900f + (tier * 120f);
@@ -260,7 +316,19 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private void startRace() {
         raceRunning = true;
-        lastTickMs = SystemClock.uptimeMillis();
+        long now = SystemClock.uptimeMillis();
+        lastTickMs = now;
+        raceStartMs = now;
+        lastInputMs = now;
+        idleWarnStage = 0;
+        wrongAttempts = 0;
+        correctWords = 0;
+
+        for (int i = 0; i < AI_COUNT; i++) {
+            aiNextBoostMs[i] = now + 1400L + (i * 700L);
+            aiBoostEndMs[i] = 0L;
+        }
+
         tvRaceStatus.setText("Build words to boost your horse!");
         handler.post(raceTick);
     }
@@ -280,9 +348,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         playerBoostSpeed = 0f;
         playerBoostEndMs = 0L;
 
-        raceRunning = true;
-        lastTickMs = SystemClock.uptimeMillis();
-        handler.post(raceTick);
+        startRace();
     }
 
     private void generateLetterRack() {
@@ -327,6 +393,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         currentWord.setLength(0);
         updateCurrentWord();
 
+        gridLetters.setColumnCount(rackLetters.size() <= 6 ? 3 : 4);
+
         int tileSize = (int) TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
         int margin = (int) TypedValue.applyDimension(
@@ -360,6 +428,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         if (selectedIndices.contains(index)) {
             return;
         }
+        recordInput();
         selectedIndices.add(index);
         currentWord.append(rackLetters.get(index));
 
@@ -382,6 +451,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void shuffleRack() {
+        recordInput();
         Collections.shuffle(rackLetters);
         renderLetters();
     }
@@ -395,26 +465,27 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void submitWord() {
+        recordInput();
         String word = currentWord.toString().toLowerCase(Locale.US);
         if (word.length() < 2) {
-            showStatus("Try a longer word!");
+            registerWrong("Thu tu dai hon nhe!");
             return;
         }
         if (word.length() > rackSize) {
-            showStatus("Too long for this round");
+            registerWrong("Tu dai qua roi!");
             return;
         }
         if (!validWords.contains(word)) {
-            showStatus("Not in the word list");
-            shakeStatus();
+            registerWrong(randomMessage(wrongMessages));
             return;
         }
         if (usedWords.contains(word)) {
-            showStatus("You already used that word");
+            registerWrong("Tu nay da dung roi!");
             return;
         }
 
         usedWords.add(word);
+        correctWords++;
         int length = word.length();
         long now = SystemClock.uptimeMillis();
         playerBoostSpeed = 12f + (length * 6f);
@@ -424,7 +495,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         score += length * 10;
         tvScore.setText("Score: " + score);
 
-        showStatus("Boost! +" + length);
+        showStatus("Boost x" + length + "!");
+        playStatusPop();
         speakWord(word);
         clearSelection();
 
@@ -433,14 +505,62 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
     }
 
+    private void registerWrong(String message) {
+        wrongAttempts++;
+        showStatus(message);
+        playStatusPop();
+        playerDistance = Math.max(0f, playerDistance - 20f);
+        if (wrongAttempts >= maxWrongAttempts) {
+            loseRace("Sai qua nhieu roi. " + randomMessage(loseMessages));
+        }
+    }
+
+    private void recordInput() {
+        lastInputMs = SystemClock.uptimeMillis();
+        idleWarnStage = 0;
+    }
+
+    private boolean checkIdle(long now) {
+        long idle = now - lastInputMs;
+        if (idle >= IDLE_LOSE_MS) {
+            loseRace("Dung lai lau qua. " + randomMessage(loseMessages));
+            return true;
+        }
+        if (idle >= IDLE_WARN_2_MS && idleWarnStage < 2) {
+            showStatus(randomMessage(idleMessages));
+            idleWarnStage = 2;
+            return false;
+        }
+        if (idle >= IDLE_WARN_1_MS && idleWarnStage < 1) {
+            showStatus(randomMessage(idleMessages));
+            idleWarnStage = 1;
+        }
+        return false;
+    }
+
+    private boolean checkPoorPlay(long now) {
+        if (correctWords == 0 && now - raceStartMs >= NO_PROGRESS_LOSE_MS) {
+            loseRace("Chua co tu dung. " + randomMessage(loseMessages));
+            return true;
+        }
+        if (wrongAttempts >= 3 && correctWords == 0 && now - raceStartMs >= 15000L) {
+            loseRace("Hay thu lai nhe. " + randomMessage(loseMessages));
+            return true;
+        }
+        return false;
+    }
+
     private void showStatus(String text) {
         tvRaceStatus.setText(text);
     }
 
-    private void shakeStatus() {
-        tvRaceStatus.animate().translationX(8f).setDuration(60).withEndAction(() ->
-            tvRaceStatus.animate().translationX(0f).setDuration(60).start()
-        ).start();
+    private void playStatusPop() {
+        Animation pop = AnimationUtils.loadAnimation(this, R.anim.status_pop);
+        tvRaceStatus.startAnimation(pop);
+    }
+
+    private String randomMessage(String[] messages) {
+        return messages[random.nextInt(messages.length)];
     }
 
     private void updateRaceUI() {
@@ -455,7 +575,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
     }
 
-    private void updateHorsePosition(FrameLayout lane, TextView horse, float progress) {
+    private void updateHorsePosition(FrameLayout lane, View horse, float progress) {
         int laneWidth = lane.getWidth();
         int horseWidth = horse.getWidth();
         if (laneWidth == 0 || horseWidth == 0) {
@@ -479,6 +599,12 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             }
         }
         return false;
+    }
+
+    private void loseRace(String reason) {
+        tvResultTitle.setText("You lose!");
+        tvResultDetail.setText(reason);
+        endRace();
     }
 
     private void endRace() {

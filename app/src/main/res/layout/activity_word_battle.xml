@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_race_sky">
+    android:background="@drawable/bg_space_universe">
 
     <LinearLayout
         android:id="@+id/topBar"
@@ -77,13 +77,15 @@
 
         <TextView
             android:id="@+id/tvRaceStatus"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Build words to boost your horse!"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/text_white"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:background="@drawable/bg_glass_dark"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -95,15 +97,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="You"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/text_white"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
             <FrameLayout
                 android:id="@+id/lanePlayer"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
 
@@ -113,21 +115,17 @@
                     android:layout_gravity="end|center_vertical"
                     android:text="FINISH"
                     android:textSize="10sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <TextView
+                <ImageView
                     android:id="@+id/horsePlayer"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_gravity="start|center_vertical"
-                    android:text="P1"
-                    android:textStyle="bold"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_white"
-                    android:gravity="center"
-                    android:background="@drawable/bg_avatar_selected"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_horse"
+                    app:tint="@color/fun_green"/>
             </FrameLayout>
 
             <ProgressBar
@@ -138,7 +136,7 @@
                 android:max="100"
                 android:progress="0"
                 android:progressTint="@color/fun_green"
-                android:progressBackgroundTint="@color/divider"/>
+                android:progressBackgroundTint="#2BFFFFFF"/>
 
         </LinearLayout>
 
@@ -146,22 +144,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:id="@+id/tvAiName1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Comet"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/text_white"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
             <FrameLayout
                 android:id="@+id/laneAi1"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
 
@@ -171,21 +169,17 @@
                     android:layout_gravity="end|center_vertical"
                     android:text="FINISH"
                     android:textSize="10sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <TextView
+                <ImageView
                     android:id="@+id/horseAi1"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_gravity="start|center_vertical"
-                    android:text="AI"
-                    android:textStyle="bold"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_white"
-                    android:gravity="center"
-                    android:background="@drawable/bg_avatar_normal"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_horse"
+                    app:tint="@color/fun_blue"/>
             </FrameLayout>
 
             <ProgressBar
@@ -196,7 +190,7 @@
                 android:max="100"
                 android:progress="0"
                 android:progressTint="@color/fun_blue"
-                android:progressBackgroundTint="@color/divider"/>
+                android:progressBackgroundTint="#2BFFFFFF"/>
 
         </LinearLayout>
 
@@ -204,22 +198,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:id="@+id/tvAiName2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bolt"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/text_white"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
             <FrameLayout
                 android:id="@+id/laneAi2"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
 
@@ -229,21 +223,17 @@
                     android:layout_gravity="end|center_vertical"
                     android:text="FINISH"
                     android:textSize="10sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <TextView
+                <ImageView
                     android:id="@+id/horseAi2"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_gravity="start|center_vertical"
-                    android:text="AI"
-                    android:textStyle="bold"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_white"
-                    android:gravity="center"
-                    android:background="@drawable/bg_avatar_normal"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_horse"
+                    app:tint="@color/fun_purple"/>
             </FrameLayout>
 
             <ProgressBar
@@ -254,7 +244,7 @@
                 android:max="100"
                 android:progress="0"
                 android:progressTint="@color/fun_purple"
-                android:progressBackgroundTint="@color/divider"/>
+                android:progressBackgroundTint="#2BFFFFFF"/>
 
         </LinearLayout>
 
@@ -262,22 +252,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:id="@+id/tvAiName3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rocket"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/text_white"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
             <FrameLayout
                 android:id="@+id/laneAi3"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:layout_marginTop="4dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
 
@@ -287,21 +277,17 @@
                     android:layout_gravity="end|center_vertical"
                     android:text="FINISH"
                     android:textSize="10sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <TextView
+                <ImageView
                     android:id="@+id/horseAi3"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_gravity="start|center_vertical"
-                    android:text="AI"
-                    android:textStyle="bold"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_white"
-                    android:gravity="center"
-                    android:background="@drawable/bg_avatar_normal"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_horse"
+                    app:tint="@color/fun_orange"/>
             </FrameLayout>
 
             <ProgressBar
@@ -312,7 +298,7 @@
                 android:max="100"
                 android:progress="0"
                 android:progressTint="@color/fun_orange"
-                android:progressBackgroundTint="@color/divider"/>
+                android:progressBackgroundTint="#2BFFFFFF"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -325,7 +311,7 @@
         android:layout_margin="12dp"
         app:cardCornerRadius="18dp"
         app:cardElevation="6dp"
-        app:cardBackgroundColor="@color/background_white">
+        app:cardBackgroundColor="@drawable/bg_glass_dark">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -338,7 +324,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Word: ..."
-                android:textColor="@color/text_primary"
+                android:textColor="@color/text_white"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
@@ -347,6 +333,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:background="@drawable/bg_card"
+                android:padding="6dp"
                 android:columnCount="4"
                 android:alignmentMode="alignMargins"/>
 
