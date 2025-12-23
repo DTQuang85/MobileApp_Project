@@ -104,7 +104,7 @@
             <FrameLayout
                 android:id="@+id/lanePlayer"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
@@ -120,8 +120,8 @@
 
                 <ImageView
                     android:id="@+id/horsePlayer"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_horse"
@@ -158,7 +158,7 @@
             <FrameLayout
                 android:id="@+id/laneAi1"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
@@ -174,8 +174,8 @@
 
                 <ImageView
                     android:id="@+id/horseAi1"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_horse"
@@ -212,7 +212,7 @@
             <FrameLayout
                 android:id="@+id/laneAi2"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
@@ -228,8 +228,8 @@
 
                 <ImageView
                     android:id="@+id/horseAi2"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_horse"
@@ -266,7 +266,7 @@
             <FrameLayout
                 android:id="@+id/laneAi3"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="6dp"
                 android:background="@drawable/bg_race_lane">
@@ -282,8 +282,8 @@
 
                 <ImageView
                     android:id="@+id/horseAi3"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_horse"

@@ -38,10 +38,10 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
 
     private static final int AI_COUNT = 3;
     private static final long TICK_MS = 50L;
-    private static final long IDLE_WARN_1_MS = 6000L;
-    private static final long IDLE_WARN_2_MS = 9000L;
-    private static final long IDLE_LOSE_MS = 12000L;
-    private static final long NO_PROGRESS_LOSE_MS = 20000L;
+    private static final long IDLE_WARN_1_MS = 12000L;
+    private static final long IDLE_WARN_2_MS = 18000L;
+    private static final long IDLE_LOSE_MS = 25000L;
+    private static final long NO_PROGRESS_LOSE_MS = 45000L;
 
     // UI - Top
     private ImageView btnBack;
@@ -104,6 +104,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private long playerBoostEndMs;
 
     private float[] aiBoostSpeed = new float[AI_COUNT];
+    private float[] aiBoostBase = new float[AI_COUNT];
     private long[] aiBoostEndMs = new long[AI_COUNT];
     private long[] aiNextBoostMs = new long[AI_COUNT];
     private long[] aiBoostIntervalMs = new long[AI_COUNT];
@@ -114,7 +115,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private int score;
     private int wrongAttempts;
     private int correctWords;
-    private int maxWrongAttempts = 4;
+    private int maxWrongAttempts = 5;
 
     private final String[] idleMessages = new String[] {
         "Nhanh len! Chon chu nao!",
@@ -152,14 +153,13 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             playerDistance += (playerBaseSpeed + boost) * deltaSec;
 
             for (int i = 0; i < AI_COUNT; i++) {
-                if (now >= aiNextBoostMs[i]) {
-                    aiBoostEndMs[i] = now + 900L + (i * 140L);
-                    aiNextBoostMs[i] = now + aiBoostIntervalMs[i] + random.nextInt(600);
-                }
-                float aiBoost = (now < aiBoostEndMs[i]) ? aiBoostSpeed[i] : 0f;
-                float jitter = (random.nextFloat() - 0.45f) * 6f;
-                aiDistance[i] += (aiBaseSpeed[i] + aiBoost + jitter) * deltaSec;
+            if (now >= aiNextBoostMs[i]) {
+                applyAiWordBoost(i, now);
             }
+            float aiBoost = (now < aiBoostEndMs[i]) ? aiBoostSpeed[i] : 0f;
+            float jitter = (random.nextFloat() - 0.45f) * 6f;
+            aiDistance[i] += (aiBaseSpeed[i] + aiBoost + jitter) * deltaSec;
+        }
 
             updateRaceUI();
 
@@ -273,14 +273,12 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         rackSize = 5 + tier;
         maxWordLength = 2 + tier;
 
-        playerBaseSpeed = 42f + (tier * 4f);
+        playerBaseSpeed = 40f + (tier * 3.5f);
         for (int i = 0; i < AI_COUNT; i++) {
-            aiBaseSpeed[i] = 40f + (tier * 4f) + (i * 2.2f);
-            aiBoostSpeed[i] = 8f + (i * 4f) + (tier * 1.2f);
-            aiBoostIntervalMs[i] = Math.max(2000L, 3400L - (tier * 250L) + (i * 400L));
+            configureAiProfile(i, tier);
         }
 
-        finishDistance = 900f + (tier * 120f);
+        finishDistance = 1500f + (tier * 180f);
 
         tvLearned.setText("Learned: " + learnedCount);
         tvDifficulty.setText(tier == 1 ? "Easy" : tier == 2 ? "Medium" : tier == 3 ? "Hard" : "Master");
@@ -405,8 +403,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             Button btn = new Button(this);
             btn.setAllCaps(true);
             btn.setText(String.valueOf(letter).toUpperCase(Locale.US));
-            btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            btn.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
+        btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        btn.setTextColor(ContextCompat.getColor(this, R.color.text_white));
             btn.setBackgroundResource(R.drawable.bg_letter_tile);
             btn.setPadding(0, 0, 0, 0);
 
@@ -435,6 +433,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         Button btn = letterButtons.get(index);
         btn.setEnabled(false);
         btn.setBackgroundResource(R.drawable.bg_letter_tile_selected);
+        btn.setTextColor(ContextCompat.getColor(this, R.color.text_primary));
 
         updateCurrentWord();
     }
@@ -447,6 +446,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         for (Button btn : letterButtons) {
             btn.setEnabled(true);
             btn.setBackgroundResource(R.drawable.bg_letter_tile);
+            btn.setTextColor(ContextCompat.getColor(this, R.color.text_white));
         }
     }
 
@@ -543,7 +543,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             loseRace("Chua co tu dung. " + randomMessage(loseMessages));
             return true;
         }
-        if (wrongAttempts >= 3 && correctWords == 0 && now - raceStartMs >= 15000L) {
+        if (wrongAttempts >= 3 && correctWords == 0 && now - raceStartMs >= 25000L) {
             loseRace("Hay thu lai nhe. " + randomMessage(loseMessages));
             return true;
         }
@@ -583,6 +583,40 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
         float maxX = laneWidth - horseWidth - dp(8);
         horse.setTranslationX(maxX * progress);
+    }
+
+    private void configureAiProfile(int index, int tier) {
+        int learnedFactor = Math.min(learnedCount, 120);
+        int baseInterval = Math.max(1400, 3600 - (learnedFactor * 16));
+
+        switch (index) {
+            case 0: // Comet - steady, slower
+                aiBaseSpeed[index] = 36f + (tier * 3.2f);
+                aiBoostBase[index] = 8f + (tier * 1.2f);
+                aiBoostIntervalMs[index] = baseInterval + 600L;
+                break;
+            case 1: // Bolt - balanced
+                aiBaseSpeed[index] = 38f + (tier * 3.4f);
+                aiBoostBase[index] = 10f + (tier * 1.4f);
+                aiBoostIntervalMs[index] = baseInterval + 200L;
+                break;
+            default: // Rocket - aggressive
+                aiBaseSpeed[index] = 40f + (tier * 3.6f);
+                aiBoostBase[index] = 12f + (tier * 1.6f);
+                aiBoostIntervalMs[index] = Math.max(1200L, baseInterval - 200L);
+                break;
+        }
+    }
+
+    private void applyAiWordBoost(int index, long now) {
+        int learnedFactor = Math.min(learnedCount, 120);
+        int baseLen = Math.min(maxWordLength, 2 + (learnedFactor / 20));
+        int length = Math.max(2, Math.min(maxWordLength, baseLen + index + random.nextInt(2)));
+
+        aiBoostEndMs[index] = now + 700L + (length * 140L);
+        aiBoostSpeed[index] = aiBoostBase[index] + (length * 1.2f);
+        aiDistance[index] += length * 9f;
+        aiNextBoostMs[index] = now + aiBoostIntervalMs[index] + random.nextInt(500);
     }
 
     private boolean checkRaceFinish() {
