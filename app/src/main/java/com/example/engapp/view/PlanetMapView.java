@@ -6,10 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import androidx.core.content.ContextCompat;
 import com.example.engapp.database.GameDatabaseHelper;
 import com.example.engapp.database.GameDatabaseHelper.PlanetData;
 import com.example.engapp.manager.ProgressionManager;
@@ -25,6 +27,7 @@ public class PlanetMapView extends View {
     private List<PlanetNode> planetNodes;
     private OnPlanetClickListener listener;
     private GameDatabaseHelper dbHelper;
+    private Drawable rocketDrawable;
 
     // Spaceship animation
     private float shipX, shipY;
@@ -68,6 +71,8 @@ public class PlanetMapView extends View {
         shipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         shipPaint.setTextSize(50);
         shipPaint.setTextAlign(Paint.Align.CENTER);
+
+        rocketDrawable = ContextCompat.getDrawable(context, com.example.engapp.R.drawable.ic_rocket);
 
         planetNodes = new ArrayList<>();
     }
@@ -237,8 +242,16 @@ public class PlanetMapView extends View {
             float actualShipX = shipX * width;
             float actualShipY = shipY * height;
 
-            shipPaint.setColor(Color.WHITE);
-            canvas.drawText("🚀", actualShipX, actualShipY - 120, shipPaint);
+            int size = (int) (getResources().getDisplayMetrics().density * 36);
+            int left = (int) (actualShipX - size / 2f);
+            int top = (int) (actualShipY - size - 80);
+            if (rocketDrawable != null) {
+                rocketDrawable.setBounds(left, top, left + size, top + size);
+                rocketDrawable.draw(canvas);
+            } else {
+                shipPaint.setColor(Color.WHITE);
+                canvas.drawText("dYs?", actualShipX, actualShipY - 120, shipPaint);
+            }
         }
     }
 
@@ -315,4 +328,5 @@ public class PlanetMapView extends View {
         }
     }
 }
+
 

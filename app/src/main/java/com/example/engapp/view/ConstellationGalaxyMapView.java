@@ -14,6 +14,7 @@ import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
@@ -46,6 +47,14 @@ public class ConstellationGalaxyMapView extends View {
     private ValueAnimator unlockAnimator;
     private GalaxyNode unlockingNode = null;
     private float unlockProgress = 0f;
+
+    // Scroll / drag
+    private float scrollOffsetY = 0f;
+    private float minScrollY = 0f;
+    private float maxScrollY = 0f;
+    private float lastTouchY = 0f;
+    private boolean isDragging = false;
+    private int touchSlop;
     
     // Decorations
     private List<Star> backgroundStars;
@@ -91,7 +100,8 @@ public class ConstellationGalaxyMapView extends View {
         generateBackgroundStars();
         generateParticles();
         startAnimations();
-        
+
+        touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         setLayerType(LAYER_TYPE_HARDWARE, null);
     }
     
@@ -193,6 +203,8 @@ public class ConstellationGalaxyMapView extends View {
         } else if (galaxy3Unlocked) {
             triggerUnlockAnimation(galaxyNodes.get(2));
         }
+
+        updateScrollBounds();
         
         invalidate();
     }
@@ -285,6 +297,9 @@ public class ConstellationGalaxyMapView extends View {
         
         // Draw twinkling stars
         drawBackgroundStars(canvas);
+
+        canvas.save();
+        canvas.translate(0f, scrollOffsetY);
         
         // Draw constellation path (connecting lines)
         drawConstellationPath(canvas);
@@ -294,6 +309,13 @@ public class ConstellationGalaxyMapView extends View {
         
         // Draw galaxy nodes
         drawGalaxyNodes(canvas);
+        canvas.restore();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        updateScrollBounds();
     }
     
     private void drawSpaceBackground(Canvas canvas, int width, int height) {
@@ -538,33 +560,78 @@ public class ConstellationGalaxyMapView extends View {
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            float touchX = event.getX();
-            float touchY = event.getY();
-            
-            for (GalaxyNode node : galaxyNodes) {
-                float distance = (float) Math.sqrt(
-                    Math.pow(touchX - node.x, 2) + Math.pow(touchY - node.y, 2)
-                );
-                
-                if (distance <= NODE_RADIUS + 20f) {
-                    // Haptic feedback
-                    performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
-                    
-                    if (node.isUnlocked && listener != null) {
-                        // Scale animation
-                        animateTap(node);
-                        listener.onGalaxyClick(node.id, node.name, node.emoji);
-                    } else if (!node.isUnlocked && listener != null) {
-                        // Shake animation
-                        animateShake();
-                        listener.onLockedGalaxyClick(node.id, node.starsRequired);
-                    }
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                lastTouchY = event.getY();
+                isDragging = false;
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                float dy = event.getY() - lastTouchY;
+                if (!isDragging && Math.abs(dy) > touchSlop) {
+                    isDragging = true;
+                }
+                if (isDragging) {
+                    scrollOffsetY = clamp(scrollOffsetY + dy, minScrollY, maxScrollY);
+                    lastTouchY = event.getY();
+                    invalidate();
                     return true;
                 }
-            }
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                if (!isDragging) {
+                    handleTap(event.getX(), event.getY() - scrollOffsetY);
+                }
+                isDragging = false;
+                return true;
         }
         return super.onTouchEvent(event);
+    }
+
+    private void handleTap(float touchX, float touchY) {
+        for (GalaxyNode node : galaxyNodes) {
+            float distance = (float) Math.sqrt(
+                Math.pow(touchX - node.x, 2) + Math.pow(touchY - node.y, 2)
+            );
+            
+            if (distance <= NODE_RADIUS + 20f) {
+                // Haptic feedback
+                performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+                
+                if (node.isUnlocked && listener != null) {
+                    // Scale animation
+                    animateTap(node);
+                    listener.onGalaxyClick(node.id, node.name, node.emoji);
+                } else if (!node.isUnlocked && listener != null) {
+                    // Shake animation
+                    animateShake();
+                    listener.onLockedGalaxyClick(node.id, node.starsRequired);
+                }
+                return;
+            }
+        }
+    }
+
+    private void updateScrollBounds() {
+        if (galaxyNodes.isEmpty()) {
+            minScrollY = 0f;
+            maxScrollY = 0f;
+            return;
+        }
+        float minY = Float.MAX_VALUE;
+        float maxY = Float.MIN_VALUE;
+        for (GalaxyNode node : galaxyNodes) {
+            minY = Math.min(minY, node.y);
+            maxY = Math.max(maxY, node.y);
+        }
+        float padding = getHeight() * 0.2f;
+        minScrollY = Math.min(0f, getHeight() - maxY - padding);
+        maxScrollY = Math.max(0f, padding - minY);
+        scrollOffsetY = clamp(scrollOffsetY, minScrollY, maxScrollY);
+    }
+
+    private float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
     }
     
     private void animateTap(GalaxyNode node) {
