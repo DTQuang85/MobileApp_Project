@@ -1,6 +1,7 @@
 package com.example.engapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +23,7 @@ import com.example.engapp.manager.BuddyManager;
 import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.manager.TravelManager;
 import com.example.engapp.model.Planet;
+import com.example.engapp.model.Zone;
 import com.example.engapp.view.BuddyOverlayView;
 import com.example.engapp.view.InteractiveStarMapView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -219,33 +221,71 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         tvLevel.setText("Level " + level);
         tvFuel.setText(String.valueOf(fuel));
     }
-
     private void loadPlanets() {
-        // Kiểm tra và mở khóa các hành tinh đủ điều kiện trước
+        // Ki???m tra vA? m??Y khA3a cA?c hA?nh tinh ?`??i???u ki???n tr????>c
         progressionManager.checkForNewUnlocks();
-        
-        // Get all planets
-        List<Planet> allPlanets = GameDataProvider.getAllPlanets();
 
-        // Filter planets by galaxy
-        // Galaxy 1: planets 0-3 (indices 0,1,2,3) - 4 planets
-        // Galaxy 2: planets 4-7 (indices 4,5,6,7) - 4 planets
-        // Galaxy 3: planets 8-11 (indices 8,9,10,11) - 4 planets
+        GameDatabaseHelper dbHelper = GameDatabaseHelper.getInstance(this);
+        List<GameDatabaseHelper.PlanetData> planetDataList = dbHelper.getPlanetsForGalaxy(galaxyId);
         planets = new java.util.ArrayList<>();
-        int startIndex = (galaxyId - 1) * 4;
-        int endIndex = startIndex + 4;
 
-        for (int i = startIndex; i < endIndex && i < allPlanets.size(); i++) {
-            planets.add(allPlanets.get(i));
-        }
+        if (planetDataList == null || planetDataList.isEmpty()) {
+            List<Planet> allPlanets = GameDataProvider.getAllPlanets();
+            int startIndex = (galaxyId - 1) * 4;
+            int endIndex = startIndex + 4;
+            for (int i = startIndex; i < endIndex && i < allPlanets.size(); i++) {
+                Planet planet = allPlanets.get(i);
+                planet.setUnlocked(progressionManager.isPlanetUnlocked(planet.getId()));
+                planets.add(planet);
+            }
+        } else {
+            for (GameDatabaseHelper.PlanetData planetData : planetDataList) {
+                int color = 0xFF4ADE80;
+                if (planetData.themeColor != null && !planetData.themeColor.isEmpty()) {
+                    try {
+                        color = Color.parseColor(planetData.themeColor);
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                }
 
-        // Update unlock status sau khi đã kiểm tra
-        for (Planet planet : planets) {
-            planet.setUnlocked(progressionManager.isPlanetUnlocked(planet.getId()));
+                Planet planet = new Planet(
+                    planetData.planetKey,
+                    planetData.name,
+                    planetData.nameVi,
+                    planetData.emoji,
+                    color,
+                    ""
+                );
+                planet.setRequiredStars(progressionManager.getStarsRequiredForPlanet(planetData.planetKey));
+                planet.setUnlocked(progressionManager.isPlanetUnlocked(planetData.planetKey));
+
+                List<GameDatabaseHelper.SceneData> scenes = dbHelper.getScenesForPlanet(planetData.id);
+                List<Zone> zones = new java.util.ArrayList<>();
+                if (scenes != null) {
+                    for (GameDatabaseHelper.SceneData scene : scenes) {
+                        String sceneKey = scene.sceneKey != null ? scene.sceneKey : "scene_" + scene.id;
+                        String sceneName = scene.name != null ? scene.name : "Scene";
+                        String sceneNameVi = scene.nameVi != null ? scene.nameVi : "";
+                        String sceneEmoji = scene.emoji != null ? scene.emoji : "";
+                        Zone zone = new Zone(sceneKey, sceneName, sceneNameVi, sceneEmoji);
+                        zone.setCompleted(scene.isCompleted);
+                        zone.setStarsEarned(scene.starsEarned);
+                        zones.add(zone);
+                    }
+                }
+                planet.setZones(zones);
+
+                planets.add(planet);
+            }
         }
 
         starMapView.setPlanets(planets, this);
-        starMapView.setCurrentPlanetId(travelManager.getCurrentPlanetId());
+        String currentPlanetId = travelManager.getCurrentPlanetId();
+        if (currentPlanetId != null && !currentPlanetId.isEmpty()) {
+            starMapView.setCurrentPlanetId(progressionManager.normalizePlanetKey(currentPlanetId));
+        } else {
+            starMapView.setCurrentPlanetId(currentPlanetId);
+        }
     }
 
     private void setupListeners() {

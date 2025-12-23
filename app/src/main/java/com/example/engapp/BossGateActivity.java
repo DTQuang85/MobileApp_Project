@@ -149,7 +149,7 @@ public class BossGateActivity extends AppCompatActivity implements TextToSpeech.
 
             TextView tv = new TextView(this);
             tv.setText(option);
-            tv.setTextColor(getColor(R.color.text_white));
+            tv.setTextColor(getColor(R.color.text_primary));
             tv.setTextSize(18);
             tv.setPadding(32, 24, 32, 24);
             tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);

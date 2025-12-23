@@ -117,7 +117,7 @@ public class PlanetMapView extends View {
                     shipY = node.y;
                     break;
                 }
-                if (isUnlocked) {
+                if (node.planet.isUnlocked) {
                     currentPlanetIndex = i;
                     shipX = node.x;
                     shipY = node.y;
@@ -248,8 +248,15 @@ public class PlanetMapView extends View {
                 rocketDrawable.setBounds(left, top, left + size, top + size);
                 rocketDrawable.draw(canvas);
             } else {
-                shipPaint.setColor(Color.WHITE);
-                canvas.drawText("dYs?", actualShipX, actualShipY - 120, shipPaint);
+                Paint fallbackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                fallbackPaint.setColor(Color.parseColor("#FFD54F"));
+                float shipSize = 12f * getResources().getDisplayMetrics().density;
+                Path shipPath = new Path();
+                shipPath.moveTo(actualShipX, actualShipY - 120 - shipSize);
+                shipPath.lineTo(actualShipX - shipSize * 0.6f, actualShipY - 120 + shipSize * 0.6f);
+                shipPath.lineTo(actualShipX + shipSize * 0.6f, actualShipY - 120 + shipSize * 0.6f);
+                shipPath.close();
+                canvas.drawPath(shipPath, fallbackPaint);
             }
         }
     }

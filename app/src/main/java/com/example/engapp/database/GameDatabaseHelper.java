@@ -434,6 +434,185 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        ensurePlanetsSeeded(db);
+    }
+
+    public void ensurePlanetsSeededNow() {
+        ensurePlanetsSeeded(getWritableDatabase());
+    }
+
+    public int ensureMinimumPlanets(int minCount) {
+        SQLiteDatabase db = getWritableDatabase();
+        ensurePlanetsSeeded(db);
+        int count = getPlanetsCount(db);
+        if (count < minCount) {
+            insertBasePlanets(db);
+            count = getPlanetsCount(db);
+        }
+        return count;
+    }
+
+    private int getPlanetsCount(SQLiteDatabase db) {
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_PLANETS, null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
+    private void insertBasePlanets(SQLiteDatabase db) {
+        ensurePlanet(db, 1, "coloria_prime", "Coloria Prime", "Coloria Prime",
+            "", "", "#FF6B6B", "crystal_city", "Prism Shards", "",
+            "Adjectives", "Colors & Shapes", 0, 1, 1);
+
+        ensurePlanet(db, 1, "toytopia_orbit", "Toytopia Orbit", "Toytopia Orbit",
+            "", "", "#4ECDC4", "toy_park", "Sticker Toys", "",
+            "Prepositions", "Toys & Positions", 3, 2, 0);
+
+        ensurePlanet(db, 1, "animania_wild", "Animania Wild", "Animania Wild",
+            "", "", "#45B7D1", "alien_zoo", "Animal Badges", "",
+            "Can/Can't", "Animals & Actions", 5, 3, 0);
+
+        ensurePlanet(db, 1, "numberia_station", "Numberia Station", "Numberia Station",
+            "", "", "#F59E0B", "math_space", "Number Gems", "",
+            "How many?", "Numbers & Counting", 7, 4, 0);
+    }
+
+    private void ensurePlanetsSeeded(SQLiteDatabase db) {
+        // Galaxy 1
+        ensurePlanet(db, 1, "coloria_prime", "Coloria Prime", "Coloria Prime",
+            "", "", "#FF6B6B", "crystal_city", "Prism Shards", "",
+            "Adjectives", "Colors & Shapes", 0, 1, 1);
+
+        ensurePlanet(db, 1, "toytopia_orbit", "Toytopia Orbit", "Toytopia Orbit",
+            "", "", "#4ECDC4", "toy_park", "Sticker Toys", "",
+            "Prepositions", "Toys & Positions", 3, 2, 0);
+
+        ensurePlanet(db, 1, "animania_wild", "Animania Wild", "Animania Wild",
+            "", "", "#45B7D1", "alien_zoo", "Animal Badges", "",
+            "Can/Can't", "Animals & Actions", 5, 3, 0);
+
+        ensurePlanet(db, 1, "numberia_station", "Numberia Station", "Numberia Station",
+            "", "", "#F59E0B", "math_space", "Number Gems", "",
+            "How many?", "Numbers & Counting", 7, 4, 0);
+
+        ensurePlanet(db, 1, "artopia_planet", "Artopia Planet", "Artopia Planet",
+            "", "", "#FF6B9D", "art_museum", "Art Supplies", "",
+            "Like/Don't like", "Art & Creativity", 0, 13, 0);
+
+        ensurePlanet(db, 1, "playground_park", "Playground Park", "Playground Park",
+            "", "", "#FFD93D", "playground", "Play Tokens", "",
+            "Let's...", "Playground & Activities", 0, 14, 0);
+
+        ensurePlanet(db, 1, "school_academy", "School Academy", "School Academy",
+            "", "", "#6C5CE7", "school_building", "Star Stickers", "",
+            "Have/Has", "School & Learning", 0, 15, 0);
+
+        // Galaxy 2
+        ensurePlanet(db, 2, "citytron_nova", "Citytron Nova", "Citytron Nova",
+            "", "", "#96CEB4", "future_city", "Metro Tickets", "",
+            "There is/are", "Places & Directions", 8, 5, 0);
+
+        ensurePlanet(db, 2, "foodora_station", "Foodora Station", "Foodora Station",
+            "", "", "#FFEAA7", "space_kitchen", "Recipe Cards", "",
+            "Countable/Uncountable", "Food & Shopping", 12, 6, 0);
+
+        ensurePlanet(db, 2, "weatheron_sky", "Weatheron Sky", "Weatheron Sky",
+            "", "", "#74B9FF", "cloud_port", "Weather Orbs", "",
+            "Because/So", "Weather & Clothes", 15, 7, 0);
+
+        ensurePlanet(db, 2, "familia_home", "Familia Home", "Familia Home",
+            "", "", "#10B981", "cozy_house", "Family Photos", "",
+            "Possessive", "Family & Home", 18, 8, 0);
+
+        ensurePlanet(db, 2, "body_parts_planet", "Body Parts Planet", "Body Parts Planet",
+            "", "", "#FF7675", "hospital_space", "Health Badges", "",
+            "My/Your/His/Her", "Body Parts & Health", 0, 16, 0);
+
+        ensurePlanet(db, 2, "sports_arena", "Sports Arena", "Sports Arena",
+            "", "", "#00B894", "stadium", "Trophy Medals", "",
+            "I can/I can't", "Sports & Actions", 0, 17, 0);
+
+        ensurePlanet(db, 2, "birthday_party", "Birthday Party", "Birthday Party",
+            "", "", "#FDCB6E", "party_room", "Party Hats", "",
+            "How old are you?", "Numbers & Celebrations", 0, 18, 0);
+
+        ensurePlanet(db, 2, "ocean_deep", "Ocean Deep", "Ocean Deep",
+            "", "", "#0984E3", "ocean_floor", "Sea Shells", "",
+            "There is/There are", "Sea Creatures & Ocean", 0, 19, 0);
+
+        // Galaxy 3
+        ensurePlanet(db, 3, "robolab_command", "RoboLab Command", "RoboLab Command",
+            "", "", "#A29BFE", "robot_factory", "Circuit Parts", "",
+            "Imperatives", "Commands & Sequences", 18, 9, 0);
+
+        ensurePlanet(db, 3, "timelapse_base", "TimeLapse Base", "TimeLapse Base",
+            "", "", "#FD79A8", "time_tower", "Time Crystals", "",
+            "Present Simple", "Time & Routines", 22, 10, 0);
+
+        ensurePlanet(db, 3, "storyverse_galaxy", "Storyverse Galaxy", "Storyverse Galaxy",
+            "", "", "#E17055", "story_castle", "Story Pages", "",
+            "Past Simple", "Storytelling", 25, 11, 0);
+
+        ensurePlanet(db, 3, "natura_wilderness", "Natura Wilderness", "Natura Wilderness",
+            "", "", "#059669", "nature_forest", "Leaf Tokens", "",
+            "Comparatives", "Nature & Environment", 28, 12, 0);
+    }
+
+    private void ensurePlanet(SQLiteDatabase db, int galaxyId, String key, String name, String nameVi,
+            String description, String emoji, String color, String bgImage,
+            String collectible, String collectibleEmoji, String grammar, String skill,
+            int requiredFuel, int order, int unlocked) {
+        if (!planetExists(db, key)) {
+            insertPlanet(db, galaxyId, key, name, nameVi, description, emoji, color, bgImage,
+                collectible, collectibleEmoji, grammar, skill, requiredFuel, order, unlocked);
+        }
+        long planetId = getPlanetIdByKey(db, key);
+        if (planetId != -1) {
+            ensureScene(db, planetId, "landing_zone", "Landing Zone", "Landing Zone", "", "", 1);
+            ensureScene(db, planetId, "explore_area", "Explore Area", "Explore Area", "", "", 2);
+            ensureScene(db, planetId, "dialogue_dock", "Dialogue Dock", "Dialogue Dock", "", "", 3);
+            ensureScene(db, planetId, "puzzle_zone", "Puzzle Zone", "Puzzle Zone", "", "", 4);
+            ensureScene(db, planetId, "boss_gate", "Boss Gate", "Boss Gate", "", "", 5);
+        }
+    }
+
+    private boolean planetExists(SQLiteDatabase db, String key) {
+        Cursor cursor = db.query(TABLE_PLANETS, new String[]{"id"}, "planet_key = ?",
+            new String[]{key}, null, null, null);
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
+
+    private long getPlanetIdByKey(SQLiteDatabase db, String key) {
+        Cursor cursor = db.query(TABLE_PLANETS, new String[]{"id"}, "planet_key = ?",
+            new String[]{key}, null, null, null);
+        long id = -1;
+        if (cursor.moveToFirst()) {
+            id = cursor.getLong(cursor.getColumnIndexOrThrow("id"));
+        }
+        cursor.close();
+        return id;
+    }
+
+    private void ensureScene(SQLiteDatabase db, long planetId, String sceneKey, String name,
+            String nameVi, String description, String emoji, int orderIndex) {
+        Cursor cursor = db.query(TABLE_SCENES, new String[]{"id"}, "planet_id = ? AND scene_key = ?",
+            new String[]{String.valueOf(planetId), sceneKey}, null, null, null);
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        if (!exists) {
+            insertScene(db, planetId, sceneKey, name, nameVi, description, emoji, orderIndex);
+        }
+    }
+
+
     private void insertInitialData(SQLiteDatabase db) {
         // Insert 3 Galaxies (Phase 2)
         insertGalaxy(db, "milky_way", "Milky Way", "Dải Ngân Hà",
@@ -2531,6 +2710,7 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     // ============ QUERY METHODS ============
 
     public List<PlanetData> getAllPlanets() {
+        ensurePlanetsSeeded(getWritableDatabase());
         List<PlanetData> planets = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_PLANETS, null, null, null, null, null, "order_index ASC");
@@ -3028,6 +3208,7 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<PlanetData> getPlanetsForGalaxy(int galaxyId) {
+        ensurePlanetsSeeded(getWritableDatabase());
         List<PlanetData> planets = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_PLANETS, null, "galaxy_id = ?",

@@ -148,6 +148,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        dbHelper.ensureMinimumPlanets(4);
         planets = dbHelper.getAllPlanets();
         userProgress = dbHelper.getUserProgress();
         

@@ -555,6 +555,10 @@ public class ProgressionManager {
         return lessonUnlockManager.isPlanetUnlocked(mappedKey);
     }
 
+    public String normalizePlanetKey(String planetId) {
+        return mapPlanetIdToKey(planetId);
+    }
+
     private void unlockPlanet(String planetKey) {
         // Use LessonUnlockManager to unlock
         lessonUnlockManager.unlockPlanet(planetKey);
