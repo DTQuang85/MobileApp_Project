@@ -67,7 +67,7 @@ public class InteractiveGalaxyMapActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
-            Intent intent = new Intent(this, BattleActivity.class);
+            Intent intent = new Intent(this, WordBattleActivity.class);
             intent.putExtra("planet_id", 1); // Default to first planet
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -96,4 +96,3 @@ public class InteractiveGalaxyMapActivity extends AppCompatActivity {
         loadGalaxyData();
     }
 }
-

@@ -61,6 +61,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private int totalScore = 0;
     private int combo = 0;
     private int currentStage = 1;
+    private int initialStage = 1;
 
     // Enemy stats
     private int enemyHealth = 50;
@@ -119,12 +120,31 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         prefs = getSharedPreferences("game_prefs", MODE_PRIVATE);
         tts = new TextToSpeech(this, this);
 
+        configureDifficulty();
         loadBuddyInfo();
         loadValidWords();
         initViews();
         setupGame();
         generateLetters();
         spawnEnemy();
+    }
+
+    private void configureDifficulty() {
+        int requestedStage = getIntent().getIntExtra("start_stage", -1);
+        int startingPlanet = getIntent().getIntExtra("planet_id", 1);
+        int baseStage = requestedStage > 0 ? requestedStage : startingPlanet;
+        if (baseStage <= 0) {
+            baseStage = 1;
+        }
+        initialStage = Math.max(1, Math.min(baseStage, ENEMIES.length));
+        setStageAndLevel(initialStage);
+    }
+
+    private void setStageAndLevel(int stage) {
+        currentStage = Math.max(1, Math.min(stage, ENEMIES.length));
+        playerLevel = Math.max(1, ((currentStage - 1) / 2) + 1);
+        maxPlayerHealth = 80 + playerLevel * 20;
+        playerHealth = maxPlayerHealth;
     }
 
     private void loadBuddyInfo() {
@@ -692,10 +712,7 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void restartGame() {
-        currentStage = 1;
-        playerLevel = 1;
-        playerHealth = 100;
-        maxPlayerHealth = 100;
+        setStageAndLevel(initialStage);
         totalScore = 0;
         combo = 0;
         usedWords.clear();
@@ -747,4 +764,3 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         super.onDestroy();
     }
 }
-

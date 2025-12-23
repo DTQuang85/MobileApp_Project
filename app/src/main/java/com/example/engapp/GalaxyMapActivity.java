@@ -112,7 +112,7 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
             // Navigate to battle with current planet
-            Intent intent = new Intent(this, BattleActivity.class);
+            Intent intent = new Intent(this, WordBattleActivity.class);
             intent.putExtra("planet_id", 1); // Default to first planet
             startActivity(intent);
             overridePendingTransition(R.anim.fade_scale_in, 0);
@@ -168,4 +168,3 @@ public class GalaxyMapActivity extends AppCompatActivity implements GalaxyAdapte
         }
     }
 }
-

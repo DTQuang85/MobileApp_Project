@@ -166,9 +166,8 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         });
 
         findViewById(R.id.btnNavAdventure).setOnClickListener(v -> {
-            // Use old Battle system (ABCD + images) instead of WordBattle
             String currentPlanetId = travelManager.getCurrentPlanetId();
-            Intent intent = new Intent(this, BattleActivity.class);
+            Intent intent = new Intent(this, WordBattleActivity.class);
             if (currentPlanetId != null) {
                 // Try to convert planet ID to int (assuming format like "planet_1" -> 1)
                 try {
@@ -504,4 +503,3 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         }
     }
 }
-

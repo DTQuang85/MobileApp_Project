@@ -58,11 +58,6 @@
             android:name=".InteractivePlanetMapActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <!-- Battle Activity - Word battles -->
-        <activity
-            android:name=".BattleActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
         <!-- Reward Activity - Show rewards -->
         <activity
             android:name=".RewardActivity"
