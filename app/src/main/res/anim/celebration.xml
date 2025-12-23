@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Multiple jumps with rotation for celebration -->
+    <translate
+        android:fromYDelta="0%"
+        android:toYDelta="-20%"
+        android:duration="150"
+        android:repeatMode="reverse"
+        android:repeatCount="5"
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+
+    <rotate
+        android:fromDegrees="0"
+        android:toDegrees="360"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="600"/>
+
+    <scale
+        android:fromXScale="1.0"
+        android:toXScale="1.3"
+        android:fromYScale="1.0"
+        android:toYScale="1.3"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="300"
+        android:repeatMode="reverse"
+        android:repeatCount="1"/>
+</set>
+

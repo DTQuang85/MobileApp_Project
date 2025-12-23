@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#50FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="12dp">
+
+        <!-- Word Emoji -->
+        <TextView
+            android:id="@+id/tvWordEmoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔴"
+            android:textSize="40sp"/>
+
+        <!-- English Word -->
+        <TextView
+            android:id="@+id/tvEnglish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Red"
+            android:textColor="@color/text_white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Pronunciation -->
+        <TextView
+            android:id="@+id/tvPronunciation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/red/"
+            android:textColor="@color/star_gold"
+            android:textSize="12sp"/>
+
+        <!-- Vietnamese -->
+        <TextView
+            android:id="@+id/tvVietnamese"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="màu đỏ"
+            android:textColor="@color/text_white"
+            android:textSize="14sp"
+            android:alpha="0.9"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Listen Button -->
+        <TextView
+            android:id="@+id/btnListen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔊"
+            android:textSize="24sp"
+            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        <!-- Learned Badge -->
+        <TextView
+            android:id="@+id/tvLearnedBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✓ Đã học"
+            android:textColor="@color/correct_green"
+            android:textSize="10sp"
+            android:visibility="gone"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+

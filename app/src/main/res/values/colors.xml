@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors - Professional Blue & Purple Gradient -->
+    <color name="primary_blue">#2563EB</color>
+    <color name="primary_purple">#7C3AED</color>
+    <color name="primary_dark">#1E40AF</color>
+    <color name="accent_orange">#F97316</color>
+    <color name="accent_green">#10B981</color>
+    <color name="accent_red">#EF4444</color>
+    
+    <!-- Legacy colors for compatibility -->
+    <color name="primary_color">#2563EB</color>
+    <color name="colorPrimary">#2563EB</color>
+    <color name="colorPrimaryDark">#1E40AF</color>
+    <color name="colorAccent">#F97316</color>
+    
+    <!-- Background Colors -->
+    <color name="background_light">#F8FAFC</color>
+    <color name="background_white">#FFFFFF</color>
+    <color name="background_card">#FFFFFF</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_hint">#94A3B8</color>
+    <color name="text_white">#FFFFFF</color>
+    
+    <!-- Difficulty Colors -->
+    <color name="difficulty_easy">#10B981</color>
+    <color name="difficulty_medium">#F59E0B</color>
+    <color name="difficulty_hard">#EF4444</color>
+    
+    <!-- Category Colors -->
+    <color name="category_general">#3B82F6</color>
+    <color name="category_technical">#8B5CF6</color>
+    <color name="category_conflict">#EC4899</color>
+    <color name="category_achievement">#F59E0B</color>
+    
+    <!-- Gradients -->
+    <color name="gradient_start">#667EEA</color>
+    <color name="gradient_end">#764BA2</color>
+    
+    <!-- Button Colors -->
+    <color name="button_primary">#2563EB</color>
+    <color name="button_secondary">#F97316</color>
+    <color name="button_disabled">#CBD5E1</color>
+    
+    <!-- Status Colors -->
+    <color name="status_success">#10B981</color>
+    <color name="status_warning">#F59E0B</color>
+    <color name="status_error">#EF4444</color>
+    <color name="status_info">#3B82F6</color>
+    
+    <!-- Shadow & Border -->
+    <color name="shadow">#1A000000</color>
+    <color name="border">#E2E8F0</color>
+    <color name="divider">#F1F5F9</color>
+
+    <!-- Basic Colors (legacy) -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="green">#10B981</color>
+    <color name="red">#EF4444</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="dark_gray">#424242</color>
+    <color name="blue">#2563EB</color>
+    <color name="light_blue">#87CEEB</color>
+    <color name="dark_blue">#1E40AF</color>
+    <color name="orange">#F97316</color>
+    <color name="purple">#7C3AED</color>
+    <color name="purple_500">#7C3AED</color>
+    <color name="teal">#009688</color>
+
+    <!-- Space Theme Colors for Kids -->
+    <color name="space_dark">#0F0F23</color>
+    <color name="space_purple">#1A1A3E</color>
+    <color name="space_blue">#2D3561</color>
+    <color name="star_gold">#FFD93D</color>
+    <color name="star_silver">#C0C0C0</color>
+    <color name="star_bronze">#CD7F32</color>
+
+    <!-- Planet Colors -->
+    <color name="planet_animal">#4ADE80</color>
+    <color name="planet_color">#F472B6</color>
+    <color name="planet_number">#60A5FA</color>
+    <color name="planet_food">#FB923C</color>
+    <color name="planet_family">#A78BFA</color>
+    <color name="planet_nature">#34D399</color>
+    <color name="planet_body">#F87171</color>
+    <color name="planet_school">#FBBF24</color>
+
+    <!-- Time Zone Colors -->
+    <color name="era_prehistoric">#86EFAC</color>
+    <color name="era_medieval">#C4B5FD</color>
+    <color name="era_modern">#93C5FD</color>
+    <color name="era_future">#F0ABFC</color>
+
+    <!-- Fun Colors for Kids -->
+    <color name="fun_pink">#FF6B9D</color>
+    <color name="fun_yellow">#FFE66D</color>
+    <color name="fun_green">#4ADE80</color>
+    <color name="fun_blue">#60A5FA</color>
+    <color name="fun_purple">#A855F7</color>
+    <color name="fun_orange">#FB923C</color>
+
+
+    <!-- Game Colors -->
+    <color name="correct_green">#22C55E</color>
+    <color name="wrong_red">#EF4444</color>
+    <color name="card_bg">#FFFFFF</color>
+
+    <!-- New Space Theme Colors -->
+    <color name="card_bg_dark">#1A1A3E</color>
+    <color name="fuel_orange">#FF6B00</color>
+    <color name="primary">#4ECDC4</color>
+
+</resources>

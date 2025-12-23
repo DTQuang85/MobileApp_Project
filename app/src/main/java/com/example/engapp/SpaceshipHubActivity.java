@@ -1,0 +1,394 @@
+package com.example.engapp;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.engapp.database.GameDatabaseHelper;
+import com.example.engapp.database.GameDatabaseHelper.*;
+import java.util.List;
+import java.util.Random;
+
+public class SpaceshipHubActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerPlanets;
+    private TextView tvPlayerName, tvLevel, tvStars, tvFuelCells, tvCrystals;
+    private TextView tvBuddyMessage, tvDailyProgress;
+    private ProgressBar progressLevel, progressDailyMission;
+    private CardView cardAvatar;
+
+    private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavAdventure;
+
+    private GameDatabaseHelper dbHelper;
+    private List<PlanetData> planets;
+    private UserProgressData userProgress;
+    private com.example.engapp.manager.ProgressionManager progressionManager;
+
+    private String[] buddyMessages = {
+        "Xin chào! Hôm nay chúng ta học gì nhỉ? 🚀",
+        "Tuyệt vời! Bạn đã sẵn sàng khám phá chưa? 🌟",
+        "Cùng thu thập thêm Word Crystals nào! 💎",
+        "Mỗi ngày học một ít, giỏi lên từng chút! 📚",
+        "Wow! Bạn thật là siêu sao! ⭐",
+        "Hành tinh mới đang chờ bạn! 🌍",
+        "Đừng quên hoàn thành nhiệm vụ hôm nay nhé! 🎯"
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_spaceship_hub);
+
+        dbHelper = GameDatabaseHelper.getInstance(this);
+        progressionManager = com.example.engapp.manager.ProgressionManager.getInstance(this);
+
+        initViews();
+        loadData();
+        setupRecyclerView(); // Setup adapter SAU khi load data
+        updateUI(); // Update UI với data đã load
+        setupBottomNav();
+        setRandomBuddyMessage();
+        loadBuddyAndAnimate();
+    }
+
+    private void loadBuddyAndAnimate() {
+        SharedPreferences prefs = getSharedPreferences("game_prefs", MODE_PRIVATE);
+        int buddyIndex = prefs.getInt("buddy_index", 0);
+        String[] buddyEmojis = {"🤖", "👽", "🐱", "🦊"};
+
+        TextView tvBuddy = findViewById(R.id.tvBuddy);
+        if (tvBuddy != null && buddyIndex < buddyEmojis.length) {
+            tvBuddy.setText(buddyEmojis[buddyIndex]);
+            Animation floatAnim = AnimationUtils.loadAnimation(this, R.anim.float_up_down);
+            tvBuddy.startAnimation(floatAnim);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+        
+        // Đảm bảo adapter được refresh với data mới
+        RecyclerView.Adapter adapter = recyclerPlanets.getAdapter();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        } else {
+            // Nếu adapter chưa có, setup lại
+            setupRecyclerView();
+        }
+        
+        updateUI();
+    }
+
+    private void initViews() {
+        recyclerPlanets = findViewById(R.id.recyclerPlanets);
+        tvPlayerName = findViewById(R.id.tvPlayerName);
+        tvLevel = findViewById(R.id.tvLevel);
+        tvStars = findViewById(R.id.tvStars);
+        tvFuelCells = findViewById(R.id.tvFuelCells);
+        tvCrystals = findViewById(R.id.tvCrystals);
+        tvBuddyMessage = findViewById(R.id.tvBuddyMessage);
+        tvDailyProgress = findViewById(R.id.tvDailyProgress);
+        progressLevel = findViewById(R.id.progressLevel);
+        progressDailyMission = findViewById(R.id.progressDailyMission);
+        cardAvatar = findViewById(R.id.cardAvatar);
+
+        btnNavHub = findViewById(R.id.btnNavHub);
+        btnNavWordLab = findViewById(R.id.btnNavWordLab);
+        btnNavBuddy = findViewById(R.id.btnNavBuddy);
+        btnNavAdventure = findViewById(R.id.btnNavAdventure);
+
+        cardAvatar.setOnClickListener(v -> openProfile());
+
+        // Daily Mission card click
+        CardView cardDailyMission = findViewById(R.id.cardDailyMission);
+        if (cardDailyMission != null) {
+            cardDailyMission.setOnClickListener(v -> {
+                Intent intent = new Intent(this, DailyMissionsActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        // Quick Actions - Galaxy Map
+        CardView cardGalaxyMap = findViewById(R.id.cardGalaxyMap);
+        if (cardGalaxyMap != null) {
+            cardGalaxyMap.setOnClickListener(v -> {
+                Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
+                startActivity(intent);
+            });
+        }
+
+        // Quick Actions - Battle (Old system with ABCD and images)
+        CardView cardBattle = findViewById(R.id.cardBattle);
+        if (cardBattle != null) {
+            cardBattle.setOnClickListener(v -> {
+                Intent intent = new Intent(this, BattleActivity.class);
+                intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+        }
+    }
+
+    private void loadData() {
+        planets = dbHelper.getAllPlanets();
+        userProgress = dbHelper.getUserProgress();
+        
+        // Debug log để kiểm tra
+        android.util.Log.d("SpaceshipHub", "Loaded " + (planets != null ? planets.size() : 0) + " planets");
+        if (planets != null && planets.size() > 0) {
+            android.util.Log.d("SpaceshipHub", "First planet: " + planets.get(0).name);
+        }
+    }
+
+    private void updateUI() {
+        if (userProgress != null) {
+            tvStars.setText(String.valueOf(userProgress.totalStars));
+            tvFuelCells.setText(String.valueOf(userProgress.totalFuelCells));
+            tvCrystals.setText(String.valueOf(userProgress.totalCrystals));
+            tvLevel.setText(String.valueOf(userProgress.currentLevel));
+
+            int xpInLevel = userProgress.experiencePoints % 100;
+            progressLevel.setProgress(xpInLevel);
+
+            int dailyProgress = Math.min(userProgress.wordsLearned % 10, 10);
+            progressDailyMission.setProgress(dailyProgress);
+            tvDailyProgress.setText(dailyProgress + "/10 từ");
+
+        }
+
+        if (recyclerPlanets.getAdapter() != null) {
+            recyclerPlanets.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+
+    private void setupRecyclerView() {
+        recyclerPlanets.setLayoutManager(new LinearLayoutManager(this));
+        recyclerPlanets.setNestedScrollingEnabled(false);
+        
+        // Tạo adapter với danh sách planets đã load
+        PlanetAdapter adapter = new PlanetAdapter();
+        recyclerPlanets.setAdapter(adapter);
+        
+        // Đảm bảo adapter được notify
+        if (planets != null) {
+            adapter.notifyDataSetChanged();
+            android.util.Log.d("SpaceshipHub", "Adapter setup with " + planets.size() + " planets");
+        }
+    }
+
+    private void setupBottomNav() {
+        btnNavHub.setOnClickListener(v -> {
+            // Already on Hub
+        });
+
+        btnNavWordLab.setOnClickListener(v -> {
+            Intent intent = new Intent(this, WordLabActivity.class);
+            startActivity(intent);
+        });
+
+        btnNavBuddy.setOnClickListener(v -> {
+            Intent intent = new Intent(this, BuddyRoomActivity.class);
+            startActivity(intent);
+        });
+
+        com.google.android.material.floatingactionbutton.FloatingActionButton fabGalaxyMap =
+            findViewById(R.id.fabGalaxyMap);
+        if (fabGalaxyMap != null) {
+            fabGalaxyMap.setOnClickListener(v -> {
+                // Navigate to Interactive Galaxy Map
+                Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+
+            Animation pulseAnim = AnimationUtils.loadAnimation(this, R.anim.pulse);
+            fabGalaxyMap.startAnimation(pulseAnim);
+        }
+
+        btnNavAdventure.setOnClickListener(v -> {
+            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.button_press));
+            Intent intent = new Intent(this, BattleActivity.class);
+            intent.putExtra("planet_id", userProgress != null ? userProgress.currentPlanetId : 1);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_scale_in, 0);
+        });
+    }
+
+    private void openProfile() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    private void setRandomBuddyMessage() {
+        Random random = new Random();
+        String message = buddyMessages[random.nextInt(buddyMessages.length)];
+        tvBuddyMessage.setText(message);
+    }
+
+    private void openPlanet(PlanetData planet) {
+        // Kiểm tra unlock status từ ProgressionManager (dùng Stars, không dùng Fuel Cells)
+        boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+        
+        if (!isUnlocked) {
+            int starsRequired = progressionManager.getStarsRequiredForPlanet(planet.planetKey);
+            int currentStars = userProgress != null ? userProgress.totalStars : 0;
+            int needed = Math.max(0, starsRequired - currentStars);
+
+            if (starsRequired == 0 || currentStars >= starsRequired) {
+                // Đủ sao, tự động mở khóa
+                progressionManager.checkForNewUnlocks();
+                planet.isUnlocked = true;
+                Toast.makeText(this, "🔓 Mở khóa " + planet.nameVi + "!", Toast.LENGTH_SHORT).show();
+                loadData();
+                updateUI();
+            } else {
+                Toast.makeText(this, "⭐ Cần thêm " + needed + " sao nữa để mở khóa!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        // Determine which galaxy this planet belongs to
+        // Galaxy 1: planets 1-4, Galaxy 2: planets 5-8, Galaxy 3: planets 9-12
+        int galaxyId = ((planet.id - 1) / 4) + 1;
+
+        // Navigate to PlanetMapActivity (games for this planet)
+        Intent intent = new Intent(this, PlanetMapActivity.class);
+        intent.putExtra("planet_id", planet.id);
+        intent.putExtra("planet_name", planet.name);
+        intent.putExtra("planet_name_vi", planet.nameVi);
+        intent.putExtra("planet_emoji", planet.emoji);
+        intent.putExtra("planet_color", planet.themeColor);
+        intent.putExtra("galaxy_id", galaxyId);
+        startActivity(intent);
+        overridePendingTransition(R.anim.warp_in, R.anim.warp_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
+
+    // ============ PLANET ADAPTER ============
+
+    class PlanetAdapter extends RecyclerView.Adapter<PlanetAdapter.PlanetViewHolder> {
+
+        private int[] gradientColors = {
+            Color.parseColor("#FF6B6B"),
+            Color.parseColor("#4ECDC4"),
+            Color.parseColor("#45B7D1"),
+            Color.parseColor("#96CEB4"),
+            Color.parseColor("#FFEAA7"),
+            Color.parseColor("#74B9FF"),
+            Color.parseColor("#A29BFE"),
+            Color.parseColor("#FD79A8"),
+            Color.parseColor("#E17055"),
+        };
+
+        @NonNull
+        @Override
+        public PlanetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_planet_new, parent, false);
+            return new PlanetViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PlanetViewHolder holder, int position) {
+            PlanetData planet = planets.get(position);
+
+            holder.tvPlanetName.setText(planet.name);
+            holder.tvPlanetNameVi.setText(planet.nameVi);
+            holder.tvPlanetEmoji.setText(planet.emoji);
+            holder.tvSkillFocus.setText("📚 " + planet.skillFocus);
+            holder.tvCollectibleEmoji.setText(planet.collectibleEmoji);
+
+            int colorIndex = position % gradientColors.length;
+            holder.planetContainer.setBackgroundColor(gradientColors[colorIndex]);
+
+            // Check unlock status từ ProgressionManager (dùng Stars)
+            boolean isUnlocked = progressionManager.isPlanetUnlocked(planet.planetKey);
+            
+            if (isUnlocked) {
+                holder.lockOverlay.setVisibility(View.GONE);
+                holder.btnPlay.setVisibility(View.VISIBLE);
+            } else {
+                holder.lockOverlay.setVisibility(View.VISIBLE);
+                holder.btnPlay.setVisibility(View.GONE);
+                // Hiển thị stars required thay vì fuel cells
+                int starsRequired = progressionManager.getStarsRequiredForPlanet(planet.planetKey);
+                int currentStars = userProgress != null ? userProgress.totalStars : 0;
+                int needed = Math.max(0, starsRequired - currentStars);
+                if (starsRequired == 0) {
+                    holder.tvRequiredFuel.setText("⭐ Sẵn sàng!");
+                } else {
+                    holder.tvRequiredFuel.setText("⭐ " + needed);
+                }
+            }
+
+            List<SceneData> scenes = dbHelper.getScenesForPlanet(planet.id);
+            int completed = 0;
+            for (SceneData scene : scenes) {
+                if (scene.isCompleted) completed++;
+            }
+            int progress = scenes.size() > 0 ? (completed * 100 / scenes.size()) : 0;
+            holder.progressPlanet.setProgress(progress);
+            holder.tvProgress.setText(progress + "%");
+
+            holder.itemView.setOnClickListener(v -> openPlanet(planet));
+            holder.btnPlay.setOnClickListener(v -> openPlanet(planet));
+        }
+
+        @Override
+        public int getItemCount() {
+            return planets != null ? planets.size() : 0;
+        }
+
+        class PlanetViewHolder extends RecyclerView.ViewHolder {
+            View planetContainer;
+            FrameLayout lockOverlay;
+            TextView tvPlanetName, tvPlanetNameVi, tvPlanetEmoji;
+            TextView tvSkillFocus, tvCollectibleEmoji, tvCollectibleCount;
+            TextView tvRequiredFuel, tvProgress, btnPlay;
+            TextView tvStar1, tvStar2, tvStar3;
+            ProgressBar progressPlanet;
+
+            PlanetViewHolder(@NonNull View itemView) {
+                super(itemView);
+                planetContainer = itemView.findViewById(R.id.planetContainer);
+                lockOverlay = itemView.findViewById(R.id.lockOverlay);
+                tvPlanetName = itemView.findViewById(R.id.tvPlanetName);
+                tvPlanetNameVi = itemView.findViewById(R.id.tvPlanetNameVi);
+                tvPlanetEmoji = itemView.findViewById(R.id.tvPlanetEmoji);
+                tvSkillFocus = itemView.findViewById(R.id.tvSkillFocus);
+                tvCollectibleEmoji = itemView.findViewById(R.id.tvCollectibleEmoji);
+                tvCollectibleCount = itemView.findViewById(R.id.tvCollectibleCount);
+                tvRequiredFuel = itemView.findViewById(R.id.tvRequiredFuel);
+                tvProgress = itemView.findViewById(R.id.tvProgress);
+                btnPlay = itemView.findViewById(R.id.btnPlay);
+                tvStar1 = itemView.findViewById(R.id.tvStar1);
+                tvStar2 = itemView.findViewById(R.id.tvStar2);
+                tvStar3 = itemView.findViewById(R.id.tvStar3);
+                progressPlanet = itemView.findViewById(R.id.progressPlanet);
+            }
+        }
+    }
+}
+

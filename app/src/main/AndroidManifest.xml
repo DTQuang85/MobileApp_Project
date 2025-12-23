@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.engapp">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
+        android:theme="@style/Theme.MyApplication">
+
+        <!-- Splash Activity - App launcher with logo -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        
+        <!-- Cutscene Activity - Story introduction -->
+        <activity
+            android:name=".CutsceneActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Galaxy Map Activity - Galaxy selection -->
+        <activity
+            android:name=".GalaxyMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Galaxy Planets Activity - Show planets of selected galaxy -->
+        <activity
+            android:name=".GalaxyPlanetsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Interactive Galaxy Map Activity - Visual galaxy map -->
+        <activity
+            android:name=".InteractiveGalaxyMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Interactive Planet Map Activity - Visual planet map with spaceship animation -->
+        <activity
+            android:name=".InteractivePlanetMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Battle Activity - Word battles -->
+        <activity
+            android:name=".BattleActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Reward Activity - Show rewards -->
+        <activity
+            android:name=".RewardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Daily Missions Activity -->
+        <activity
+            android:name=".DailyMissionsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Word Review Activity - Spaced repetition -->
+        <activity
+            android:name=".WordReviewActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Intro Activity - Welcome slides -->
+        <activity 
+            android:name=".IntroActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        
+        <!-- Login Activity -->
+        <activity android:name=".LoginActivity"/>
+        
+        <!-- SignUp Activity -->
+        <activity android:name=".SignUpActivity"/>
+        
+        <!-- Space Map Activity - Main game hub -->
+        <activity
+            android:name=".SpaceMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Planet Activity - Planet zones -->
+        <activity
+            android:name=".PlanetActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Planet Map Activity - Learning path nodes (Phase 3) -->
+        <activity
+            android:name=".PlanetMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Zone Activity - Zone games and learning -->
+        <activity
+            android:name=".ZoneActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Learn Words Activity -->
+        <activity
+            android:name=".LearnWordsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Guess Name Game Activity -->
+        <activity
+            android:name=".GuessNameGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Listen Choose Game Activity -->
+        <activity
+            android:name=".ListenChooseGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Match Game Activity -->
+        <activity
+            android:name=".MatchGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Sentence Activity -->
+        <activity
+            android:name=".SentenceActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Badges Activity -->
+        <activity
+            android:name=".BadgesActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Spaceship Hub Activity - New Main Hub -->
+        <activity
+            android:name=".SpaceshipHubActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Word Lab Activity -->
+        <activity
+            android:name=".WordLabActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Buddy Room Activity -->
+        <activity
+            android:name=".BuddyRoomActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Profile Activity -->
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Explore Activity -->
+        <activity
+            android:name=".ExploreActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Dialogue Activity -->
+        <activity
+            android:name=".DialogueActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Puzzle Game Activity -->
+        <activity
+            android:name=".PuzzleGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Boss Gate Activity -->
+        <activity
+            android:name=".BossGateActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Adventure Activity - Explore with Buddy -->
+        <activity
+            android:name=".AdventureActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Word Battle Activity - Bookworm Adventures style -->
+        <activity
+            android:name=".WordBattleActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Parent Dashboard Activity (Phase 8) -->
+        <activity
+            android:name=".ParentDashboardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Main Activity (Legacy - redirect to SpaceMap) -->
+        <activity android:name=".MainActivity"/>
+        
+        <!-- Vocabulary Activity - Updated for space theme -->
+        <activity android:name=".VocabularyActivity"/>
+        
+        <!-- Legacy activities kept for compatibility -->
+        <activity android:name=".CategoryActivity"/>
+        <activity android:name=".VocabularyDetailActivity"/>
+        <activity android:name=".VocabularyGameActivity"/>
+        <activity android:name=".CategoryDetailActivity"/>
+        <activity android:name=".VideoListActivity"/>
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".BehavioralListActivity"/>
+        <activity android:name=".BehavioralDetailActivity"/>
+        <activity 
+            android:name=".BehavioralPracticeActivity"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <!-- New Interactive Star Map Activity -->
+        <activity
+            android:name=".InteractiveStarMapActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Space Travel Animation Activity -->
+        <activity
+            android:name=".SpaceTravelActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait"/>
+
+        <!-- Captain's Log Activity -->
+        <activity
+            android:name=".CaptainsLogActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+    </application>
+</manifest>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Deep space background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#0B0B1A"
+                android:centerColor="#151530"
+                android:endColor="#1E1E3F"
+                android:angle="270"/>
+        </shape>
+    </item>
+
+    <!-- Nebula effect 1 - Purple -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#20663399"
+                android:endColor="#00000000"
+                android:type="radial"
+                android:gradientRadius="400dp"
+                android:centerX="0.2"
+                android:centerY="0.3"/>
+        </shape>
+    </item>
+
+    <!-- Nebula effect 2 - Blue -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#153366CC"
+                android:endColor="#00000000"
+                android:type="radial"
+                android:gradientRadius="350dp"
+                android:centerX="0.8"
+                android:centerY="0.7"/>
+        </shape>
+    </item>
+
+    <!-- Nebula effect 3 - Pink -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#10FF69B4"
+                android:endColor="#00000000"
+                android:type="radial"
+                android:gradientRadius="300dp"
+                android:centerX="0.5"
+                android:centerY="0.5"/>
+        </shape>
+    </item>
+
+    <!-- Star cluster 1 -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#15FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="radial"
+                android:gradientRadius="100dp"
+                android:centerX="0.1"
+                android:centerY="0.2"/>
+        </shape>
+    </item>
+
+    <!-- Star cluster 2 -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#10FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="radial"
+                android:gradientRadius="80dp"
+                android:centerX="0.9"
+                android:centerY="0.4"/>
+        </shape>
+    </item>
+
+    <!-- Star cluster 3 -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#12FFFFFF"
+                android:endColor="#00FFFFFF"
+                android:type="radial"
+                android:gradientRadius="120dp"
+                android:centerX="0.3"
+                android:centerY="0.8"/>
+        </shape>
+    </item>
+</layer-list>
+

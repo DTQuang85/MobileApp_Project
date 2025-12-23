@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Space English</string>
+    <string name="default_web_client_id">407652235319-fg8ttkbd0q7ec9uabmk681u0kuhhms1g.apps.googleusercontent.com</string>
+    <string name="verification_email_sent">Đã gửi email xác nhận đến %s. Vui lòng kiểm tra hộp thư.</string>
+    <string name="resend_verification">Gửi lại email xác nhận</string>
+    <string name="email_not_verified">Email chưa được xác nhận</string>
+
+    <!-- Space Theme -->
+    <string name="welcome_astronaut">Xin chào, Phi hành gia nhí!</string>
+    <string name="select_planet">Chọn hành tinh để khám phá</string>
+    <string name="energy">Năng lượng</string>
+    <string name="badges">Huy hiệu</string>
+    <string name="start_adventure">Bắt đầu cuộc phiêu lưu!</string>
+    <string name="collect_stars">Thu thập sao</string>
+    <string name="complete_mission">Hoàn thành nhiệm vụ</string>
+
+    <!-- Time Zones -->
+    <string name="prehistoric_era">Thời tiền sử 🦕</string>
+    <string name="medieval_era">Thời Trung cổ 🏰</string>
+    <string name="modern_era">Thời Hiện đại 🌆</string>
+    <string name="future_era">Tương lai 🚀</string>
+
+    <!-- Planets -->
+    <string name="animal_planet">Hành tinh Động vật 🐾</string>
+    <string name="color_planet">Hành tinh Màu sắc 🌈</string>
+    <string name="number_planet">Hành tinh Số 🔢</string>
+    <string name="food_planet">Hành tinh Đồ ăn 🍎</string>
+    <string name="family_planet">Hành tinh Gia đình 👨‍👩‍👧‍👦</string>
+    <string name="nature_planet">Hành tinh Thiên nhiên 🌳</string>
+    <string name="body_planet">Hành tinh Cơ thể 🤸</string>
+    <string name="school_planet">Hành tinh Trường học 📚</string>
+
+    <!-- Game Types -->
+    <string name="guess_name">Đoán tên</string>
+    <string name="listen_choose">Nghe và chọn</string>
+    <string name="speak_word">Nói từ</string>
+    <string name="match_game">Ghép hình - chữ</string>
+    <string name="learn_info">Học thông tin</string>
+
+    <!-- Rewards -->
+    <string name="great_job">Tuyệt vời! 🎉</string>
+    <string name="try_again">Thử lại nhé! 💪</string>
+    <string name="correct_answer">Đúng rồi! ⭐</string>
+    <string name="wrong_answer">Chưa đúng rồi!</string>
+    <string name="new_badge">Bạn nhận được huy hiệu mới!</string>
+    <string name="planet_unlocked">Mở khóa hành tinh mới!</string>
+
+    <!-- UI -->
+    <string name="next">Tiếp theo</string>
+    <string name="back">Quay lại</string>
+    <string name="play">Chơi</string>
+    <string name="listen">Nghe</string>
+    <string name="speak">Nói</string>
+    <string name="hint">Gợi ý</string>
+    <string name="score">Điểm</string>
+    <string name="level">Cấp độ</string>
+    <string name="stars_collected">Sao đã thu thập</string>
+</resources>
