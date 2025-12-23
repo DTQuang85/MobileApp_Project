@@ -85,7 +85,7 @@
 * [x] Battle = chuỗi câu hỏi vocab (4 options)
 * [x] State machine logic (Player HP vs Enemy HP)
 * [x] Tạo `activity_battle.xml` layout
-* [x] Tạo `BattleActivity.java`
+* [x] Tạo `WordBattleActivity.java`
 * [x] Correct/Wrong answer feedback
 * [x] Health bar animations
 * [x] Victory/Defeat result screen
@@ -180,7 +180,7 @@
 - `GalaxyAdapter.java` - Galaxy list adapter
 - `PlanetMapActivity.java` - Planet learning path
 - `PlanetNodeAdapter.java` - Node list adapter
-- `BattleActivity.java` - Word battle game
+- `WordBattleActivity.java` - Word battle game
 - `RewardActivity.java` - Reward celebration
 - `DailyMissionsActivity.java` - Daily missions
 - `MissionAdapter.java` - Mission list adapter
@@ -280,4 +280,3 @@
 ---
 
 ## 🚀 ALL PHASES COMPLETE!
-

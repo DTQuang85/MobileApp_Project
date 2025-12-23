@@ -152,7 +152,7 @@ Bản đồ hành tinh với khả năng zoom, pan:
 
 ### ⚔️ Battle System (MỚI!)
 
-- **Word Battles**: Đấu từ vựng với AI enemies
+- **Word Battles**: Ghép chữ trong lưới 4x4 kiểu Bookworm để đấu AI enemies
 - **Health Bar System**: Thanh máu cho player và enemy
 - **Hint System**: Buddy hỗ trợ với hint
 - **Reward System**: Nhận stars và crystals khi thắng
@@ -386,7 +386,7 @@ File → Open → Chọn thư mục project
 | 🚀 | Tàu Mẹ | SpaceshipHubActivity |
 | 📚 | Từ Vựng | WordLabActivity |
 | 🌌 | Bản Đồ | InteractiveGalaxyMapActivity / InteractiveStarMapActivity |
-| ⚔️ | Chiến Đấu | BattleActivity |
+| ⚔️ | Chiến Đấu | WordBattleActivity |
 | 🤖 | Buddy | BuddyRoomActivity |
 
 **Lưu ý:** Nút giữa (Bản Đồ) là FAB (Floating Action Button) nổi lên giữa thanh navigation.
@@ -703,4 +703,3 @@ Dự án này được phát triển cho mục đích giáo dục.
 <p align="center">
   🚀 <strong>Space English</strong> - Fly to Learn! 🌟
 </p>
-
