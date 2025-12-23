@@ -78,6 +78,10 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private Set<String> validWords = new HashSet<>();
     private Set<String> usedWords = new HashSet<>();
     private List<WordData> allWords;
+    private List<WordData> learnedWords = new ArrayList<>();
+    private List<String> currentBoardWords = new ArrayList<>();
+    private int wordsLearnedCount = 0;
+    private float difficultyScale = 1f;
 
     // Buddy
     private String buddyEmoji = "🤖";
@@ -131,13 +135,24 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void configureDifficulty() {
+        GameDatabaseHelper.UserProgressData progress = dbHelper.getUserProgress();
+        if (progress != null) {
+            wordsLearnedCount = progress.wordsLearned;
+        }
+
         int requestedStage = getIntent().getIntExtra("start_stage", -1);
         int startingPlanet = getIntent().getIntExtra("planet_id", 1);
-        int baseStage = requestedStage > 0 ? requestedStage : startingPlanet;
-        if (baseStage <= 0) {
-            baseStage = 1;
+        int derivedStage = Math.max(1, Math.min(ENEMIES.length, 1 + wordsLearnedCount / 8));
+
+        int baseStage = derivedStage;
+        if (requestedStage > 0) {
+            baseStage = Math.max(derivedStage, requestedStage);
+        } else if (startingPlanet > 0) {
+            baseStage = Math.max(derivedStage, startingPlanet);
         }
+
         initialStage = Math.max(1, Math.min(baseStage, ENEMIES.length));
+        difficultyScale = calculateDifficultyScale(wordsLearnedCount);
         setStageAndLevel(initialStage);
     }
 
@@ -160,25 +175,44 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void loadValidWords() {
-        allWords = dbHelper.getWordsForPlanet(1); // Load all words
-
-        // Add more words from other planets
-        for (int i = 2; i <= 9; i++) {
-            List<WordData> planetWords = dbHelper.getWordsForPlanet(i);
-            if (planetWords != null) {
-                allWords.addAll(planetWords);
-            }
+        validWords.clear();
+        learnedWords = dbHelper.getLearnedWords();
+        if (learnedWords == null) {
+            learnedWords = new ArrayList<>();
         }
+        allWords = new ArrayList<>();
 
-        // Build valid words set
-        if (allWords != null) {
+        if (!learnedWords.isEmpty()) {
+            allWords.addAll(learnedWords);
+            for (WordData word : learnedWords) {
+                if (word != null && word.english != null) {
+                    validWords.add(word.english.toLowerCase());
+                }
+            }
+        } else {
+            // Fallback to general word list if child hasn't learned any yet
+            List<WordData> starterWords = dbHelper.getWordsForPlanet(1);
+            if (starterWords != null) {
+                allWords.addAll(starterWords);
+            }
+            for (int i = 2; i <= 9; i++) {
+                List<WordData> planetWords = dbHelper.getWordsForPlanet(i);
+                if (planetWords != null) {
+                    allWords.addAll(planetWords);
+                }
+            }
             for (WordData word : allWords) {
-                validWords.add(word.english.toLowerCase());
+                if (word != null && word.english != null) {
+                    validWords.add(word.english.toLowerCase());
+                }
             }
         }
 
-        // Add common English words for more gameplay options
-        String[] commonWords = {
+        wordsLearnedCount = Math.max(wordsLearnedCount, learnedWords.size());
+
+        // Add simple English words to keep gameplay possible when vocabulary is still tiny
+        if (validWords.size() < 25) {
+            String[] commonWords = {
             "a", "i", "an", "at", "be", "by", "do", "go", "he", "if", "in", "is", "it", "me", "my", "no", "of", "on", "or", "so", "to", "up", "us", "we",
             "ace", "act", "add", "age", "ago", "aid", "aim", "air", "all", "and", "ant", "any", "ape", "arc", "are", "ark", "arm", "art", "ask", "ate",
             "bad", "bag", "ban", "bar", "bat", "bay", "bed", "bee", "bet", "big", "bit", "bow", "box", "boy", "bud", "bug", "bus", "but", "buy",
@@ -214,11 +248,24 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
             "snow", "some", "soon", "star", "stay", "stop", "such", "sure", "take", "talk", "tell", "than", "that", "them", "then", "they", "this", "time", "tree",
             "turn", "upon", "very", "wait", "walk", "want", "warm", "week", "well", "west", "what", "when", "will", "wind", "wish", "with", "wood", "word", "work",
             "year", "your", "zero", "zoom"
-        };
+            };
 
-        for (String w : commonWords) {
-            validWords.add(w.toLowerCase());
+            for (String w : commonWords) {
+                validWords.add(w.toLowerCase());
+            }
         }
+
+        difficultyScale = calculateDifficultyScale(wordsLearnedCount);
+    }
+
+    private List<WordData> getActiveWordPool() {
+        if (learnedWords != null && !learnedWords.isEmpty()) {
+            return learnedWords;
+        }
+        if (allWords == null) {
+            allWords = new ArrayList<>();
+        }
+        return allWords;
     }
 
     private void initViews() {
@@ -275,39 +322,50 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     }
 
     private void generateLetters() {
-        // Weighted letter distribution (more vowels and common consonants)
-        String vowels = "AEIOU";
-        String commonConsonants = "BCDFGHLMNPRST";
-        String rareConsonants = "JKQVWXYZ";
-
         letterGrid.removeAllViews();
+        currentBoardWords.clear();
 
-        // Ensure at least 4 vowels
-        int vowelCount = 4 + random.nextInt(2);
-        int commonCount = 16 - vowelCount - 2;
-        int rareCount = 2;
+        List<WordData> pool = getActiveWordPool();
+        if (pool != null && !pool.isEmpty()) {
+            List<WordData> shuffled = new ArrayList<>(pool);
+            Collections.shuffle(shuffled);
+            int letterBudget = 12;
+            int totalLetters = 0;
 
-        StringBuilder letters = new StringBuilder();
+            for (WordData word : shuffled) {
+                if (word == null || word.english == null) continue;
+                String clean = word.english.replaceAll("[^A-Za-z]", "");
+                if (clean.length() < 2) continue;
+                if (currentBoardWords.isEmpty() || totalLetters + clean.length() <= letterBudget) {
+                    currentBoardWords.add(clean.toLowerCase());
+                    totalLetters += clean.length();
+                }
+                if (currentBoardWords.size() >= 3 || totalLetters >= letterBudget) {
+                    break;
+                }
+            }
+        }
 
-        for (int i = 0; i < vowelCount; i++) {
-            letters.append(vowels.charAt(random.nextInt(vowels.length())));
-        }
-        for (int i = 0; i < commonCount; i++) {
-            letters.append(commonConsonants.charAt(random.nextInt(commonConsonants.length())));
-        }
-        for (int i = 0; i < rareCount; i++) {
-            letters.append(rareConsonants.charAt(random.nextInt(rareConsonants.length())));
+        if (currentBoardWords.isEmpty()) {
+            currentBoardWords.add("cat");
+            currentBoardWords.add("sun");
         }
 
-        // Shuffle
-        List<Character> letterList = new ArrayList<>();
-        for (char c : letters.toString().toCharArray()) {
-            letterList.add(c);
+        List<Character> letterPool = new ArrayList<>();
+        for (String word : currentBoardWords) {
+            for (char c : word.toUpperCase().toCharArray()) {
+                letterPool.add(c);
+            }
         }
-        Collections.shuffle(letterList);
+
+        while (letterPool.size() < 16) {
+            letterPool.add(pickFillerLetter());
+        }
+
+        Collections.shuffle(letterPool);
 
         for (int i = 0; i < 16; i++) {
-            currentLetters[i] = letterList.get(i);
+            currentLetters[i] = letterPool.get(i);
             addLetterButton(i, currentLetters[i]);
         }
     }
@@ -343,6 +401,17 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         card.setOnClickListener(v -> selectLetter(index, card));
 
         letterGrid.addView(card);
+    }
+
+    private char pickFillerLetter() {
+        float roll = random.nextFloat();
+        if (roll < 0.4f) return randomCharFrom("AEIOU");
+        if (roll < 0.9f) return randomCharFrom("BCDFGHLMNPRST");
+        return randomCharFrom("JKQVWXYZ");
+    }
+
+    private char randomCharFrom(String source) {
+        return source.charAt(random.nextInt(source.length()));
     }
 
     private void selectLetter(int index, CardView card) {
@@ -570,7 +639,12 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         // Animation
         progressPlayerHealth.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_scale_in));
 
-        showBuddyMessage(buddyMessages[buddyIndex][2]); // Take damage message
+        String enemyWord = getEnemyMoveWord();
+        if (enemyWord != null) {
+            showBuddyMessage(enemyEmoji + " phản đòn bằng từ \"" + enemyWord + "\"! Né cẩn thận! ⚠️");
+        } else {
+            showBuddyMessage(buddyMessages[buddyIndex][2]); // Take damage message
+        }
 
         updateUI();
 
@@ -613,20 +687,46 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         }
     }
 
+    private String getEnemyMoveWord() {
+        if (!currentBoardWords.isEmpty()) {
+            return currentBoardWords.get(random.nextInt(currentBoardWords.size())).toUpperCase();
+        }
+        if (!validWords.isEmpty()) {
+            List<String> pool = new ArrayList<>(validWords);
+            return pool.get(random.nextInt(pool.size())).toUpperCase();
+        }
+        return null;
+    }
+
+    private float calculateDifficultyScale(int learned) {
+        if (learned < 5) return 0.9f;
+        if (learned < 15) return 1.0f;
+        if (learned < 30) return 1.15f;
+        if (learned < 50) return 1.3f;
+        return 1.5f;
+    }
+
     private void showHint() {
         // Find a valid word that can be made
         String hint = findPossibleWord();
         if (hint != null) {
-            showBuddyMessage("💡 Gợi ý: Thử ghép từ '" + hint.toUpperCase() + "'!");
+            showBuddyMessage("💡 Gợi ý: Thử ghép lại từ '" + hint.toUpperCase() + "' mà con đã học!");
         } else {
             showBuddyMessage("💡 Thử ghép các chữ cái thành từ tiếng Anh nhé!");
         }
     }
 
     private String findPossibleWord() {
-        // Simple hint: find 3-4 letter words that can be made
         String letters = new String(currentLetters).toLowerCase();
 
+        for (String boardWord : currentBoardWords) {
+            String lower = boardWord.toLowerCase();
+            if (!usedWords.contains(lower) && canMakeWord(lower, letters)) {
+                return lower;
+            }
+        }
+
+        // Fallback: search general dictionary words if needed
         for (String word : validWords) {
             if (word.length() >= 3 && word.length() <= 4 && !usedWords.contains(word)) {
                 if (canMakeWord(word, letters)) {
@@ -654,8 +754,11 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         enemyEmoji = enemy[0];
         enemyName = enemy[1];
         maxEnemyHealth = Integer.parseInt(enemy[2]) + (currentStage - 1) * 10;
-        enemyHealth = maxEnemyHealth;
         enemyDamage = Integer.parseInt(enemy[3]) + (currentStage - 1) * 2;
+
+        maxEnemyHealth = Math.max(30, Math.round(maxEnemyHealth * difficultyScale));
+        enemyHealth = maxEnemyHealth;
+        enemyDamage = Math.max(4, Math.round(enemyDamage * difficultyScale));
 
         tvEnemyEmoji.setText(enemyEmoji);
         tvEnemyName.setText(enemyName + " Lv." + currentStage);
