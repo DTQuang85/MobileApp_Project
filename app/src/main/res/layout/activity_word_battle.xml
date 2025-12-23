@@ -118,14 +118,15 @@
                     android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <ImageView
+                <TextView
                     android:id="@+id/horsePlayer"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_horse"
-                    app:tint="@color/fun_green"/>
+                    android:text="🐴"
+                    android:textSize="26sp"
+                    android:includeFontPadding="false"/>
             </FrameLayout>
 
             <ProgressBar
@@ -172,14 +173,15 @@
                     android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <ImageView
+                <TextView
                     android:id="@+id/horseAi1"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_horse"
-                    app:tint="@color/fun_blue"/>
+                    android:text="🐎"
+                    android:textSize="24sp"
+                    android:includeFontPadding="false"/>
             </FrameLayout>
 
             <ProgressBar
@@ -235,14 +237,15 @@
                     android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <ImageView
+                <TextView
                     android:id="@+id/horseAi2"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_horse"
-                    app:tint="@color/fun_purple"/>
+                    android:text="🐎"
+                    android:textSize="24sp"
+                    android:includeFontPadding="false"/>
             </FrameLayout>
 
             <ProgressBar
@@ -298,14 +301,15 @@
                     android:textColor="@color/text_white"
                     android:layout_marginEnd="8dp"/>
 
-                <ImageView
+                <TextView
                     android:id="@+id/horseAi3"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_horse"
-                    app:tint="@color/fun_orange"/>
+                    android:text="🐎"
+                    android:textSize="24sp"
+                    android:includeFontPadding="false"/>
             </FrameLayout>
 
             <ProgressBar
@@ -338,14 +342,13 @@
         android:layout_margin="12dp"
         app:cardCornerRadius="18dp"
         app:cardElevation="6dp"
-        app:cardBackgroundColor="@color/card_bg_dark">
+        app:cardBackgroundColor="@drawable/bg_word_panel">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp"
-            android:background="@drawable/bg_glass_dark">
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/tvCurrentWord"
@@ -361,8 +364,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
-                android:padding="6dp"
+                android:background="@drawable/bg_word_board"
+                android:padding="8dp"
                 android:columnCount="4"
                 android:alignmentMode="alignMargins"/>
 

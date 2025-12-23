@@ -54,8 +54,8 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
     private TextView tvRaceStatus;
     private FrameLayout lanePlayer;
     private FrameLayout[] laneAi = new FrameLayout[AI_COUNT];
-    private ImageView horsePlayer;
-    private ImageView[] horseAi = new ImageView[AI_COUNT];
+    private TextView horsePlayer;
+    private TextView[] horseAi = new TextView[AI_COUNT];
     private TextView tvPlayerName;
     private TextView[] tvAiName = new TextView[AI_COUNT];
     private TextView[] tvAiStatus = new TextView[AI_COUNT];
@@ -240,11 +240,6 @@ public class WordBattleActivity extends AppCompatActivity implements TextToSpeec
         tvAiName[0].setText("Comet");
         tvAiName[1].setText("Bolt");
         tvAiName[2].setText("Rocket");
-
-        horsePlayer.setColorFilter(ContextCompat.getColor(this, R.color.fun_green));
-        horseAi[0].setColorFilter(ContextCompat.getColor(this, R.color.fun_blue));
-        horseAi[1].setColorFilter(ContextCompat.getColor(this, R.color.fun_purple));
-        horseAi[2].setColorFilter(ContextCompat.getColor(this, R.color.fun_orange));
 
         Animation bob = AnimationUtils.loadAnimation(this, R.anim.horse_bob);
         horsePlayer.startAnimation(bob);
