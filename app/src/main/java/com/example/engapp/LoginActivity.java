@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.engapp.manager.ProgressionManager;
 
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.api.ApiException;
@@ -468,6 +469,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goHome(String name) {
+        ProgressionManager.getInstance(this).refreshCloudSync();
         Intent intent = new Intent(this, SpaceshipHubActivity.class);
         intent.putExtra("username", name != null ? name : "User");
         startActivity(intent);

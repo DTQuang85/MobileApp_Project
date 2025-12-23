@@ -214,7 +214,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
                 intent = new Intent(this, PuzzleGameActivity.class);
                 break;
             case "boss_gate":
-                intent = new Intent(this, WordBattleActivity.class);
+                intent = new Intent(this, BossGateActivity.class);
                 break;
                 
             default:

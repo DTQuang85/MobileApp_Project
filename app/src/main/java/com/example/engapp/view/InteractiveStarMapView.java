@@ -13,6 +13,7 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,6 +21,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.model.Planet;
@@ -54,6 +56,7 @@ public class InteractiveStarMapView extends View {
     private Paint textPaint;
     private Paint pathPaint;
     private Paint progressPaint;
+    private Drawable rocketDrawable;
 
     // Data
     private Context context;
@@ -144,6 +147,7 @@ public class InteractiveStarMapView extends View {
         initGestureDetectors(context);
         generateBackgroundStars();
         startTwinkleAnimation();
+        rocketDrawable = ContextCompat.getDrawable(context, com.example.engapp.R.drawable.ic_rocket);
     }
 
     private void initPaints() {
@@ -479,12 +483,25 @@ public class InteractiveStarMapView extends View {
                 locationPaint.setAlpha(100);
                 locationPaint.setStrokeWidth(2f);
                 canvas.drawCircle(x, y, pulseRadius + 5, locationPaint);
-
                 // Draw spaceship icon above (animated)
-                textPaint.setTextSize(32f);
-                textPaint.setColor(Color.WHITE);
                 float shipY = y - radius - 35;
-                canvas.drawText("🚀", x, shipY, textPaint);
+                if (rocketDrawable != null) {
+                    int size = (int) (getResources().getDisplayMetrics().density * 28);
+                    int left = (int) (x - size / 2f);
+                    int top = (int) (shipY - size);
+                    rocketDrawable.setBounds(left, top, left + size, top + size);
+                    rocketDrawable.draw(canvas);
+                } else {
+                    Paint shipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    shipPaint.setColor(Color.parseColor("#FFD54F"));
+                    float shipSize = 12f * getResources().getDisplayMetrics().density;
+                    Path shipPath = new Path();
+                    shipPath.moveTo(x, shipY - shipSize);
+                    shipPath.lineTo(x - shipSize * 0.6f, shipY + shipSize * 0.6f);
+                    shipPath.lineTo(x + shipSize * 0.6f, shipY + shipSize * 0.6f);
+                    shipPath.close();
+                    canvas.drawPath(shipPath, shipPaint);
+                }
             }
         } else {
             // Draw locked planet (enhanced greyed out)
