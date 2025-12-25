@@ -3,64 +3,59 @@ package com.example.engapp;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class IntroAdapter extends RecyclerView.Adapter<IntroAdapter.IntroViewHolder> {
-    private IntroActivity context;
 
-    public IntroAdapter(IntroActivity context) {
-        this.context = context;
+    private final IntroSlide[] slides;
+
+    public IntroAdapter(IntroSlide[] slides) {
+        this.slides = slides;
     }
 
     @NonNull
     @Override
     public IntroViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_intro, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_intro_slide, parent, false);
         return new IntroViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull IntroViewHolder holder, int position) {
-        switch (position) {
-            case 0:
-                holder.icon.setText("📚");
-                holder.title.setText("Learn IT Vocabulary");
-                holder.description.setText("Master technical terms across 10 different IT categories");
-                break;
-            case 1:
-                holder.icon.setText("🎯");
-                holder.title.setText("Interactive Learning");
-                holder.description.setText("Practice with examples and hear correct pronunciations");
-                break;
-            case 2:
-                holder.icon.setText("📊");
-                holder.title.setText("Track Your Progress");
-                holder.description.setText("Monitor your learning journey and improve your tech vocabulary");
-                break;
-            case 3:
-                holder.icon.setText("🚀");
-                holder.title.setText("Get Started");
-                holder.description.setText("Join thousands of learners improving their IT vocabulary today!");
-                break;
-        }
+        IntroSlide slide = slides[position];
+        holder.tvEmoji.setText(slide.emoji);
+        holder.tvTitle.setText(slide.title);
+        holder.tvDescription.setText(slide.description);
     }
 
     @Override
     public int getItemCount() {
-        return 4;
+        return slides.length;
     }
 
     static class IntroViewHolder extends RecyclerView.ViewHolder {
-        TextView icon, title, description;
+        TextView tvEmoji, tvTitle, tvDescription;
 
-        public IntroViewHolder(@NonNull View itemView) {
+        IntroViewHolder(@NonNull View itemView) {
             super(itemView);
-            icon = itemView.findViewById(R.id.tvIntroIcon);
-            title = itemView.findViewById(R.id.tvIntroTitle);
-            description = itemView.findViewById(R.id.tvIntroDescription);
+            tvEmoji = itemView.findViewById(R.id.tvEmoji);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
+        }
+    }
+
+    public static class IntroSlide {
+        String emoji;
+        String title;
+        String description;
+
+        public IntroSlide(String emoji, String title, String description) {
+            this.emoji = emoji;
+            this.title = title;
+            this.description = description;
         }
     }
 }
