@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:background="#1a1a2e">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,168 +14,92 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_gradient_primary"
-            android:padding="20dp"
-            android:elevation="4dp">
+            android:padding="16dp"
+            android:background="#16213e">
 
             <ImageView
                 android:id="@+id/btnBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_revert"
-                android:tint="@android:color/white"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"/>
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                android:tint="#00d4ff"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Question Details"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- Question Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardBackgroundColor="#16213e"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_toEndOf="@id/btnBack"
-                android:layout_marginStart="16dp">
+                android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/tvQuestion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tell me about yourself"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:layout_marginBottom="8dp"/>
-
+                <!-- Category and Difficulty -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/tvCategory"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="General"
-                        android:textSize="12sp"
-                        android:textColor="@android:color/white"
-                        android:background="@drawable/bg_difficulty_badge"
-                        android:padding="6dp"
-                        android:layout_marginEnd="8dp"/>
+                        android:layout_weight="1"
+                        android:text="Leadership"
+                        android:textColor="#00d4ff"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvDifficulty"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="EASY"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/difficulty_easy"
-                        android:background="@drawable/bg_difficulty_badge"
-                        android:padding="6dp"/>
-
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <!-- Explanation Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/background_card"
-            android:layout_margin="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
+                <!-- Question -->
                 <TextView
+                    android:id="@+id/tvQuestion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="How to Answer (STAR Method)"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvExplanation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Use STAR method: Situation, Task, Action, Result"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:lineSpacingMultiplier="1.3"/>
-
+                    android:layout_marginTop="12dp"
+                    android:text="Tell me about a time..."
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:lineSpacingExtra="4dp" />
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
-        <!-- Keywords Card -->
+        <!-- Explanation Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/background_card"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Key Points to Cover"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvKeywords"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="skills, experience, achievements, goals"
-                    android:textSize="14sp"
-                    android:textColor="@color/primary_blue"
-                    android:textStyle="italic"/>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Sample Answers -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sample Answers"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- Basic Sample -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/background_card"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#16213e"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -186,34 +110,115 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Basic Level"
+                    android:text="💡 How to Answer"
+                    android:textColor="#ffd700"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvExplanation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Use STAR method: Situation, Task, Action, Result"
+                    android:textColor="#ffffff"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/difficulty_easy"
-                    android:layout_marginBottom="8dp"/>
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Keywords Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#16213e"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎯 Key Points to Include"
+                    android:textColor="#00d4ff"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvKeywords"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="leadership, teamwork, problem-solving"
+                    android:textColor="#ffffff"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Sample Answers Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="📝 Sample Answers"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Basic Sample -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#16213e"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⭐ Basic Level"
+                    android:textColor="#4ade80"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvSampleBasic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sample basic answer..."
+                    android:layout_marginTop="8dp"
+                    android:text="No sample available"
+                    android:textColor="#cccccc"
                     android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:lineSpacingMultiplier="1.3"/>
-
+                    android:lineSpacingExtra="4dp" />
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
         <!-- Intermediate Sample -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/background_card"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="#16213e"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -224,34 +229,32 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Intermediate Level"
+                    android:text="⭐⭐ Intermediate Level"
+                    android:textColor="#fbbf24"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/difficulty_medium"
-                    android:layout_marginBottom="8dp"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvSampleIntermediate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sample intermediate answer..."
+                    android:layout_marginTop="8dp"
+                    android:text="No sample available"
+                    android:textColor="#cccccc"
                     android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:lineSpacingMultiplier="1.3"/>
-
+                    android:lineSpacingExtra="4dp" />
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
         <!-- Advanced Sample -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/background_card"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#16213e"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -262,23 +265,21 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Advanced Level"
+                    android:text="⭐⭐⭐ Advanced Level"
+                    android:textColor="#ef4444"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/difficulty_hard"
-                    android:layout_marginBottom="8dp"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvSampleAdvanced"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sample advanced answer..."
+                    android:layout_marginTop="8dp"
+                    android:text="No sample available"
+                    android:textColor="#cccccc"
                     android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:lineSpacingMultiplier="1.3"/>
-
+                    android:lineSpacingExtra="4dp" />
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
         <!-- Practice Button -->
@@ -286,13 +287,12 @@
             android:id="@+id/btnPractice"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Start Practice"
+            android:layout_margin="16dp"
+            android:backgroundTint="#00d4ff"
+            android:text="Practice This Question"
+            android:textColor="#1a1a2e"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:background="@drawable/bg_button_primary_selector"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="24dp"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 

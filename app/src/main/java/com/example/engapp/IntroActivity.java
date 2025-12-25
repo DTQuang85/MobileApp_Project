@@ -12,6 +12,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class IntroActivity extends AppCompatActivity {
+
     private ViewPager2 viewPager;
     private TabLayout tabLayout;
     private Button btnNext;
@@ -23,19 +24,38 @@ public class IntroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 
+        initViews();
+        setupIntro();
+        setupListeners();
+    }
+
+    private void initViews() {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
         btnNext = findViewById(R.id.btnNext);
         btnSkip = findViewById(R.id.btnSkip);
+    }
 
-        // Setup ViewPager
-        adapter = new IntroAdapter(this);
+    private void setupIntro() {
+        adapter = new IntroAdapter(getIntroSlides());
         viewPager.setAdapter(adapter);
 
-        // Link TabLayout với ViewPager
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {}).attach();
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+        }).attach();
 
-        // Xử lý nút Next
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == adapter.getItemCount() - 1) {
+                    btnNext.setText("Get Started");
+                } else {
+                    btnNext.setText("Next");
+                }
+            }
+        });
+    }
+
+    private void setupListeners() {
         btnNext.setOnClickListener(v -> {
             int currentItem = viewPager.getCurrentItem();
             if (currentItem < adapter.getItemCount() - 1) {
@@ -45,32 +65,51 @@ public class IntroActivity extends AppCompatActivity {
             }
         });
 
-        // Xử lý nút Skip
         btnSkip.setOnClickListener(v -> finishIntro());
-
-        // Thay đổi text nút khi đến slide cuối
-        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                if (position == adapter.getItemCount() - 1) {
-                    btnNext.setText("Get Started");
-                    btnSkip.setVisibility(View.GONE);
-                } else {
-                    btnNext.setText("Next");
-                    btnSkip.setVisibility(View.VISIBLE);
-                }
-            }
-        });
     }
 
     private void finishIntro() {
-        // Lưu trạng thái đã xem intro
         SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
-        prefs.edit().putBoolean("has_seen_intro", true).apply();
+        prefs.edit().putBoolean("intro_seen", true).apply();
 
-        // Chuyển đến LoginActivity
-        Intent intent = new Intent(this, LoginActivity.class);
+        // Navigate to SpaceMapActivity
+        Intent intent = new Intent(this, SpaceMapActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.fade_scale_in, 0);
         finish();
+    }
+
+    private IntroAdapter.IntroSlide[] getIntroSlides() {
+        return new IntroAdapter.IntroSlide[] {
+            new IntroAdapter.IntroSlide(
+                "🌌",
+                "Explore the Galaxy",
+                "Travel through different eras and discover new planets!"
+            ),
+            new IntroAdapter.IntroSlide(
+                "📚",
+                "Learn English Words",
+                "Master vocabulary through fun and engaging games!"
+            ),
+            new IntroAdapter.IntroSlide(
+                "🎯",
+                "Complete Missions",
+                "Unlock achievements and earn rewards as you progress!"
+            ),
+            new IntroAdapter.IntroSlide(
+                "🤝",
+                "Meet Your Buddy",
+                "Your AI companion will guide you through your learning journey!"
+            )
+        };
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() > 0) {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

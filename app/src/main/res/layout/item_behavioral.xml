@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardUseCompatPadding="true">
+    app:cardBackgroundColor="#16213e"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,62 +15,38 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Header with Category and Difficulty -->
+        <!-- Category and Difficulty Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
+            android:gravity="center_vertical">
 
-            <!-- Category Badge -->
             <TextView
                 android:id="@+id/tvCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="General"
-                android:textSize="12sp"
-                android:textColor="@color/text_white"
-                android:background="@drawable/bg_button_primary"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:textStyle="bold"/>
-
-            <View
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Leadership"
+                android:textColor="#00d4ff"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-            <!-- Difficulty Badge -->
-            <LinearLayout
+            <ImageView
+                android:id="@+id/ivDifficulty"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_difficulty_easy"
+                android:contentDescription="Difficulty" />
+
+            <TextView
+                android:id="@+id/tvDifficulty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_difficulty_badge"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp">
-
-                <ImageView
-                    android:id="@+id/ivDifficulty"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_difficulty_easy"
-                    android:layout_marginEnd="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvDifficulty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Easy"
-                    android:textSize="12sp"
-                    android:textColor="@color/difficulty_easy"
-                    android:textStyle="bold"/>
-            </LinearLayout>
+                android:text="EASY"
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Question Text -->
@@ -78,23 +54,25 @@
             android:id="@+id/tvQuestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tell me about yourself."
-            android:textSize="18sp"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold"
-            android:lineSpacingExtra="4dp"/>
+            android:layout_marginTop="12dp"
+            android:text="Tell me about a time when you had to lead a team under pressure"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp"
+            android:maxLines="3"
+            android:ellipsize="end" />
 
-        <!-- Keywords count -->
+        <!-- Keywords Count -->
         <TextView
             android:id="@+id/tvKeywords"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="6 key points to cover"
+            android:layout_marginTop="12dp"
+            android:text="5 key points"
+            android:textColor="#aaaaaa"
             android:textSize="12sp"
-            android:textColor="@color/text_secondary"
-            android:layout_marginTop="8dp"
-            android:drawableStart="@drawable/ic_practice"
-            android:drawablePadding="4dp"/>
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="4dp" />
 
     </LinearLayout>
 
