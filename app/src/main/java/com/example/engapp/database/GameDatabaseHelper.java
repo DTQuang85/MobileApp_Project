@@ -13,6 +13,7 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "space_english_game.db";
     private static final int DATABASE_VERSION = 6;
+    private static final int EXPECTED_PLANET_COUNT = 19;
 
     // Table names
     public static final String TABLE_GALAXIES = "galaxies";
@@ -438,10 +439,37 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
         ensurePlanetsSeeded(db);
+        if (getPlanetsCount(db) < EXPECTED_PLANET_COUNT) {
+            rebuildDatabase(db);
+            ensurePlanetsSeeded(db);
+        }
     }
 
     public void ensurePlanetsSeededNow() {
-        ensurePlanetsSeeded(getWritableDatabase());
+        SQLiteDatabase db = getWritableDatabase();
+        ensurePlanetsSeeded(db);
+        if (getPlanetsCount(db) < EXPECTED_PLANET_COUNT) {
+            rebuildDatabase(db);
+            ensurePlanetsSeeded(db);
+        }
+    }
+
+    private void rebuildDatabase(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAILY_MISSIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BATTLES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDDY_SKILLS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDDIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COLLECTED_ITEMS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BADGES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_PROGRESS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MINIGAMES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENTENCES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORDS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCENES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PLANETS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALAXIES);
+        onCreate(db);
     }
 
     public int ensureMinimumPlanets(int minCount) {
@@ -484,6 +512,7 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void ensurePlanetsSeeded(SQLiteDatabase db) {
+        ensureGalaxiesSeeded(db);
         // Galaxy 1
         ensurePlanet(db, 1, "coloria_prime", "Coloria Prime", "Coloria Prime",
             "", "", "#FF6B6B", "crystal_city", "Prism Shards", "",
@@ -562,6 +591,30 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         ensurePlanet(db, 3, "natura_wilderness", "Natura Wilderness", "Natura Wilderness",
             "", "", "#059669", "nature_forest", "Leaf Tokens", "",
             "Comparatives", "Nature & Environment", 28, 12, 0);
+    }
+
+    private void ensureGalaxiesSeeded(SQLiteDatabase db) {
+        ensureGalaxy(db, "milky_way", "Milky Way", "Dải Ngân Hà",
+            "Your home galaxy - start your adventure here!", "dYOO", "#4A90D9", 0, 1, 1);
+        ensureGalaxy(db, "andromeda", "Andromeda", "Thiên Hà Tiên Nữ",
+            "A galaxy of wonders and advanced learning missions", "dYOO", "#F59E0B", 25, 2, 0);
+        ensureGalaxy(db, "nebula_prime", "Nebula Prime", "Tinh Vân Nguyên Thủy",
+            "A mysterious nebula for advanced explorers", "dYOO", "#8B5CF6", 60, 3, 0);
+    }
+
+    private void ensureGalaxy(SQLiteDatabase db, String key, String name, String nameVi,
+            String description, String emoji, String color, int requiredStars, int order, int unlocked) {
+        if (!galaxyExists(db, key)) {
+            insertGalaxy(db, key, name, nameVi, description, emoji, color, requiredStars, order, unlocked);
+        }
+    }
+
+    private boolean galaxyExists(SQLiteDatabase db, String key) {
+        Cursor cursor = db.query(TABLE_GALAXIES, new String[]{"id"}, "galaxy_key = ?",
+            new String[]{key}, null, null, null);
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
     }
 
     private void ensurePlanet(SQLiteDatabase db, int galaxyId, String key, String name, String nameVi,
@@ -2710,9 +2763,13 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     // ============ QUERY METHODS ============
 
     public List<PlanetData> getAllPlanets() {
-        ensurePlanetsSeeded(getWritableDatabase());
+        SQLiteDatabase db = getWritableDatabase();
+        ensurePlanetsSeeded(db);
+        if (getPlanetsCount(db) < EXPECTED_PLANET_COUNT) {
+            rebuildDatabase(db);
+            ensurePlanetsSeeded(db);
+        }
         List<PlanetData> planets = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_PLANETS, null, null, null, null, null, "order_index ASC");
 
         while (cursor.moveToNext()) {

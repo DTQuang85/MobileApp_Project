@@ -18,6 +18,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TEST_EMAIL = "test@local.app";
+    private static final String TEST_PASSWORD = "123456";
+
     private FirebaseAuth auth;
     private TextInputEditText etEmail, etPassword;
     private TextInputLayout emailLayout, passwordLayout;
@@ -99,18 +102,19 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setEnabled(false);
         btnLogin.setText("Logging in...");
 
+        if (isTestAccount(email, password)) {
+            Toast.makeText(LoginActivity.this, "Login successful! (Test)", Toast.LENGTH_SHORT).show();
+            openMainApp();
+            return;
+        }
+
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = auth.getCurrentUser();
                             Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                            
-                            Intent intent = new Intent(LoginActivity.this, InteractiveGalaxyMapActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
-                            finish();
+                            openMainApp();
                         } else {
                             Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             btnLogin.setEnabled(true);
@@ -131,15 +135,23 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    private boolean isTestAccount(String email, String password) {
+        return TEST_EMAIL.equalsIgnoreCase(email) && TEST_PASSWORD.equals(password);
+    }
+
+    private void openMainApp() {
+        Intent intent = new Intent(LoginActivity.this, InteractiveGalaxyMapActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(LoginActivity.this, InteractiveGalaxyMapActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            openMainApp();
         }
     }
 }

@@ -66,6 +66,8 @@ public class InteractivePlanetMapActivity extends AppCompatActivity {
                 return;
             }
 
+            travelManager.setCurrentPlanetId(planet.planetKey);
+
             // Navigate to PlanetMapActivity (scenes/missions)
             Intent intent = new Intent(this, PlanetMapActivity.class);
             intent.putExtra("planet_id", planet.id);
