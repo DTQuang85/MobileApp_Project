@@ -8,14 +8,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-<<<<<<< Updated upstream
-
-import com.example.engapp.manager.ProgressionManager;
-
-import com.google.android.gms.auth.api.signin.*;
-import com.google.android.gms.common.api.ApiException;
-=======
->>>>>>> Stashed changes
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -150,15 +142,4 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
-<<<<<<< Updated upstream
-
-    private void goHome(String name) {
-        ProgressionManager.getInstance(this).refreshCloudSync();
-        Intent intent = new Intent(this, SpaceshipHubActivity.class);
-        intent.putExtra("username", name != null ? name : "User");
-        startActivity(intent);
-        finish();
-    }
-=======
->>>>>>> Stashed changes
 }

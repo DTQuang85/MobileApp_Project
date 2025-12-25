@@ -21,18 +21,10 @@
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
-<<<<<<< Updated upstream
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:padding="8dp"
-            android:layout_alignParentStart="true"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            app:tint="@android:color/white"/>
-=======
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:src="@drawable/ic_back"
             android:tint="#00d4ff" />
->>>>>>> Stashed changes
 
         <LinearLayout
             android:layout_width="0dp"
