@@ -142,6 +142,14 @@ public class TravelManager {
         return currentPlanetId;
     }
 
+    public void setCurrentPlanetId(String planetId) {
+        if (planetId == null || planetId.isEmpty()) {
+            return;
+        }
+        currentPlanetId = planetId;
+        saveCurrentPlanet();
+    }
+
     public boolean isTraveling() {
         return isTraveling;
     }
@@ -425,4 +433,3 @@ public class TravelManager {
         void onComplete(Planet destination);
     }
 }
-

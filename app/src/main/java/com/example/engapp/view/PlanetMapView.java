@@ -1,5 +1,7 @@
 package com.example.engapp.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -266,6 +268,7 @@ public class PlanetMapView extends View {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             float touchX = event.getX();
             float touchY = event.getY();
+            ProgressionManager progressionManager = ProgressionManager.getInstance(getContext());
 
             for (int i = 0; i < planetNodes.size(); i++) {
                 PlanetNode node = planetNodes.get(i);
@@ -276,6 +279,9 @@ public class PlanetMapView extends View {
                 );
 
                 if (distance <= 90) {
+                    if (!progressionManager.isPlanetUnlocked(node.planet.planetKey)) {
+                        return true;
+                    }
                     // Animate ship to this planet
                     animateShipToPlanet(i);
 
@@ -310,6 +316,10 @@ public class PlanetMapView extends View {
         float endX = target.x;
         float endY = target.y;
 
+        TravelManager travelManager = TravelManager.getInstance(getContext());
+        travelManager.setCurrentPlanetId(target.planet.planetKey);
+        currentPlanetIndex = targetIndex;
+
         shipAnimator.addUpdateListener(animation -> {
             float fraction = (float) animation.getAnimatedValue();
             shipX = startX + (endX - startX) * fraction;
@@ -317,8 +327,16 @@ public class PlanetMapView extends View {
             invalidate();
         });
 
+        shipAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                shipX = endX;
+                shipY = endY;
+                invalidate();
+            }
+        });
+
         shipAnimator.start();
-        currentPlanetIndex = targetIndex;
     }
 
     private static class PlanetNode {
