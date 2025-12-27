@@ -1,5 +1,7 @@
 package com.example.engapp.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -108,6 +110,10 @@ public class PlanetMapView extends View {
         // Initialize ship position at first unlocked planet
         if (!planetNodes.isEmpty()) {
             String currentPlanetKey = TravelManager.getInstance(getContext()).getCurrentPlanetId();
+            if (currentPlanetKey != null) {
+                currentPlanetKey = ProgressionManager.getInstance(getContext())
+                    .normalizePlanetKey(currentPlanetKey);
+            }
             for (int i = 0; i < planetNodes.size(); i++) {
                 PlanetNode node = planetNodes.get(i);
                 if (currentPlanetKey != null && currentPlanetKey.equals(node.planet.planetKey)
@@ -266,6 +272,7 @@ public class PlanetMapView extends View {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             float touchX = event.getX();
             float touchY = event.getY();
+            ProgressionManager progressionManager = ProgressionManager.getInstance(getContext());
 
             for (int i = 0; i < planetNodes.size(); i++) {
                 PlanetNode node = planetNodes.get(i);
@@ -276,12 +283,15 @@ public class PlanetMapView extends View {
                 );
 
                 if (distance <= 90) {
-                    // Animate ship to this planet
-                    animateShipToPlanet(i);
-
-                    if (listener != null) {
-                        listener.onPlanetClick(node.planet);
+                    if (!progressionManager.isPlanetUnlocked(node.planet.planetKey)) {
+                        return true;
                     }
+                    // Animate ship to this planet
+                    animateShipToPlanet(i, () -> {
+                        if (listener != null) {
+                            listener.onPlanetClick(node.planet);
+                        }
+                    });
                     return true;
                 }
             }
@@ -289,9 +299,19 @@ public class PlanetMapView extends View {
         return super.onTouchEvent(event);
     }
 
-    private void animateShipToPlanet(int targetIndex) {
-        if (targetIndex < 0 || targetIndex >= planetNodes.size()) return;
-        if (targetIndex == currentPlanetIndex) return;
+    private void animateShipToPlanet(int targetIndex, Runnable onArrived) {
+        if (targetIndex < 0 || targetIndex >= planetNodes.size()) {
+            if (onArrived != null) {
+                onArrived.run();
+            }
+            return;
+        }
+        if (targetIndex == currentPlanetIndex) {
+            if (onArrived != null) {
+                onArrived.run();
+            }
+            return;
+        }
 
         PlanetNode target = planetNodes.get(targetIndex);
 
@@ -310,6 +330,10 @@ public class PlanetMapView extends View {
         float endX = target.x;
         float endY = target.y;
 
+        TravelManager travelManager = TravelManager.getInstance(getContext());
+        currentPlanetIndex = targetIndex;
+        travelManager.setCurrentPlanetId(target.planet.planetKey);
+
         shipAnimator.addUpdateListener(animation -> {
             float fraction = (float) animation.getAnimatedValue();
             shipX = startX + (endX - startX) * fraction;
@@ -317,8 +341,19 @@ public class PlanetMapView extends View {
             invalidate();
         });
 
+        shipAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                shipX = endX;
+                shipY = endY;
+                invalidate();
+                if (onArrived != null) {
+                    onArrived.run();
+                }
+            }
+        });
+
         shipAnimator.start();
-        currentPlanetIndex = targetIndex;
     }
 
     private static class PlanetNode {

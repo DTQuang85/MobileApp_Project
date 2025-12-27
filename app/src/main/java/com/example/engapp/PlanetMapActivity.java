@@ -76,6 +76,9 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
             
             planetColor = getIntent().getStringExtra("planet_color");
             if (planetColor == null) planetColor = String.format("#%06X", planetData.themeColor);
+
+            com.example.engapp.manager.TravelManager.getInstance(this)
+                .setCurrentPlanetId(planetData.planetKey);
         } else {
             // Fallback nếu không tìm thấy
             planetName = getIntent().getStringExtra("planet_name");

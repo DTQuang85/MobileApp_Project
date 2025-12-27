@@ -13,15 +13,14 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.model.Planet;
@@ -56,7 +55,7 @@ public class InteractiveStarMapView extends View {
     private Paint textPaint;
     private Paint pathPaint;
     private Paint progressPaint;
-    private Drawable rocketDrawable;
+    private Paint shipTextPaint;
 
     // Data
     private Context context;
@@ -68,6 +67,13 @@ public class InteractiveStarMapView extends View {
     // Animation
     private float starTwinklePhase = 0f;
     private ObjectAnimator twinkleAnimator;
+    private ValueAnimator shipAnimator;
+    private float shipX;
+    private float shipY;
+    private float shipRadius;
+    private boolean hasShipPosition;
+
+    private static final String SHIP_EMOJI = "🚀";
 
     // Callbacks
     private OnPlanetSelectedListener planetSelectedListener;
@@ -147,7 +153,6 @@ public class InteractiveStarMapView extends View {
         initGestureDetectors(context);
         generateBackgroundStars();
         startTwinkleAnimation();
-        rocketDrawable = ContextCompat.getDrawable(context, com.example.engapp.R.drawable.ic_rocket);
     }
 
     private void initPaints() {
@@ -183,6 +188,12 @@ public class InteractiveStarMapView extends View {
         progressPaint.setStyle(Paint.Style.STROKE);
         progressPaint.setStrokeWidth(6f);
         progressPaint.setStrokeCap(Paint.Cap.ROUND);
+
+        shipTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        shipTextPaint.setColor(Color.WHITE);
+        shipTextPaint.setTextAlign(Paint.Align.CENTER);
+        float shipTextSize = 28f * getResources().getDisplayMetrics().scaledDensity;
+        shipTextPaint.setTextSize(shipTextSize);
     }
 
     private void initGestureDetectors(Context context) {
@@ -294,6 +305,7 @@ public class InteractiveStarMapView extends View {
 
         // Draw planets
         drawPlanets(canvas);
+        drawSpaceship(canvas);
 
         canvas.restore();
     }
@@ -483,25 +495,6 @@ public class InteractiveStarMapView extends View {
                 locationPaint.setAlpha(100);
                 locationPaint.setStrokeWidth(2f);
                 canvas.drawCircle(x, y, pulseRadius + 5, locationPaint);
-                // Draw spaceship icon above (animated)
-                float shipY = y - radius - 35;
-                if (rocketDrawable != null) {
-                    int size = (int) (getResources().getDisplayMetrics().density * 28);
-                    int left = (int) (x - size / 2f);
-                    int top = (int) (shipY - size);
-                    rocketDrawable.setBounds(left, top, left + size, top + size);
-                    rocketDrawable.draw(canvas);
-                } else {
-                    Paint shipPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    shipPaint.setColor(Color.parseColor("#FFD54F"));
-                    float shipSize = 12f * getResources().getDisplayMetrics().density;
-                    Path shipPath = new Path();
-                    shipPath.moveTo(x, shipY - shipSize);
-                    shipPath.lineTo(x - shipSize * 0.6f, shipY + shipSize * 0.6f);
-                    shipPath.lineTo(x + shipSize * 0.6f, shipY + shipSize * 0.6f);
-                    shipPath.close();
-                    canvas.drawPath(shipPath, shipPaint);
-                }
             }
         } else {
             // Draw locked planet (enhanced greyed out)
@@ -672,12 +665,94 @@ public class InteractiveStarMapView extends View {
             planetNodes.add(node);
         }
 
+        if (currentPlanetId != null) {
+            PlanetNode currentNode = findNodeById(currentPlanetId);
+            if (currentNode != null) {
+                shipX = currentNode.x;
+                shipY = currentNode.y;
+                shipRadius = currentNode.radius;
+                hasShipPosition = true;
+            } else {
+                hasShipPosition = false;
+            }
+        } else {
+            hasShipPosition = false;
+        }
+
         invalidate();
     }
 
     public void setCurrentPlanetId(String planetId) {
+        if (planetId == null || planetId.isEmpty()) {
+            currentPlanetId = planetId;
+            hasShipPosition = false;
+            invalidate();
+            return;
+        }
         this.currentPlanetId = planetId;
-        invalidate();
+        PlanetNode targetNode = findNodeById(planetId);
+        if (targetNode == null && planetId != null) {
+            String normalized = ProgressionManager.getInstance(getContext())
+                .normalizePlanetKey(planetId);
+            if (normalized != null && !normalized.equals(planetId)) {
+                this.currentPlanetId = normalized;
+                targetNode = findNodeById(normalized);
+            }
+        }
+        if (targetNode != null) {
+            moveShipToNode(targetNode, hasShipPosition);
+        } else {
+            invalidate();
+        }
+    }
+
+    private PlanetNode findNodeById(String planetId) {
+        if (planetId == null) {
+            return null;
+        }
+        for (PlanetNode node : planetNodes) {
+            if (planetId.equals(node.planet.getId())) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private void moveShipToNode(PlanetNode target, boolean animate) {
+        if (target == null) {
+            return;
+        }
+        if (!animate) {
+            shipX = target.x;
+            shipY = target.y;
+            shipRadius = target.radius;
+            hasShipPosition = true;
+            invalidate();
+            return;
+        }
+        if (shipAnimator != null) {
+            shipAnimator.cancel();
+        }
+
+        float startX = shipX;
+        float startY = shipY;
+        float startRadius = shipRadius;
+        float endX = target.x;
+        float endY = target.y;
+        float endRadius = target.radius;
+
+        shipAnimator = ValueAnimator.ofFloat(0f, 1f);
+        shipAnimator.setDuration(700);
+        shipAnimator.setInterpolator(new DecelerateInterpolator());
+        shipAnimator.addUpdateListener(animation -> {
+            float fraction = (float) animation.getAnimatedValue();
+            shipX = startX + (endX - startX) * fraction;
+            shipY = startY + (endY - startY) * fraction;
+            shipRadius = startRadius + (endRadius - startRadius) * fraction;
+            hasShipPosition = true;
+            invalidate();
+        });
+        shipAnimator.start();
     }
 
     public void setOnPlanetSelectedListener(OnPlanetSelectedListener listener) {
@@ -725,6 +800,19 @@ public class InteractiveStarMapView extends View {
         invalidate();
     }
 
+    private void drawSpaceship(Canvas canvas) {
+        if (!hasShipPosition) {
+            return;
+        }
+        float shipYPos = shipY - shipRadius - 35f;
+        float textHeight = shipTextPaint.descent() - shipTextPaint.ascent();
+        float baseline = shipYPos + textHeight / 2f - shipTextPaint.descent();
+        canvas.save();
+        canvas.rotate(-45f, shipX, shipYPos);
+        canvas.drawText(SHIP_EMOJI, shipX, baseline, shipTextPaint);
+        canvas.restore();
+    }
+
     // Color utility methods
     private int lightenColor(int color) {
         float[] hsv = new float[3];
@@ -745,6 +833,9 @@ public class InteractiveStarMapView extends View {
         super.onDetachedFromWindow();
         if (twinkleAnimator != null) {
             twinkleAnimator.cancel();
+        }
+        if (shipAnimator != null) {
+            shipAnimator.cancel();
         }
     }
 }

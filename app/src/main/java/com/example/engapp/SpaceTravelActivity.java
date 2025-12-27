@@ -44,7 +44,7 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
 
     private FrameLayout rootLayout;
     private View spaceBackground;
-    private ImageView ivSpaceship;
+    private TextView tvSpaceship;
     private ImageView ivEngineGlow;
     private TextView tvStatus;
     private TextView tvDestination;
@@ -108,25 +108,26 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
 
         // Engine glow
         ivEngineGlow = new ImageView(this);
-        ivEngineGlow.setBackgroundColor(Color.parseColor("#FF6B00"));
-        FrameLayout.LayoutParams glowParams = new FrameLayout.LayoutParams(60, 100);
+        ivEngineGlow.setImageResource(R.drawable.circle_glow_background);
+        FrameLayout.LayoutParams glowParams = new FrameLayout.LayoutParams(80, 80);
         glowParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-        glowParams.bottomMargin = 150;
+        glowParams.bottomMargin = 170;
         ivEngineGlow.setLayoutParams(glowParams);
         ivEngineGlow.setAlpha(0f);
         rootLayout.addView(ivEngineGlow);
 
         // Spaceship
-        ivSpaceship = new ImageView(this);
-        ivSpaceship.setBackgroundColor(Color.parseColor("#4ECDC4"));
+        tvSpaceship = new TextView(this);
+        tvSpaceship.setText("🚀");
+        tvSpaceship.setTextSize(48);
+        tvSpaceship.setGravity(Gravity.CENTER);
+        tvSpaceship.setIncludeFontPadding(false);
         FrameLayout.LayoutParams shipParams = new FrameLayout.LayoutParams(80, 120);
         shipParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         shipParams.bottomMargin = 200;
-        ivSpaceship.setLayoutParams(shipParams);
-
-        // Create rocket shape appearance
-        ivSpaceship.setRotation(0);
-        rootLayout.addView(ivSpaceship);
+        tvSpaceship.setLayoutParams(shipParams);
+        tvSpaceship.setRotation(-45f);
+        rootLayout.addView(tvSpaceship);
 
         // Status text
         tvStatus = new TextView(this);
@@ -253,7 +254,7 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
         prelaunchSet.start();
 
         // Shake effect
-        ObjectAnimator shake = ObjectAnimator.ofFloat(ivSpaceship, "translationX", 0, -5, 5, -5, 5, 0);
+        ObjectAnimator shake = ObjectAnimator.ofFloat(tvSpaceship, "translationX", 0, -5, 5, -5, 5, 0);
         shake.setDuration(500);
         shake.setRepeatCount(3);
         shake.start();
@@ -264,7 +265,7 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
         showBuddySpeech("Lên nào! Wheee! 🎉");
 
         // Spaceship moves up
-        ObjectAnimator moveUp = ObjectAnimator.ofFloat(ivSpaceship, "translationY", 0, -300);
+        ObjectAnimator moveUp = ObjectAnimator.ofFloat(tvSpaceship, "translationY", 0, -300);
         moveUp.setDuration(1500);
         moveUp.setInterpolator(new AccelerateInterpolator());
 
@@ -274,8 +275,8 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
         glowMoveUp.setInterpolator(new AccelerateInterpolator());
 
         // Scale down as it goes up
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(ivSpaceship, "scaleX", 1f, 0.7f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(ivSpaceship, "scaleY", 1f, 0.7f);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(tvSpaceship, "scaleX", 1f, 0.7f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(tvSpaceship, "scaleY", 1f, 0.7f);
         scaleX.setDuration(1500);
         scaleY.setDuration(1500);
 
@@ -317,11 +318,11 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
         showBuddySpeech("Nhìn kìa! Các ngôi sao! ✨");
 
         // Move spaceship to center
-        ivSpaceship.setTranslationY(0);
+        tvSpaceship.setTranslationY(0);
 
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) ivSpaceship.getLayoutParams();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) tvSpaceship.getLayoutParams();
         params.gravity = Gravity.CENTER;
-        ivSpaceship.setLayoutParams(params);
+        tvSpaceship.setLayoutParams(params);
 
         FrameLayout.LayoutParams glowParams = (FrameLayout.LayoutParams) ivEngineGlow.getLayoutParams();
         glowParams.gravity = Gravity.CENTER;
@@ -405,13 +406,13 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
         planetView.animate().alpha(0f).setDuration(1000).start();
 
         // Spaceship landing animation
-        ObjectAnimator descend = ObjectAnimator.ofFloat(ivSpaceship, "translationY", 0, 200);
+        ObjectAnimator descend = ObjectAnimator.ofFloat(tvSpaceship, "translationY", 0, 200);
         descend.setDuration(2000);
         descend.setInterpolator(new DecelerateInterpolator());
 
         // Scale up as we land
-        ObjectAnimator scaleX = ObjectAnimator.ofFloat(ivSpaceship, "scaleX", 0.7f, 1.2f);
-        ObjectAnimator scaleY = ObjectAnimator.ofFloat(ivSpaceship, "scaleY", 0.7f, 1.2f);
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(tvSpaceship, "scaleX", 0.7f, 1.2f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(tvSpaceship, "scaleY", 0.7f, 1.2f);
         scaleX.setDuration(2000);
         scaleY.setDuration(2000);
 
@@ -556,4 +557,3 @@ public class SpaceTravelActivity extends AppCompatActivity implements TravelMana
         }
     }
 }
-

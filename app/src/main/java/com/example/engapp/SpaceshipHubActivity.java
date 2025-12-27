@@ -130,7 +130,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         CardView cardGalaxyMap = findViewById(R.id.cardGalaxyMap);
         if (cardGalaxyMap != null) {
             cardGalaxyMap.setOnClickListener(v -> {
-                Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
+                Intent intent = new Intent(this, InteractiveStarMapActivity.class);
                 startActivity(intent);
             });
         }
@@ -148,7 +148,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        dbHelper.ensureMinimumPlanets(4);
+        dbHelper.ensurePlanetsSeededNow();
         planets = dbHelper.getAllPlanets();
         userProgress = dbHelper.getUserProgress();
         
@@ -215,8 +215,8 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             findViewById(R.id.fabGalaxyMap);
         if (fabGalaxyMap != null) {
             fabGalaxyMap.setOnClickListener(v -> {
-                // Navigate to Interactive Galaxy Map
-                Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
+                // Navigate to full planet map
+                Intent intent = new Intent(this, InteractiveStarMapActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_scale_in, 0);
             });

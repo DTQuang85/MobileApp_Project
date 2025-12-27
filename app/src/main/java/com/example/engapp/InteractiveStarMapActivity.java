@@ -226,15 +226,12 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         progressionManager.checkForNewUnlocks();
 
         GameDatabaseHelper dbHelper = GameDatabaseHelper.getInstance(this);
-        List<GameDatabaseHelper.PlanetData> planetDataList = dbHelper.getPlanetsForGalaxy(galaxyId);
+        List<GameDatabaseHelper.PlanetData> planetDataList = dbHelper.getAllPlanets();
         planets = new java.util.ArrayList<>();
 
         if (planetDataList == null || planetDataList.isEmpty()) {
             List<Planet> allPlanets = GameDataProvider.getAllPlanets();
-            int startIndex = (galaxyId - 1) * 4;
-            int endIndex = startIndex + 4;
-            for (int i = startIndex; i < endIndex && i < allPlanets.size(); i++) {
-                Planet planet = allPlanets.get(i);
+            for (Planet planet : allPlanets) {
                 planet.setUnlocked(progressionManager.isPlanetUnlocked(planet.getId()));
                 planets.add(planet);
             }
@@ -280,12 +277,38 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         }
 
         starMapView.setPlanets(planets, this);
-        String currentPlanetId = travelManager.getCurrentPlanetId();
+        String currentPlanetId = resolveCurrentPlanetKey(travelManager.getCurrentPlanetId());
         if (currentPlanetId != null && !currentPlanetId.isEmpty()) {
-            starMapView.setCurrentPlanetId(progressionManager.normalizePlanetKey(currentPlanetId));
-        } else {
-            starMapView.setCurrentPlanetId(currentPlanetId);
+            travelManager.setCurrentPlanetId(currentPlanetId);
         }
+        starMapView.setCurrentPlanetId(currentPlanetId);
+        if (currentPlanetId != null && !currentPlanetId.isEmpty()) {
+            starMapView.post(() -> starMapView.focusOnPlanet(currentPlanetId));
+        }
+    }
+
+    private String resolveCurrentPlanetKey(String planetId) {
+        if (planetId == null || planetId.isEmpty()) {
+            return planetId;
+        }
+        String normalized = progressionManager.normalizePlanetKey(planetId);
+        if (normalized != null && !normalized.equals(planetId)) {
+            return normalized;
+        }
+        String numericId = planetId;
+        if (numericId.startsWith("planet_")) {
+            numericId = numericId.substring("planet_".length());
+        }
+        try {
+            int id = Integer.parseInt(numericId);
+            GameDatabaseHelper.PlanetData planetData =
+                GameDatabaseHelper.getInstance(this).getPlanetById(id);
+            if (planetData != null && planetData.planetKey != null) {
+                return planetData.planetKey;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return planetId;
     }
 
     private void setupListeners() {
@@ -423,15 +446,19 @@ public class InteractiveStarMapActivity extends AppCompatActivity
 
     private void onArrivedAtPlanet(String planetId) {
         // Update current location on map
-        starMapView.setCurrentPlanetId(planetId);
-        starMapView.focusOnPlanet(planetId);
+        String resolvedPlanetId = resolveCurrentPlanetKey(planetId);
+        travelManager.setCurrentPlanetId(resolvedPlanetId);
+        starMapView.setCurrentPlanetId(resolvedPlanetId);
+        if (resolvedPlanetId != null && !resolvedPlanetId.isEmpty()) {
+            starMapView.focusOnPlanet(resolvedPlanetId);
+        }
 
         // Update stats
         updateStatsDisplay();
 
         // Get planet_id from database using planet key
         GameDatabaseHelper dbHelper = GameDatabaseHelper.getInstance(this);
-        GameDatabaseHelper.PlanetData planetData = dbHelper.getPlanetByKey(planetId);
+        GameDatabaseHelper.PlanetData planetData = dbHelper.getPlanetByKey(resolvedPlanetId);
         
         if (planetData != null) {
             // Navigate to PlanetMapActivity with correct planet_id
@@ -540,7 +567,7 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     @Override
     public void onTravelComplete(Planet destination) {
         runOnUiThread(() -> {
-            starMapView.setCurrentPlanetId(destination.getId());
+            starMapView.setCurrentPlanetId(resolveCurrentPlanetKey(destination.getId()));
             updateStatsDisplay();
         });
     }
