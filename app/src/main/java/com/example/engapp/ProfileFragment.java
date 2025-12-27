@@ -16,12 +16,17 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.List;
 
 public class ProfileFragment extends Fragment {
     private CircleImageView ivAvatar;
     private TextView tvName, tvEmail;
     private Button btnLogout;
+    private TextView tvXp, tvWordsLearned, tvGamesCompleted;
+    private ViewGroup planetProgressContainer;
+    private Button btnNotes, btnReminders;
     private FirebaseAuth auth;
+    private com.example.engapp.database.GameDatabaseHelper dbHelper;
 
     @Nullable
     @Override
@@ -29,15 +34,33 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         auth = FirebaseAuth.getInstance();
+        dbHelper = com.example.engapp.database.GameDatabaseHelper.getInstance(requireContext());
         
         ivAvatar = view.findViewById(R.id.ivAvatar);
         tvName = view.findViewById(R.id.tvName);
         tvEmail = view.findViewById(R.id.tvEmail);
         btnLogout = view.findViewById(R.id.btnLogout);
+        tvXp = view.findViewById(R.id.tvXp);
+        tvWordsLearned = view.findViewById(R.id.tvWordsLearned);
+        tvGamesCompleted = view.findViewById(R.id.tvGamesCompleted);
+        planetProgressContainer = view.findViewById(R.id.planetProgressContainer);
+        btnNotes = view.findViewById(R.id.btnNotes);
+        btnReminders = view.findViewById(R.id.btnReminders);
 
         loadUserInfo();
+        loadProgressStats();
 
         btnLogout.setOnClickListener(v -> showLogoutDialog());
+        btnNotes.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                startActivity(new Intent(getActivity(), NotesActivity.class));
+            }
+        });
+        btnReminders.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                startActivity(new Intent(getActivity(), RemindersActivity.class));
+            }
+        });
 
         return view;
     }
@@ -83,5 +106,51 @@ public class ProfileFragment extends Fragment {
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+    private void loadProgressStats() {
+        com.example.engapp.database.GameDatabaseHelper.UserProgressData progress =
+            dbHelper.getUserProgress();
+        int xp = progress != null ? progress.experiencePoints : 0;
+        tvXp.setText("XP: " + xp);
+
+        com.example.engapp.manager.ProgressionManager progressionManager =
+            com.example.engapp.manager.ProgressionManager.getInstance(requireContext());
+        tvWordsLearned.setText("Words learned: " + progressionManager.getWordsLearned());
+        tvGamesCompleted.setText("Games completed: " + progressionManager.getGamesCompleted());
+
+        if (planetProgressContainer != null) {
+            planetProgressContainer.removeAllViews();
+            List<com.example.engapp.database.GameDatabaseHelper.PlanetData> planets =
+                dbHelper.getAllPlanets();
+            android.content.Context context = getContext();
+            if (context != null && planets != null) {
+                for (com.example.engapp.database.GameDatabaseHelper.PlanetData planet : planets) {
+                    List<com.example.engapp.database.GameDatabaseHelper.SceneData> scenes =
+                        dbHelper.getScenesForPlanet(planet.id);
+                    int completed = 0;
+                    for (com.example.engapp.database.GameDatabaseHelper.SceneData scene : scenes) {
+                        if (scene.isCompleted) completed++;
+                    }
+                    int percent = scenes.size() > 0 ? (completed * 100 / scenes.size()) : 0;
+                    TextView row = new TextView(context);
+                    String name = planet.nameVi != null && !planet.nameVi.isEmpty()
+                        ? planet.nameVi
+                        : planet.name;
+                    row.setText(name + ": " + percent + "%");
+                    row.setTextColor(0xFFFFFFFF);
+                    row.setTextSize(14f);
+                    row.setPadding(0, 6, 0, 6);
+                    planetProgressContainer.addView(row);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserInfo();
+        loadProgressStats();
     }
 }

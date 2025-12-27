@@ -12,7 +12,7 @@ import java.util.List;
 public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "space_english_game.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final int EXPECTED_PLANET_COUNT = 19;
 
     // Table names
@@ -30,6 +30,8 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_BATTLES = "battles";
     public static final String TABLE_DAILY_MISSIONS = "daily_missions";
     public static final String TABLE_INVENTORY = "inventory";
+    public static final String TABLE_NOTES = "notes";
+    public static final String TABLE_REMINDERS = "reminders";
 
     private static GameDatabaseHelper instance;
     private Context context;
@@ -264,6 +266,28 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "last_updated TEXT" +
         ")");
 
+        // Create Notes table (offline)
+        db.execSQL("CREATE TABLE " + TABLE_NOTES + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "user_id TEXT DEFAULT 'default'," +
+            "content TEXT," +
+            "created_at TEXT," +
+            "updated_at TEXT" +
+        ")");
+
+        // Create Reminders table (offline)
+        db.execSQL("CREATE TABLE " + TABLE_REMINDERS + " (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "user_id TEXT DEFAULT 'default'," +
+            "label TEXT," +
+            "hour INTEGER," +
+            "minute INTEGER," +
+            "repeat_days TEXT," +
+            "is_enabled INTEGER DEFAULT 1," +
+            "created_at TEXT," +
+            "updated_at TEXT" +
+        ")");
+
         // Insert initial data
         insertInitialData(db);
     }
@@ -414,9 +438,33 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
                 insertOceanDeepSentences(db, 19);
             }
         }
+
+        if (oldVersion < 7) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NOTES + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "user_id TEXT DEFAULT 'default'," +
+                "content TEXT," +
+                "created_at TEXT," +
+                "updated_at TEXT" +
+            ")");
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_REMINDERS + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "user_id TEXT DEFAULT 'default'," +
+                "label TEXT," +
+                "hour INTEGER," +
+                "minute INTEGER," +
+                "repeat_days TEXT," +
+                "is_enabled INTEGER DEFAULT 1," +
+                "created_at TEXT," +
+                "updated_at TEXT" +
+            ")");
+            ensurePlanetsSeeded(db);
+        }
         
         // For other upgrades, use the old method (drop and recreate)
         if (oldVersion < 5) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_REMINDERS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAILY_MISSIONS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_BATTLES);
@@ -455,6 +503,8 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void rebuildDatabase(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REMINDERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DAILY_MISSIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BATTLES);
@@ -632,6 +682,7 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             ensureScene(db, planetId, "dialogue_dock", "Dialogue Dock", "Dialogue Dock", "", "", 3);
             ensureScene(db, planetId, "puzzle_zone", "Puzzle Zone", "Puzzle Zone", "", "", 4);
             ensureScene(db, planetId, "boss_gate", "Boss Gate", "Boss Gate", "", "", 5);
+            ensureScene(db, planetId, "mini_game", "Mini Game", "Mini Game", "", "", 6);
         }
     }
 
@@ -2914,6 +2965,98 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         return sentences;
     }
 
+    public List<NoteData> getAllNotes() {
+        List<NoteData> notes = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NOTES, null, "user_id = ?",
+            new String[]{"default"}, null, null, "updated_at DESC, created_at DESC");
+        while (cursor.moveToNext()) {
+            notes.add(cursorToNote(cursor));
+        }
+        cursor.close();
+        return notes;
+    }
+
+    public long addNote(String content) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", "default");
+        values.put("content", content);
+        String now = String.valueOf(System.currentTimeMillis());
+        values.put("created_at", now);
+        values.put("updated_at", now);
+        return db.insert(TABLE_NOTES, null, values);
+    }
+
+    public void updateNote(int noteId, String content) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("content", content);
+        values.put("updated_at", String.valueOf(System.currentTimeMillis()));
+        db.update(TABLE_NOTES, values, "id = ?", new String[]{String.valueOf(noteId)});
+    }
+
+    public void deleteNote(int noteId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_NOTES, "id = ?", new String[]{String.valueOf(noteId)});
+    }
+
+    public List<ReminderData> getAllReminders() {
+        List<ReminderData> reminders = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_REMINDERS, null, "user_id = ?",
+            new String[]{"default"}, null, null, "hour ASC, minute ASC");
+        while (cursor.moveToNext()) {
+            reminders.add(cursorToReminder(cursor));
+        }
+        cursor.close();
+        return reminders;
+    }
+
+    public ReminderData getReminderById(int reminderId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TABLE_REMINDERS, null, "id = ?",
+            new String[]{String.valueOf(reminderId)}, null, null, null);
+        ReminderData reminder = null;
+        if (cursor.moveToFirst()) {
+            reminder = cursorToReminder(cursor);
+        }
+        cursor.close();
+        return reminder;
+    }
+
+    public long addReminder(ReminderData reminder) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_id", "default");
+        values.put("label", reminder.label != null ? reminder.label : "");
+        values.put("hour", reminder.hour);
+        values.put("minute", reminder.minute);
+        values.put("repeat_days", reminder.repeatDays != null ? reminder.repeatDays : "1111111");
+        values.put("is_enabled", reminder.isEnabled ? 1 : 0);
+        String now = String.valueOf(System.currentTimeMillis());
+        values.put("created_at", now);
+        values.put("updated_at", now);
+        return db.insert(TABLE_REMINDERS, null, values);
+    }
+
+    public void updateReminder(ReminderData reminder) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("label", reminder.label != null ? reminder.label : "");
+        values.put("hour", reminder.hour);
+        values.put("minute", reminder.minute);
+        values.put("repeat_days", reminder.repeatDays != null ? reminder.repeatDays : "1111111");
+        values.put("is_enabled", reminder.isEnabled ? 1 : 0);
+        values.put("updated_at", String.valueOf(System.currentTimeMillis()));
+        db.update(TABLE_REMINDERS, values, "id = ?", new String[]{String.valueOf(reminder.id)});
+    }
+
+    public void deleteReminder(int reminderId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_REMINDERS, "id = ?", new String[]{String.valueOf(reminderId)});
+    }
+
     public UserProgressData getUserProgress() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_USER_PROGRESS, null, "user_id = ?",
@@ -3128,6 +3271,28 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         return b;
     }
 
+    private NoteData cursorToNote(Cursor c) {
+        NoteData n = new NoteData();
+        n.id = c.getInt(c.getColumnIndexOrThrow("id"));
+        n.content = c.getString(c.getColumnIndexOrThrow("content"));
+        n.createdAt = c.getString(c.getColumnIndexOrThrow("created_at"));
+        n.updatedAt = c.getString(c.getColumnIndexOrThrow("updated_at"));
+        return n;
+    }
+
+    private ReminderData cursorToReminder(Cursor c) {
+        ReminderData r = new ReminderData();
+        r.id = c.getInt(c.getColumnIndexOrThrow("id"));
+        r.label = c.getString(c.getColumnIndexOrThrow("label"));
+        r.hour = c.getInt(c.getColumnIndexOrThrow("hour"));
+        r.minute = c.getInt(c.getColumnIndexOrThrow("minute"));
+        r.repeatDays = c.getString(c.getColumnIndexOrThrow("repeat_days"));
+        r.isEnabled = c.getInt(c.getColumnIndexOrThrow("is_enabled")) == 1;
+        r.createdAt = c.getString(c.getColumnIndexOrThrow("created_at"));
+        r.updatedAt = c.getString(c.getColumnIndexOrThrow("updated_at"));
+        return r;
+    }
+
     // ============ DATA CLASSES ============
 
     public static class PlanetData {
@@ -3208,6 +3373,24 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         public String requirementType;
         public int requirementValue;
         public boolean isEarned;
+    }
+
+    public static class NoteData {
+        public int id;
+        public String content;
+        public String createdAt;
+        public String updatedAt;
+    }
+
+    public static class ReminderData {
+        public int id;
+        public String label;
+        public int hour;
+        public int minute;
+        public String repeatDays;
+        public boolean isEnabled;
+        public String createdAt;
+        public String updatedAt;
     }
 
     public static class GalaxyData {

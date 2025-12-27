@@ -147,6 +147,7 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
                 case "dialogue_dock": return "💬"; // Dialogue/Conversation
                 case "puzzle_zone": return "🧩"; // Puzzle
                 case "boss_gate": return "👾"; // Boss/Battle
+                case "mini_game": return "M"; // Mini game
                 
                 default: return "📚";
             }
@@ -172,10 +173,10 @@ public class PlanetNodeAdapter extends RecyclerView.Adapter<PlanetNodeAdapter.No
                 case "dialogue_dock": return "💬 DIALOGUE";
                 case "puzzle_zone": return "🧩 PUZZLE";
                 case "boss_gate": return "👾 BOSS";
+                case "mini_game": return "MINI GAME";
                 
                 default: return "📖 LEARN";
             }
         }
     }
 }
-

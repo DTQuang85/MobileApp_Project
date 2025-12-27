@@ -469,13 +469,27 @@ public class InteractiveStarMapActivity extends AppCompatActivity
             intent.putExtra("planet_name", planetData.name);
             intent.putExtra("planet_name_vi", planetData.nameVi);
             intent.putExtra("planet_emoji", planetData.emoji);
-            intent.putExtra("planet_color", String.format("#%06X", planetData.themeColor));
+            intent.putExtra("planet_color", normalizeColor(planetData.themeColor, "#4ADE80"));
             startActivity(intent);
         } else {
             Toast.makeText(this, "Không tìm thấy hành tinh: " + planetId, Toast.LENGTH_SHORT).show();
         }
     }
 
+
+    private String normalizeColor(String color, String fallback) {
+        if (color == null) {
+            return fallback;
+        }
+        String trimmed = color.trim();
+        if (trimmed.isEmpty()) {
+            return fallback;
+        }
+        if (!trimmed.startsWith("#")) {
+            trimmed = "#" + trimmed;
+        }
+        return trimmed;
+    }
 
     // ProgressionManager.ProgressionEventListener
     @Override
