@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -159,6 +161,16 @@
             android:name=".ProfileActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+        <!-- Notes Activity -->
+        <activity
+            android:name=".NotesActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Reminders Activity -->
+        <activity
+            android:name=".RemindersActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <!-- Explore Activity -->
         <activity
             android:name=".ExploreActivity"
@@ -172,6 +184,11 @@
         <!-- Puzzle Game Activity -->
         <activity
             android:name=".PuzzleGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <!-- Signal Decode Mini Game Activity -->
+        <activity
+            android:name=".SignalDecodeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <!-- Boss Gate Activity -->
@@ -226,6 +243,19 @@
         <activity
             android:name=".CaptainsLogActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <receiver
+            android:name=".ReminderReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".ReminderBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>

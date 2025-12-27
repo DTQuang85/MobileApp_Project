@@ -80,6 +80,7 @@ public class PlanetActivity extends AppCompatActivity {
         tvPlanetNameVi.setText(currentPlanet.nameVi);
         tvPlanetEmoji.setText(currentPlanet.emoji);
 
+        dbHelper.ensurePlanetsSeededNow();
         // Load scenes
         scenes = dbHelper.getScenesForPlanet(planetId);
 
@@ -220,6 +221,9 @@ public class PlanetActivity extends AppCompatActivity {
                 break;
             case "boss_gate":
                 intent = new Intent(this, BossGateActivity.class);
+                break;
+            case "mini_game":
+                intent = new Intent(this, SignalDecodeActivity.class);
                 break;
             default:
                 intent = new Intent(this, LearnWordsActivity.class);

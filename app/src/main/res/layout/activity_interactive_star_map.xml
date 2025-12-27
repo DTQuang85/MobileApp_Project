@@ -289,6 +289,19 @@
                 android:textStyle="bold"
                 android:background="@drawable/bg_button_primary"/>
 
+            <Button
+                android:id="@+id/btnEnterPlanet"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:text="Vao hanh tinh"
+                android:textColor="@color/text_white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:background="@drawable/button_background"
+                android:visibility="gone"/>
+
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

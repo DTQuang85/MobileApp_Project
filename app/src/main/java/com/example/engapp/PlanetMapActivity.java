@@ -75,7 +75,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
             if (planetEmoji == null) planetEmoji = planetData.emoji;
             
             planetColor = getIntent().getStringExtra("planet_color");
-            if (planetColor == null) planetColor = String.format("#%06X", planetData.themeColor);
+            if (planetColor == null) planetColor = normalizeColor(planetData.themeColor, "#4ADE80");
 
             com.example.engapp.manager.TravelManager.getInstance(this)
                 .setCurrentPlanetId(planetData.planetKey);
@@ -113,6 +113,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
             fw.close();
         } catch (Exception e) {}
         // #endregion
+        dbHelper.ensurePlanetsSeededNow();
         nodes = dbHelper.getScenesForPlanet(planetId);
         // #region agent log
         try {
@@ -167,6 +168,20 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
         }
     }
 
+    private String normalizeColor(String color, String fallback) {
+        if (color == null) {
+            return fallback;
+        }
+        String trimmed = color.trim();
+        if (trimmed.isEmpty()) {
+            return fallback;
+        }
+        if (!trimmed.startsWith("#")) {
+            trimmed = "#" + trimmed;
+        }
+        return trimmed;
+    }
+
     @Override
     public void onNodeClick(SceneData node, int position) {
         // Use LessonUnlockManager to check unlock status
@@ -216,6 +231,9 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
             case "puzzle_zone":
                 intent = new Intent(this, PuzzleGameActivity.class);
                 break;
+            case "mini_game":
+                intent = new Intent(this, SignalDecodeActivity.class);
+                break;
             case "boss_gate":
                 intent = new Intent(this, BossGateActivity.class);
                 break;
@@ -257,7 +275,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
             planetName = planetData.name;
             planetNameVi = planetData.nameVi;
             planetEmoji = planetData.emoji;
-            planetColor = String.format("#%06X", planetData.themeColor);
+            planetColor = normalizeColor(planetData.themeColor, planetColor != null ? planetColor : "#4ADE80");
         }
         
         // Refresh unlock status when returning to planet map

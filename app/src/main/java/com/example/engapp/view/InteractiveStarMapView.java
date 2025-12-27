@@ -13,6 +13,7 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.example.engapp.manager.ProgressionManager;
 import com.example.engapp.model.Planet;
@@ -56,6 +58,7 @@ public class InteractiveStarMapView extends View {
     private Paint pathPaint;
     private Paint progressPaint;
     private Paint shipTextPaint;
+    private Drawable shipDrawable;
 
     // Data
     private Context context;
@@ -153,6 +156,7 @@ public class InteractiveStarMapView extends View {
         initGestureDetectors(context);
         generateBackgroundStars();
         startTwinkleAnimation();
+        shipDrawable = ContextCompat.getDrawable(context, com.example.engapp.R.drawable.ic_rocket);
     }
 
     private void initPaints() {
@@ -804,13 +808,34 @@ public class InteractiveStarMapView extends View {
         if (!hasShipPosition) {
             return;
         }
-        float shipYPos = shipY - shipRadius - 35f;
-        float textHeight = shipTextPaint.descent() - shipTextPaint.ascent();
-        float baseline = shipYPos + textHeight / 2f - shipTextPaint.descent();
-        canvas.save();
-        canvas.rotate(-45f, shipX, shipYPos);
-        canvas.drawText(SHIP_EMOJI, shipX, baseline, shipTextPaint);
-        canvas.restore();
+        float shipCenterX = shipX;
+        float shipCenterY = shipY;
+        boolean isTraveling = shipAnimator != null && shipAnimator.isRunning();
+        if (!isTraveling) {
+            shipCenterY = shipY - shipRadius - 18f;
+        }
+        float shipSize = Math.max(24f, Math.min(64f, shipRadius * 0.7f));
+
+        if (shipDrawable != null) {
+            int half = Math.round(shipSize / 2f);
+            int left = Math.round(shipCenterX) - half;
+            int top = Math.round(shipCenterY) - half;
+            int right = left + Math.round(shipSize);
+            int bottom = top + Math.round(shipSize);
+
+            canvas.save();
+            canvas.rotate(-45f, shipCenterX, shipCenterY);
+            shipDrawable.setBounds(left, top, right, bottom);
+            shipDrawable.draw(canvas);
+            canvas.restore();
+        } else {
+            float textHeight = shipTextPaint.descent() - shipTextPaint.ascent();
+            float baseline = shipCenterY + textHeight / 2f - shipTextPaint.descent();
+            canvas.save();
+            canvas.rotate(-45f, shipCenterX, shipCenterY);
+            canvas.drawText(SHIP_EMOJI, shipCenterX, baseline, shipTextPaint);
+            canvas.restore();
+        }
     }
 
     // Color utility methods
