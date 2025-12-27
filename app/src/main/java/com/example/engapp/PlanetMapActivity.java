@@ -113,6 +113,7 @@ public class PlanetMapActivity extends AppCompatActivity implements PlanetNodeAd
             fw.close();
         } catch (Exception e) {}
         // #endregion
+        dbHelper.ensurePlanetsSeededNow();
         nodes = dbHelper.getScenesForPlanet(planetId);
         // #region agent log
         try {

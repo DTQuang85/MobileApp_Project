@@ -682,7 +682,8 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             ensureScene(db, planetId, "dialogue_dock", "Dialogue Dock", "Dialogue Dock", "", "", 3);
             ensureScene(db, planetId, "puzzle_zone", "Puzzle Zone", "Puzzle Zone", "", "", 4);
             ensureScene(db, planetId, "boss_gate", "Boss Gate", "Boss Gate", "", "", 5);
-            ensureScene(db, planetId, "mini_game", "Mini Game", "Mini Game", "", "", 6);
+            ensureScene(db, planetId, "mini_game", "Mini Game", "Mini Game",
+                "Decode the signal", "M", 6);
         }
     }
 

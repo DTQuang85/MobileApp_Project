@@ -55,6 +55,7 @@ public class InteractiveStarMapActivity extends AppCompatActivity
     private ProgressBar progressPlanet;
     private LinearLayout layoutFuelCost, layoutLockInfo;
     private Button btnTravel;
+    private Button btnEnterPlanet;
     private ImageView btnClosePlanetInfo;
 
     // Managers
@@ -143,6 +144,7 @@ public class InteractiveStarMapActivity extends AppCompatActivity
         layoutFuelCost = findViewById(R.id.layoutFuelCost);
         layoutLockInfo = findViewById(R.id.layoutLockInfo);
         btnTravel = findViewById(R.id.btnTravel);
+        btnEnterPlanet = findViewById(R.id.btnEnterPlanet);
         btnClosePlanetInfo = findViewById(R.id.btnClosePlanetInfo);
 
         // Set listener for star map
@@ -319,6 +321,7 @@ public class InteractiveStarMapActivity extends AppCompatActivity
                 handleTravelRequest();
             }
         });
+        btnEnterPlanet.setOnClickListener(v -> openSelectedPlanetMiniGame());
     }
 
     // InteractiveStarMapView.OnPlanetSelectedListener
@@ -359,17 +362,25 @@ public class InteractiveStarMapActivity extends AppCompatActivity
             if (isCurrentPlanet) {
                 btnTravel.setText("📍 Bạn đang ở đây");
                 btnTravel.setEnabled(false);
+                btnEnterPlanet.setVisibility(View.VISIBLE);
+                btnEnterPlanet.setEnabled(true);
             } else if (travelManager.getFuelCells() >= fuelCost) {
                 btnTravel.setText("🚀 Bay đến đây!");
                 btnTravel.setEnabled(true);
+                btnEnterPlanet.setVisibility(View.GONE);
+                btnEnterPlanet.setEnabled(false);
             } else {
                 btnTravel.setText("🔋 Không đủ nhiên liệu");
                 btnTravel.setEnabled(false);
+                btnEnterPlanet.setVisibility(View.GONE);
+                btnEnterPlanet.setEnabled(false);
             }
         } else {
             // Show lock info
             layoutFuelCost.setVisibility(View.GONE);
             layoutLockInfo.setVisibility(View.VISIBLE);
+            btnEnterPlanet.setVisibility(View.GONE);
+            btnEnterPlanet.setEnabled(false);
 
             int required = progressionManager.getStarsRequiredForPlanet(planet.getId());
             int current = progressionManager.getTotalStars();
@@ -409,6 +420,40 @@ public class InteractiveStarMapActivity extends AppCompatActivity
                 selectedPlanet = null;
             })
             .start();
+    }
+
+    private void openSelectedPlanetMiniGame() {
+        if (selectedPlanet == null) return;
+        GameDatabaseHelper dbHelper = GameDatabaseHelper.getInstance(this);
+        GameDatabaseHelper.PlanetData planetData = dbHelper.getPlanetByKey(selectedPlanet.getId());
+        if (planetData == null) {
+            Toast.makeText(this, "Khong tim thay hanh tinh", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int sceneId = getMiniGameSceneId(dbHelper, planetData.id);
+        if (sceneId <= 0) {
+            Toast.makeText(this, "Chua co mini-game", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, SignalDecodeActivity.class);
+        intent.putExtra("planet_id", planetData.id);
+        intent.putExtra("scene_id", sceneId);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_scale_in, 0);
+        hidePlanetInfo();
+    }
+
+    private int getMiniGameSceneId(GameDatabaseHelper dbHelper, int planetId) {
+        List<GameDatabaseHelper.SceneData> scenes = dbHelper.getScenesForPlanet(planetId);
+        if (scenes == null) {
+            return -1;
+        }
+        for (GameDatabaseHelper.SceneData scene : scenes) {
+            if ("mini_game".equals(scene.sceneType) || "mini_game".equals(scene.sceneKey)) {
+                return scene.id;
+            }
+        }
+        return -1;
     }
 
     private void handleTravelRequest() {
