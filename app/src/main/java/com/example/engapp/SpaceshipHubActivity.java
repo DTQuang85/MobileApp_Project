@@ -114,6 +114,16 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             });
         }
 
+        // Quick Actions - Word Review
+        CardView cardWordReview = findViewById(R.id.cardWordReview);
+        if (cardWordReview != null) {
+            cardWordReview.setOnClickListener(v -> {
+                Intent intent = new Intent(this, WordReviewActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+        }
+
         // Quick Actions - Battle (Old system with ABCD and images)
         CardView cardBattle = findViewById(R.id.cardBattle);
         if (cardBattle != null) {
