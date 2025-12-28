@@ -191,6 +191,19 @@
             android:name=".SignalDecodeActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+        <!-- Fun Zone Mini Games -->
+        <activity
+            android:name=".ConstellationMemoryActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <activity
+            android:name=".StarCatchActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
+        <activity
+            android:name=".FuelMixActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <!-- Boss Gate Activity -->
         <activity
             android:name=".BossGateActivity"
