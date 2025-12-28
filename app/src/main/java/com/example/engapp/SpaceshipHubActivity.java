@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import com.example.engapp.database.GameDatabaseHelper;
@@ -22,7 +21,7 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     private TextView tvBuddyMessage, tvDailyProgress;
     private ProgressBar progressLevel, progressDailyMission;
     private CardView cardAvatar;
-    private CardView cardFunSurprise, cardFunSignal, cardFunReview;
+    private CardView cardFunMemory, cardFunCatch, cardFunFuel;
 
     private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavAdventure;
 
@@ -86,9 +85,9 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         progressLevel = findViewById(R.id.progressLevel);
         progressDailyMission = findViewById(R.id.progressDailyMission);
         cardAvatar = findViewById(R.id.cardAvatar);
-        cardFunSurprise = findViewById(R.id.cardFunSurprise);
-        cardFunSignal = findViewById(R.id.cardFunSignal);
-        cardFunReview = findViewById(R.id.cardFunReview);
+        cardFunMemory = findViewById(R.id.cardFunMemory);
+        cardFunCatch = findViewById(R.id.cardFunCatch);
+        cardFunFuel = findViewById(R.id.cardFunFuel);
 
         btnNavHub = findViewById(R.id.btnNavHub);
         btnNavWordLab = findViewById(R.id.btnNavWordLab);
@@ -128,63 +127,33 @@ public class SpaceshipHubActivity extends AppCompatActivity {
     }
 
     private void setupFunZone() {
-        if (cardFunSurprise != null) {
-            cardFunSurprise.setOnClickListener(v -> grantSurpriseReward());
+        if (cardFunMemory != null) {
+            cardFunMemory.setOnClickListener(v -> openConstellationMemory());
         }
-        if (cardFunSignal != null) {
-            cardFunSignal.setOnClickListener(v -> openSignalDecode());
+        if (cardFunCatch != null) {
+            cardFunCatch.setOnClickListener(v -> openStarCatch());
         }
-        if (cardFunReview != null) {
-            cardFunReview.setOnClickListener(v -> openWordReview());
+        if (cardFunFuel != null) {
+            cardFunFuel.setOnClickListener(v -> openFuelMix());
         }
     }
 
-    private void openSignalDecode() {
-        Intent intent = new Intent(this, SignalDecodeActivity.class);
-        intent.putExtra("planet_id", getSafePlanetId());
-        intent.putExtra("scene_id", 0);
+    private void openConstellationMemory() {
+        Intent intent = new Intent(this, ConstellationMemoryActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_scale_in, 0);
     }
 
-    private void openWordReview() {
-        Intent intent = new Intent(this, WordReviewActivity.class);
+    private void openStarCatch() {
+        Intent intent = new Intent(this, StarCatchActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_scale_in, 0);
     }
 
-    private void grantSurpriseReward() {
-        Random random = new Random();
-        int roll = random.nextInt(3);
-        String message;
-
-        if (roll == 0) {
-            int stars = 1 + random.nextInt(3);
-            dbHelper.addStars(stars);
-            message = "Ban nhan duoc " + stars + " sao!";
-        } else if (roll == 1) {
-            int crystals = 5 + random.nextInt(11);
-            dbHelper.addCrystals(crystals);
-            message = "Ban nhan duoc " + crystals + " crystals!";
-        } else {
-            int xp = 10 + random.nextInt(21);
-            dbHelper.addExperience(xp);
-            message = "Ban nhan duoc " + xp + " XP!";
-        }
-
-        loadData();
-        updateUI();
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private int getSafePlanetId() {
-        if (userProgress == null) {
-            userProgress = dbHelper.getUserProgress();
-        }
-        if (userProgress != null && userProgress.currentPlanetId > 0) {
-            return userProgress.currentPlanetId;
-        }
-        return 1;
+    private void openFuelMix() {
+        Intent intent = new Intent(this, FuelMixActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_scale_in, 0);
     }
 
     private void loadData() {

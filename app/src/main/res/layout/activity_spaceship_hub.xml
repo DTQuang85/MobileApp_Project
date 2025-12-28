@@ -456,14 +456,14 @@
                 android:id="@+id/tvFunZoneTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Khu Vui Choi Vu Tru"
+                android:text="Khu Vui Chơi Vũ Trụ"
                 android:textColor="@color/text_white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardFunSurprise"
+                android:id="@+id/cardFunMemory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -481,7 +481,7 @@
                     <ImageView
                         android:layout_width="36dp"
                         android:layout_height="36dp"
-                        android:src="@drawable/ic_star"
+                        android:src="@drawable/ic_galaxy_map"
                         android:tint="@color/text_white"/>
 
                     <LinearLayout
@@ -494,7 +494,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Hop Qua Bat Ngo"
+                            android:text="Chòm sao ghi nhớ"
                             android:textColor="@color/text_white"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
@@ -502,7 +502,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bam vao de nhan thuong nho"
+                            android:text="Nhớ thứ tự để chạm lại"
                             android:textColor="@color/text_white"
                             android:textSize="12sp"
                             android:alpha="0.9"
@@ -524,7 +524,7 @@
                 android:layout_marginBottom="8dp">
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardFunSignal"
+                    android:id="@+id/cardFunCatch"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -543,13 +543,13 @@
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/ic_keyboard"
+                            android:src="@drawable/ic_star"
                             android:tint="@color/text_white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Mat Ma Vu Tru"
+                            android:text="Sao rơi phản xạ"
                             android:textColor="@color/text_white"
                             android:textSize="13sp"
                             android:textStyle="bold"
@@ -558,7 +558,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardFunReview"
+                    android:id="@+id/cardFunFuel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -577,13 +577,13 @@
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
-                            android:src="@drawable/ic_practice"
+                            android:src="@drawable/ic_rocket"
                             android:tint="@color/text_white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="On Tap Nhanh"
+                            android:text="Pha nhiên liệu"
                             android:textColor="@color/text_white"
                             android:textSize="13sp"
                             android:textStyle="bold"
@@ -719,4 +719,3 @@
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
-
