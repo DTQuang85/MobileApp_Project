@@ -1,10 +1,6 @@
-# Space English
+﻿# Space English
 
-Space English là ứng dụng học tiếng Anh theo chủ đề vũ trụ dành cho trẻ em.
-Người chơi du hành qua các thiên hà và hành tinh, hoàn thành các scene học tập,
-và theo dõi tiến độ qua XP, sao, huy hiệu. Ứng dụng kết hợp dữ liệu offline
-trong SQLite với dịch vụ online để đăng nhập và luyện tập dạng câu hỏi hành vi
-(behavioral).
+Space English là ứng dụng học tiếng Anh theo chủ đề vũ trụ dành cho trẻ em. Người chơi du hành qua các thiên hà và hành tinh, hoàn thành các scene học tập, và theo dõi tiến độ qua XP, sao, huy hiệu. Ứng dụng kết hợp dữ liệu offline trong SQLite với dịch vụ online để đăng nhập và luyện tập dạng câu hỏi hành vi (behavioral).
 
 ## Mục lục
 - Tổng quan
@@ -12,6 +8,7 @@ trong SQLite với dịch vụ online để đăng nhập và luyện tập dạ
 - Luồng trải nghiệm
 - Màn hình chính (Activity)
 - Học tập và mini game
+- Khu vui chơi vũ trụ
 - Hệ thống tiến độ
 - Ghi chú và nhắc nhở
 - Dữ liệu và lưu trữ
@@ -39,6 +36,7 @@ trong SQLite với dịch vụ online để đăng nhập và luyện tập dạ
 - Hành tinh với nhiều scene học tập và mini game.
 - Học từ vựng theo thẻ, Word Lab, Word Review.
 - Thử thách, boss gate, word battle.
+- Khu vui chơi vũ trụ với 3 mini game mới (không trùng với game học hiện có).
 - Hệ thống tiến độ: XP, level, sao, fuel cells, crystals, streak, huy hiệu.
 - Buddy Room: chọn bạn đồng hành, nói chuyện, chơi, học.
 - Profile: XP, số từ đã học, số game hoàn thành, % theo hành tinh.
@@ -49,8 +47,7 @@ trong SQLite với dịch vụ online để đăng nhập và luyện tập dạ
 2. LoginActivity / SignUpActivity (Firebase Auth)
 3. InteractiveGalaxyMapActivity -> InteractiveStarMapActivity
 4. PlanetActivity -> Scene Activities
-5. Các hub phụ trợ: SpaceshipHubActivity, WordLabActivity, BuddyRoomActivity,
-   ProfileActivity
+5. Các hub phụ trợ: SpaceshipHubActivity, WordLabActivity, BuddyRoomActivity, ProfileActivity
 
 ## Màn hình chính (Activity)
 Onboarding và đăng nhập:
@@ -67,7 +64,7 @@ Bản đồ và di chuyển:
 
 Hành tinh và scene:
 - PlanetActivity: danh sách scene theo hành tinh.
-- PlanetMapActivity: danh sách node học tập theo planet.
+- PlanetMapActivity: danh sách node học tập/mini game của hành tinh.
 - ZoneActivity: khu vực học trong planet.
 
 Học tập và mini game:
@@ -86,17 +83,19 @@ Học tập và mini game:
 - WordLabActivity: kho từ và TTS.
 
 Hub và tiện ích:
-- SpaceshipHubActivity: hub chính.
+- SpaceshipHubActivity: hub chính và khu vui chơi vũ trụ.
 - BuddyRoomActivity: bạn đồng hành.
 - ProfileActivity: hồ sơ và thống kê.
 - NotesActivity: ghi chú offline.
 - RemindersActivity: đặt nhắc nhở.
 - BadgesActivity, DailyMissionsActivity, RewardActivity: thưởng và nhiệm vụ.
 - CaptainsLogActivity, AdventureActivity: nội dung mở rộng.
+- ConstellationMemoryActivity: chòm sao ghi nhớ.
+- StarCatchActivity: sao rơi phản xạ.
+- FuelMixActivity: pha nhiên liệu.
 
 Legacy/compat:
-- SpaceMapActivity, MainActivity, VocabularyActivity và một số màn hình cũ
-  được giữ để tương thích.
+- SpaceMapActivity, MainActivity, VocabularyActivity và một số màn hình cũ được giữ để tương thích.
 
 ## Học tập và mini game
 Nhóm học tập:
@@ -106,7 +105,7 @@ Nhóm học tập:
 - DialogueActivity: luyện phản xạ hội thoại.
 - SentenceActivity: luyện ghép câu và cấu trúc.
 
-Nhóm mini game:
+Nhóm mini game theo planet:
 - GuessNameGameActivity: đoán từ theo gợi ý.
 - ListenChooseGameActivity: nghe và chọn đáp án.
 - MatchGameActivity: nối cặp từ và hình.
@@ -114,6 +113,11 @@ Nhóm mini game:
 - BossGateActivity: thử thách cuối scene.
 - SignalDecodeActivity: mini game gõ chữ.
 - WordBattleActivity/BattleActivity: đánh boss bằng từ vựng.
+
+## Khu vui chơi vũ trụ
+- Chòm sao ghi nhớ: quan sát chuỗi sao và chạm lại theo thứ tự.
+- Sao rơi phản xạ: chạm càng nhiều sao rơi càng tốt trong thời gian giới hạn.
+- Pha nhiên liệu: kéo thả nhiên liệu đúng màu vào buồng pha.
 
 ## Hệ thống tiến độ
 - XP và level: cộng sau mỗi hoạt động.
@@ -131,9 +135,9 @@ Nhóm mini game:
 ## Dữ liệu và lưu trữ
 SQLite:
 - Database: space_english_game.db (DATABASE_VERSION = 7).
-- Các bảng chính: galaxies, planets, scenes, words, sentences, minigames,
-  user_progress, collected_items, badges, buddies, buddy_skills, battles,
-  daily_missions, inventory, notes, reminders.
+- Các bảng chính: galaxies, planets, scenes, words, sentences, minigames, user_progress,
+  collected_items, badges, buddies, buddy_skills, battles, daily_missions, inventory,
+  notes, reminders.
 - Dữ liệu seed cho galaxy/planet/scene được tạo trong GameDatabaseHelper.
 
 SharedPreferences:
@@ -196,8 +200,7 @@ gradlew.bat assembleDebug
 - Instrumented tests: ./gradlew connectedAndroidTest
 
 ## Ghi chú phát triển
-- SplashActivity đang gọi LessonUnlockManager.unlockAllForTesting() để test.
-  Cần bỏ khi release.
+- SplashActivity đang gọi LessonUnlockManager.unlockAllForTesting() để test. Cần bỏ khi release.
 - Khi thay đổi schema SQLite, cần tăng DATABASE_VERSION.
 - usesCleartextTraffic đang bật trong manifest, chỉ nên dùng khi cần.
 

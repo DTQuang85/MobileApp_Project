@@ -72,8 +72,8 @@ public class IntroActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
         prefs.edit().putBoolean("intro_seen", true).apply();
 
-        // Navigate to SpaceMapActivity
-        Intent intent = new Intent(this, SpaceMapActivity.class);
+        // Navigate to new main flow
+        Intent intent = new Intent(this, InteractiveGalaxyMapActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_scale_in, 0);
         finish();
