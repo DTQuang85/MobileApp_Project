@@ -12,7 +12,7 @@ import java.util.List;
 public class GameDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "space_english_game.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     private static final int EXPECTED_PLANET_COUNT = 19;
 
     // Table names
@@ -121,6 +121,11 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             "is_learned INTEGER DEFAULT 0," +
             "times_correct INTEGER DEFAULT 0," +
             "times_wrong INTEGER DEFAULT 0," +
+            "sr_interval_days INTEGER DEFAULT 0," +
+            "sr_repetitions INTEGER DEFAULT 0," +
+            "sr_ease REAL DEFAULT 2.5," +
+            "sr_last_reviewed INTEGER DEFAULT 0," +
+            "sr_next_due INTEGER DEFAULT 0," +
             "FOREIGN KEY(planet_id) REFERENCES planets(id)," +
             "FOREIGN KEY(scene_id) REFERENCES scenes(id)" +
         ")");
@@ -460,6 +465,10 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             ")");
             ensurePlanetsSeeded(db);
         }
+
+        if (oldVersion < 8) {
+            addWordReviewColumns(db);
+        }
         
         // For other upgrades, use the old method (drop and recreate)
         if (oldVersion < 5) {
@@ -491,6 +500,33 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
             rebuildDatabase(db);
             ensurePlanetsSeeded(db);
         }
+    }
+
+    private void addWordReviewColumns(SQLiteDatabase db) {
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_WORDS + " ADD COLUMN sr_interval_days INTEGER DEFAULT 0");
+        } catch (Exception ignored) {}
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_WORDS + " ADD COLUMN sr_repetitions INTEGER DEFAULT 0");
+        } catch (Exception ignored) {}
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_WORDS + " ADD COLUMN sr_ease REAL DEFAULT 2.5");
+        } catch (Exception ignored) {}
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_WORDS + " ADD COLUMN sr_last_reviewed INTEGER DEFAULT 0");
+        } catch (Exception ignored) {}
+        try {
+            db.execSQL("ALTER TABLE " + TABLE_WORDS + " ADD COLUMN sr_next_due INTEGER DEFAULT 0");
+        } catch (Exception ignored) {}
+
+        ContentValues easeDefaults = new ContentValues();
+        easeDefaults.put("sr_ease", 2.5);
+        db.update(TABLE_WORDS, easeDefaults, "sr_ease IS NULL OR sr_ease = 0", null);
+
+        long now = System.currentTimeMillis();
+        ContentValues dueDefaults = new ContentValues();
+        dueDefaults.put("sr_next_due", now);
+        db.update(TABLE_WORDS, dueDefaults, "is_learned = 1 AND (sr_next_due IS NULL OR sr_next_due = 0)", null);
     }
 
     public void ensurePlanetsSeededNow() {
@@ -2896,6 +2932,101 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         return words;
     }
 
+    public List<WordData> getWeakWords(int limit) {
+        List<WordData> words = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String orderBy = "(times_wrong * 2 - times_correct) DESC, times_wrong DESC, times_correct ASC";
+        String limitClause = limit > 0 ? String.valueOf(limit) : null;
+        Cursor cursor = db.query(TABLE_WORDS, null, "is_learned = ?",
+            new String[]{"1"}, null, null, orderBy, limitClause);
+
+        while (cursor.moveToNext()) {
+            words.add(cursorToWord(cursor));
+        }
+        cursor.close();
+        return words;
+    }
+
+    public List<WordData> getDueWords(int limit) {
+        List<WordData> words = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        long now = System.currentTimeMillis();
+        String selection = "is_learned = 1 AND (sr_next_due IS NULL OR sr_next_due = 0 OR sr_next_due <= ?)";
+        String orderBy = "sr_next_due ASC, times_wrong DESC, times_correct ASC";
+        String limitClause = limit > 0 ? String.valueOf(limit) : null;
+        Cursor cursor = db.query(TABLE_WORDS, null, selection,
+            new String[]{String.valueOf(now)}, null, null, orderBy, limitClause);
+
+        while (cursor.moveToNext()) {
+            words.add(cursorToWord(cursor));
+        }
+        cursor.close();
+        return words;
+    }
+
+    public List<WordData> getErrorDrillWords(int limit) {
+        List<WordData> words = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String selection = "is_learned = 1 AND times_wrong >= 2";
+        String orderBy = "times_wrong DESC, times_correct ASC, sr_next_due ASC";
+        String limitClause = limit > 0 ? String.valueOf(limit) : null;
+        Cursor cursor = db.query(TABLE_WORDS, null, selection,
+            null, null, null, orderBy, limitClause);
+
+        while (cursor.moveToNext()) {
+            words.add(cursorToWord(cursor));
+        }
+        cursor.close();
+        return words;
+    }
+
+    public int getDueWordCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        long now = System.currentTimeMillis();
+        Cursor cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM " + TABLE_WORDS + " WHERE is_learned = 1 " +
+                "AND (sr_next_due IS NULL OR sr_next_due = 0 OR sr_next_due <= ?)",
+            new String[]{String.valueOf(now)}
+        );
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
+    public int getAdaptiveWordCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        long now = System.currentTimeMillis();
+        Cursor cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM " + TABLE_WORDS + " WHERE is_learned = 1 AND (" +
+                "sr_next_due IS NULL OR sr_next_due = 0 OR sr_next_due <= ? " +
+                "OR (times_wrong * 2 > times_correct + 1))",
+            new String[]{String.valueOf(now)}
+        );
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
+    public int getErrorDrillWordCount() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+            "SELECT COUNT(*) FROM " + TABLE_WORDS + " WHERE is_learned = 1 AND times_wrong >= 2",
+            null
+        );
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
     public List<SentenceData> getSentencesForPlanet(int planetId) {
         // #region agent log
         try {
@@ -3129,6 +3260,86 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("is_learned", 1);
         db.update(TABLE_WORDS, values, "id = ?", new String[]{String.valueOf(wordId)});
+
+        long now = System.currentTimeMillis();
+        db.execSQL("UPDATE " + TABLE_WORDS + " SET sr_ease = 2.5 WHERE id = ? AND (sr_ease IS NULL OR sr_ease = 0)",
+            new Object[]{wordId});
+        db.execSQL("UPDATE " + TABLE_WORDS + " SET sr_next_due = ? WHERE id = ? AND (sr_next_due IS NULL OR sr_next_due = 0)",
+            new Object[]{now, wordId});
+    }
+
+    public void incrementWordCorrect(int wordId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("UPDATE " + TABLE_WORDS + " SET times_correct = times_correct + 1 WHERE id = ?",
+            new Object[]{wordId});
+    }
+
+    public void incrementWordWrong(int wordId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("UPDATE " + TABLE_WORDS + " SET times_wrong = times_wrong + 1 WHERE id = ?",
+            new Object[]{wordId});
+    }
+
+    public void applyReviewResult(WordData word, int rating) {
+        if (word == null) {
+            return;
+        }
+
+        int quality;
+        if (rating <= 1) {
+            quality = 2;
+        } else if (rating == 2) {
+            quality = 4;
+        } else {
+            quality = 5;
+        }
+
+        double ease = word.srEase > 0 ? word.srEase : 2.5;
+        int repetitions = Math.max(word.srRepetitions, 0);
+        int intervalDays = Math.max(word.srIntervalDays, 0);
+
+        if (quality < 3) {
+            repetitions = 0;
+            intervalDays = 1;
+        } else {
+            if (repetitions == 0) {
+                intervalDays = 1;
+            } else if (repetitions == 1) {
+                intervalDays = 6;
+            } else {
+                intervalDays = (int) Math.round(intervalDays * ease);
+            }
+            repetitions += 1;
+        }
+
+        ease = ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+        if (ease < 1.3) {
+            ease = 1.3;
+        }
+
+        long now = System.currentTimeMillis();
+        long nextDue = now + (intervalDays * 24L * 60L * 60L * 1000L);
+
+        int correctIncrement = rating >= 2 ? 1 : 0;
+        int wrongIncrement = rating <= 1 ? 1 : 0;
+        word.timesCorrect += correctIncrement;
+        word.timesWrong += wrongIncrement;
+        word.srIntervalDays = intervalDays;
+        word.srRepetitions = repetitions;
+        word.srEase = ease;
+        word.srLastReviewed = now;
+        word.srNextDue = nextDue;
+
+        ContentValues values = new ContentValues();
+        values.put("times_correct", word.timesCorrect);
+        values.put("times_wrong", word.timesWrong);
+        values.put("sr_interval_days", intervalDays);
+        values.put("sr_repetitions", repetitions);
+        values.put("sr_ease", ease);
+        values.put("sr_last_reviewed", now);
+        values.put("sr_next_due", nextDue);
+        SQLiteDatabase db = getWritableDatabase();
+        db.update(TABLE_WORDS, values, "id = ?", new String[]{String.valueOf(word.id)});
     }
 
     public void updateSceneProgress(int sceneId, int stars) {
@@ -3228,6 +3439,13 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         w.exampleSentence = c.getString(c.getColumnIndexOrThrow("example_sentence"));
         w.exampleTranslation = c.getString(c.getColumnIndexOrThrow("example_translation"));
         w.isLearned = c.getInt(c.getColumnIndexOrThrow("is_learned")) == 1;
+        w.timesCorrect = c.getInt(c.getColumnIndexOrThrow("times_correct"));
+        w.timesWrong = c.getInt(c.getColumnIndexOrThrow("times_wrong"));
+        w.srIntervalDays = c.getInt(c.getColumnIndexOrThrow("sr_interval_days"));
+        w.srRepetitions = c.getInt(c.getColumnIndexOrThrow("sr_repetitions"));
+        w.srEase = c.getDouble(c.getColumnIndexOrThrow("sr_ease"));
+        w.srLastReviewed = c.getLong(c.getColumnIndexOrThrow("sr_last_reviewed"));
+        w.srNextDue = c.getLong(c.getColumnIndexOrThrow("sr_next_due"));
         return w;
     }
 
@@ -3339,6 +3557,13 @@ public class GameDatabaseHelper extends SQLiteOpenHelper {
         public String exampleSentence;
         public String exampleTranslation;
         public boolean isLearned;
+        public int timesCorrect;
+        public int timesWrong;
+        public int srIntervalDays;
+        public int srRepetitions;
+        public double srEase;
+        public long srLastReviewed;
+        public long srNextDue;
     }
 
     public static class SentenceData {

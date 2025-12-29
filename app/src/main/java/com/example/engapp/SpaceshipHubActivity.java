@@ -19,8 +19,10 @@ public class SpaceshipHubActivity extends AppCompatActivity {
 
     private TextView tvPlayerName, tvLevel, tvStars, tvFuelCells, tvCrystals;
     private TextView tvBuddyMessage, tvDailyProgress;
+    private TextView tvReviewDueCount, tvAdaptiveCount, tvDrillCount;
     private ProgressBar progressLevel, progressDailyMission;
     private CardView cardAvatar;
+    private CardView cardWordReview, cardReviewDue, cardAdaptiveReview, cardErrorDrill;
     private CardView cardFunMemory, cardFunCatch, cardFunFuel;
 
     private LinearLayout btnNavHub, btnNavWordLab, btnNavBuddy, btnNavAdventure;
@@ -82,9 +84,16 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         tvCrystals = findViewById(R.id.tvCrystals);
         tvBuddyMessage = findViewById(R.id.tvBuddyMessage);
         tvDailyProgress = findViewById(R.id.tvDailyProgress);
+        tvReviewDueCount = findViewById(R.id.tvReviewDueCount);
+        tvAdaptiveCount = findViewById(R.id.tvAdaptiveCount);
+        tvDrillCount = findViewById(R.id.tvDrillCount);
         progressLevel = findViewById(R.id.progressLevel);
         progressDailyMission = findViewById(R.id.progressDailyMission);
         cardAvatar = findViewById(R.id.cardAvatar);
+        cardWordReview = findViewById(R.id.cardWordReview);
+        cardReviewDue = findViewById(R.id.cardReviewDue);
+        cardAdaptiveReview = findViewById(R.id.cardAdaptiveReview);
+        cardErrorDrill = findViewById(R.id.cardErrorDrill);
         cardFunMemory = findViewById(R.id.cardFunMemory);
         cardFunCatch = findViewById(R.id.cardFunCatch);
         cardFunFuel = findViewById(R.id.cardFunFuel);
@@ -95,6 +104,41 @@ public class SpaceshipHubActivity extends AppCompatActivity {
         btnNavAdventure = findViewById(R.id.btnNavAdventure);
 
         cardAvatar.setOnClickListener(v -> openProfile());
+
+        if (cardWordReview != null) {
+            cardWordReview.setOnClickListener(v -> {
+                Intent intent = new Intent(this, WordReviewActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+        }
+
+        if (cardReviewDue != null) {
+            cardReviewDue.setOnClickListener(v -> {
+                Intent intent = new Intent(this, WordReviewActivity.class);
+                intent.putExtra(WordReviewActivity.EXTRA_REVIEW_MODE, WordReviewActivity.MODE_DUE);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+        }
+
+        if (cardAdaptiveReview != null) {
+            cardAdaptiveReview.setOnClickListener(v -> {
+                Intent intent = new Intent(this, WordReviewActivity.class);
+                intent.putExtra(WordReviewActivity.EXTRA_REVIEW_MODE, WordReviewActivity.MODE_ADAPTIVE);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+        }
+
+        if (cardErrorDrill != null) {
+            cardErrorDrill.setOnClickListener(v -> {
+                Intent intent = new Intent(this, WordReviewActivity.class);
+                intent.putExtra(WordReviewActivity.EXTRA_REVIEW_MODE, WordReviewActivity.MODE_DRILL);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_scale_in, 0);
+            });
+        }
 
         // Daily Mission card click
         CardView cardDailyMission = findViewById(R.id.cardDailyMission);
@@ -174,6 +218,21 @@ public class SpaceshipHubActivity extends AppCompatActivity {
             int dailyProgress = Math.min(userProgress.wordsLearned % 10, 10);
             progressDailyMission.setProgress(dailyProgress);
             tvDailyProgress.setText(dailyProgress + "/10 tu");
+        }
+
+        if (dbHelper != null) {
+            int dueCount = dbHelper.getDueWordCount();
+            int adaptiveCount = dbHelper.getAdaptiveWordCount();
+            int drillCount = dbHelper.getErrorDrillWordCount();
+            if (tvReviewDueCount != null) {
+                tvReviewDueCount.setText(String.valueOf(dueCount));
+            }
+            if (tvAdaptiveCount != null) {
+                tvAdaptiveCount.setText(String.valueOf(adaptiveCount));
+            }
+            if (tvDrillCount != null) {
+                tvDrillCount.setText(String.valueOf(drillCount));
+            }
         }
     }
 

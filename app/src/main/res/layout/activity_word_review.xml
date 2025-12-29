@@ -31,15 +31,61 @@
                 android:contentDescription="Back"/>
 
             <TextView
+                android:id="@+id/tvReviewTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="📖 Word Review"
+                android:text="Word Review"
                 android:textColor="#FFD700"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:layout_marginEnd="40dp"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvModeHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Review learned words"
+            android:textColor="#B3FFFFFF"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginTop="6dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mastery"
+                android:textColor="#FFD700"
+                android:textSize="12sp"/>
+
+            <ProgressBar
+                android:id="@+id/progressMastery"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="0dp"
+                android:layout_height="6dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="10dp"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/progress_xp"/>
+
+            <TextView
+                android:id="@+id/tvMasteryValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0%"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"/>
 
         </LinearLayout>
 
@@ -72,7 +118,7 @@
                 android:id="@+id/tvStreak"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🔥 0"
+                android:text="Streak: 0"
                 android:textColor="#FF6B6B"
                 android:textSize="16sp"/>
 
@@ -276,4 +322,3 @@
     </LinearLayout>
 
 </FrameLayout>
-
